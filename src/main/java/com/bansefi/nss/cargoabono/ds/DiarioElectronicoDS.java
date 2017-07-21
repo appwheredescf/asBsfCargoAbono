@@ -182,7 +182,7 @@ try
 		
 		DiarioElectronicoRequest requestDiario = new DiarioElectronicoRequest();
 		requestDiario.setClaveAnulDi("");
-		requestDiario.setCodClopSist("");
+		requestDiario.setCodClopSist("01");
 		requestDiario.setCodErr1("0");
 		requestDiario.setCodErr2("0");
 		requestDiario.setCodErr3("0");
@@ -254,6 +254,121 @@ try
 
 		return response;
 	}
+
+	public ResponDiaPend RegistraCargoAbonoPendienteInter(  String entidad, 
+			String centro,				String terminal, 
+			String empleado,			String tipoOp,
+			String concepto,			String importe,
+			String importaSldo,			String numSecAc,
+			String numSec	 ,
+			String fechaOperacion,String cajaInt,
+			String StrClop,String StrSubClop)
+{
+ResponDiaPend response = new ResponDiaPend();
+try
+{
+PasivoTcb pasivoTCB = new PasivoTcb();
+ResponseFechaHoraTCB fechaHora = pasivoTCB.FechaContable(terminal);
+String horaOprn = "";
+String fechaContable = "";
+fechaOperacion =fechaOperacion.replace("/", "-");
+
+if(fechaHora.getStatus() == 1)
+{
+TcbProperties oPropTcb = new TcbProperties();
+String StrCodTx =oPropTcb.getABONO_CODTX();
+String SgnCtbleDi="H";
+
+if(tipoOp.equals("C"))
+{
+	StrCodTx =oPropTcb.getCARGO_CODTX();
+	SgnCtbleDi="D";
+}
+
+horaOprn = fechaHora.getHoraOprcn();
+fechaContable = fechaHora.getFechaCble();
+fechaContable =fechaContable.replace("/", "-");
+//fechaOperacion=fechaHora.getFechaOprcn();
+DecimalFormat df = new DecimalFormat("#.00");
+importe = df.format(Double.parseDouble(importe.replace("$", "")));
+importaSldo = df.format(Double.parseDouble(importaSldo.replace("$", "")));
+
+DiarioElectronicoRequest requestDiario = new DiarioElectronicoRequest();
+requestDiario.setClaveAnulDi("");
+requestDiario.setCodClopSist(StrClop);
+requestDiario.setCodErr1("0");
+requestDiario.setCodErr2("0");
+requestDiario.setCodErr3("0");
+requestDiario.setCodErr4("0");
+requestDiario.setCodErr5("0");
+requestDiario.setCodInternoUo(centro);
+requestDiario.setCodInternoUoFsc(centro);
+requestDiario.setCodNrbeEn(entidad);
+requestDiario.setCodNrbeEnFsc(entidad);
+requestDiario.setCodNumrcoMoneda("MXN");
+requestDiario.setCodNumrcoMoneda1("MXN");
+requestDiario.setCodRespuesta("0");
+
+requestDiario.setCodTx(StrCodTx);
+requestDiario.setCodTxDi("");
+requestDiario.setContrida(cajaInt);
+requestDiario.setDiTextArg1("");
+requestDiario.setDiTextArg2("");
+requestDiario.setDiTextArg3("");
+requestDiario.setDiTextArg4("");
+requestDiario.setDiTextArg5("");
+requestDiario.setFechaCtble(fechaContable);
+requestDiario.setFechaOprcn(fechaOperacion);
+requestDiario.setFechaValor(fechaContable);
+requestDiario.setHoraOprcn(horaOprn);
+requestDiario.setIdInternoEmplEp(empleado);
+requestDiario.setIdInternoTermTn(terminal);
+requestDiario.setImpNominal(importe);
+String ImpNominalX = importe.replace(".", "");
+requestDiario.setImpNominalX(StringUtils.leftPad(ImpNominalX, 13, "0"));
+requestDiario.setImpSdo(importaSldo);
+requestDiario.setMasMenosDi("0");
+requestDiario.setModoTx("0");
+requestDiario.setNumPuesto("00");
+requestDiario.setNumSec(numSec);
+requestDiario.setNumSecAc(numSecAc);
+requestDiario.setNumSecAnul("0");
+requestDiario.setNumSecOff("0");
+requestDiario.setSgnCtbleDi(SgnCtbleDi);
+requestDiario.setSituTx("00");
+requestDiario.setTipoSbclop(StrSubClop);
+requestDiario.setValorDtllTx(concepto);
+requestDiario.setIdTermAnul("");
+requestDiario.setIdEmplAnul("");
+requestDiario.setFechaPc(fechaHora.getFechaOprcn());
+requestDiario.setHoraPc(horaOprn);
+ResponseService responseDia = InsertaDiario(requestDiario);
+response.setStatus(0);
+if(responseDia.getStatus()==1)
+{
+	response.setStatus(1);
+	response.setFEC_PC(fechaHora.getFechaOprcn());
+	response.setHORA_PC(horaOprn);
+	response.setHORA_OPERACION(horaOprn);
+}
+} 
+else 
+{
+response.setStatus(0);
+response.setDescripcion(fechaHora.getDescripcion());
+}
+}
+catch(Exception ex)
+{
+response.setCOD_RESPUESTA(-1);
+response.setDescripcion(ex.getMessage());
+log.error("DiarioElectronicoDS - RegistraCargoAbonoPendiente : Exception. " + ex.getMessage());
+}
+
+return response;
+}
+
+	
 	
 	public ResponseRegistroDiarioElectronico UltimoMovimiento(String terminal, String entidad)
 	{

@@ -89,7 +89,7 @@ public class CargoAbono
             		RespDia.setCOD_RESPUESTA(1);
             		RespDia.setNUMSEC(responseMov.getNUM_SEC());
             		RespDia.setIMP_SDO(impNom);
-            		
+            		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
             		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
             		if(pResp.getStatus()==1)
             		{
@@ -98,6 +98,10 @@ public class CargoAbono
             		}
             		else
             		{
+            			if(responseMov.getHORAOPERACION()!=null)
+            				if(responseMov.getHORAOPERACION().length()>0)
+            					RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
+            			
                 		RespDia.setCOD_RESPUESTA(2);
             			ResponseService pResp01= ProcDia.ActualizaRegistro(RespDia);
             			SrStatus="0";
@@ -146,6 +150,112 @@ public class CargoAbono
 	}
 	/*Begin E234 */
 
+	public JSONObject ProcesarIntervencion( String entidad, 
+			String sucursal,	String empleado, 
+			String terminal,	String acuerdo, 
+			String tipoOp,		String fechaValor, 
+			String impNom,		String concepto, 
+			String fechaOperacion,String horaOp,
+			String cajaInt,		String nombreCliente, 
+			String producto,	String idexterno, 
+			String tipoIdExterno,String StrClop,
+			String StrSubClop)
+{
+PasivoTcb pasivoTCB = new PasivoTcb();
+JSONObject jsonResult = new JSONObject();
+JSONObject jsonResultado = new JSONObject();
+boolean StatusOper =false;
+String SrStatus="-1";
+String SrIdMov="-999";
+String SrDesc="";
+/*Begin E234*/
+try
+{
+	impNom =impNom.replace(",", "");
+	concepto = "DVI        " + concepto + " " + tipoIdExterno + " " + idexterno;
+		//Registro de Cargo/Abono en 3 pasos
+		//Paso 1
+		DiarioElectronicoDS ProcDia = new DiarioElectronicoDS();
+		ResponDiaPend RespDia= ProcDia.RegistraCargoAbonoPendienteInter(entidad, sucursal, terminal, empleado,
+				tipoOp, concepto, impNom, "0", acuerdo, "0",
+				fechaOperacion,cajaInt,StrClop,StrSubClop);
+		
+		//Paso 2
+		if(RespDia.getStatus()==1)
+		{
+		String StrAcuerdo ="0000000000".substring(acuerdo.length()) + acuerdo;
+		ResponseServiceCargoAbono responseMov =  new ResponseServiceCargoAbono();
+		switch (tipoOp) 
+		{
+		case "C":
+			responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom, concepto, terminal);
+			break;
+		case "A":
+			responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom, concepto, terminal);
+			break;							
+		}
+		if(responseMov.getStatus()==1)
+		{
+		//Paso 3
+		RespDia.setTERMINAL(terminal);
+		RespDia.setCOD_RESPUESTA(1);
+		RespDia.setNUMSEC(responseMov.getNUM_SEC());
+		RespDia.setIMP_SDO(impNom);
+		
+		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
+		if(pResp.getStatus()==1)
+		{
+			SrIdMov = responseMov.getNUM_SEC();
+			StatusOper =true;
+		}
+		else
+		{
+			RespDia.setCOD_RESPUESTA(2);
+			ResponseService pResp01= ProcDia.ActualizaRegistro(RespDia);
+			SrStatus="0";
+			SrDesc="No pasa a estatus 1 :";
+		}
+		
+		}
+		else
+		{
+		SrIdMov= "-999";
+		SrStatus= "0";
+		SrDesc="No registra cargo-abono";
+		}
+		}
+		else
+		{
+		SrIdMov= "-999";
+		SrStatus= "0";
+		SrDesc="No registra cargo-abono pendiente";
+		}
+		
+		if(StatusOper)
+		{
+			jsonResultado.put("idmov", SrIdMov);
+			jsonResultado.put("status", "1");
+			jsonResultado.put("descripcion","Registro dado de alta");
+		}
+		else
+		{
+			jsonResultado.put("idmov", SrIdMov);
+			jsonResultado.put("status", SrStatus);
+			jsonResultado.put("descripcion",SrDesc);
+		}
+
+}
+catch(Exception ex)
+{
+jsonResultado.put("idmov", "-999");
+jsonResultado.put("status", "-1");
+jsonResultado.put("descripcion", ex.getMessage());
+log.error("Procesar  - " + ex.getMessage());
+}
+/*End E234*/
+jsonResult.put("RespuestaCargoAbono", jsonResultado);
+return jsonResult;
+}
 	public JSONObject ConsultaPendientes(String entidad,String sucursal,String terminal,String empleado)
 	{
 		JSONObject jsonResult = new JSONObject();

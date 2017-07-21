@@ -36,32 +36,32 @@ public class Main {
 		// TODO Auto-generated method stub
 		String entidad ="0166";
 		String sucursal="0001";
-		String terminal ="12000101";
+		String terminal ="12000102";
 		String empleado ="DESA0003";
-		String acuerdo = "11267234";
+		String acuerdo = "22153456";
 		String ID_INTERNO_PE="16396563";
 		String ID_DOM="2";
 		String FecCn="2015/01/23";
 		/**/
 		CargoAbono cargoAbono = new CargoAbono();
 
-		String horaOpr="15:20:04";
+		String horaOpr="15:29:04";
 		String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="14.15";
+		String Importe="5.15";
 		String TipOper="A";
-		String FecValor="2017-07-17";
+		String FecValor="2017-07-20";
 		String Concepto="prueba depura";
-		String FecOper="2017-07-14";
+		String FecOper="2017-07-21";
 		String HrOper="15:20:57";
 		String CajaInt="C";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";
 		String IdExt="DVI        ";
 		String tipoIdExterno="";
+		String StrClop="22";
+		String StrSubClop="0054";
 		
-
-		cargoAbono.ProcesaPendientes(entidad,terminal);
 		
 		cargoAbono.Procesar(entidad, 
 				sucursal, 
@@ -80,6 +80,21 @@ public class Main {
 				IdExt, 
 				tipoIdExterno);
 
+		
+		
+		
+		DiarioElectronicoDS ds = new DiarioElectronicoDS();
+		ds.ObtieneUltimoMovPendiente(entidad, terminal);
+		
+		
+		cargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
+				FecValor, Importe, Concepto, FecOper, HrOper, CajaInt, nombreCliente,
+				Producto, IdExt, tipoIdExterno, StrClop, StrSubClop);
+		
+		
+		cargoAbono.ProcesaPendientes(entidad,terminal);
+		
+		
 
 		
 		
@@ -90,8 +105,7 @@ public class Main {
 		cargoAbono.ConsultaPendienteDiario(entidad,terminal);
 		
 		
-		DiarioElectronicoDS ds = new DiarioElectronicoDS();
-		ds.ObtieneUltimoMovPendiente(entidad, terminal);
+		
 		
 		
 		

@@ -29,7 +29,30 @@ public class ServiciosCargoAbono
 		return  jsonResult.toString();
 	}
 	
-	
+	public String CargoAbonoIntervencion(String entidad,String sucursal, String empleado,
+			String terminal, String acuerdo, String tipoOp, String fechaValor, 
+			String impNom, String concepto, String fechaOperacion, String horaOp,
+			String cajaInt, String nombreCliente, String producto, String idexterno, 
+			String tipoIdExterno,String StrClop,String StrSubClop)
+	{
+		//String result = "{RespuestaCargoAbono:{status:0,descripcion:pruebaReturn,idmov:111}}";
+		JSONObject jsonResult = new JSONObject();
+		try
+		{
+			CargoAbono processCargoAbono = new CargoAbono();
+			/* Proceso de Diario Electronico comentado E234 09-06-2017 */
+			jsonResult =processCargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, 
+					acuerdo, tipoOp, fechaValor, impNom, concepto, 
+					fechaOperacion, horaOp, cajaInt, nombreCliente, producto, 
+					idexterno, tipoIdExterno,StrClop,StrSubClop);
+		}
+		catch(Exception ex)
+		{
+			log.error("CargoAbono principal  - " + ex.getMessage());
+			
+		}
+		return  jsonResult.toString();
+	}	
 	public String ConsultaPendientes(String entidad, String sucursal, String terminal, String empleado){
 		/*String result = "{RespuestaConsultaPendientes:{ idMovimiento:2340,"
 												+ "entidad:'0166',"
