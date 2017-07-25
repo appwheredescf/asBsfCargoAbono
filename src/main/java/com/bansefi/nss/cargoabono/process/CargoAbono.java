@@ -90,7 +90,7 @@ public class CargoAbono
             		RespDia.setNUMSEC(responseMov.getNUM_SEC());
             		RespDia.setIMP_SDO(impNom);
             		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
-            		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
+            		ResponseService pResp= new ResponseService(); //ProcDia.ActualizaRegistro(RespDia);
             		if(pResp.getStatus()==1)
             		{
             			SrIdMov = responseMov.getNUM_SEC();

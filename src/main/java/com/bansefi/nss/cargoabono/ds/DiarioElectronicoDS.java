@@ -541,10 +541,7 @@ return response;
 	}
 	
 	public ResponseService ActualizaRegistro(ResponDiaPend oResp)
-
 	{
-		//	//(String terminal, String fechaPc, String horaPc, String numSec, String horaOprcn, 
-		//String codRespuesta,String Importe)
 		ResponseService response = new ResponseService();
 		String action = "urn:ActualizaDiario";
 		String xml = "";

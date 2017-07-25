@@ -36,7 +36,7 @@ public class Main {
 		// TODO Auto-generated method stub
 		String entidad ="0166";
 		String sucursal="0001";
-		String terminal ="12000102";
+		String terminal ="12000113";
 		String empleado ="DESA0003";
 		String acuerdo = "22153456";
 		String ID_INTERNO_PE="16396563";
@@ -49,12 +49,12 @@ public class Main {
 		String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="5.15";
+		String Importe="1.15";
 		String TipOper="A";
 		String FecValor="2017-07-20";
 		String Concepto="prueba depura";
-		String FecOper="2017-07-21";
-		String HrOper="15:20:57";
+		String FecOper="2017-07-24";
+		String HrOper="12:30:57";
 		String CajaInt="C";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";
 		String IdExt="DVI        ";
