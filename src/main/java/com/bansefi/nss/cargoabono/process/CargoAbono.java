@@ -58,6 +58,8 @@ public class CargoAbono
 		String SrStatus="-1";
 		String SrIdMov="-999";
 		String SrDesc="";
+		String SrCod="";
+		String SrArg1="";
 		/*Begin E234*/
 		try
 		{
@@ -114,13 +116,17 @@ public class CargoAbono
             		SrIdMov= "-999";
             		SrStatus= "0";
             		SrDesc="No registra cargo-abono";
+            		SrCod=responseMov.getDescripcion();
+            		
             	}
 			}
 			else
 			{
-				SrIdMov= "-999";
+				SrIdMov= "-998";
         		SrStatus= "0";
         		SrDesc="No registra cargo-abono pendiente";
+        		SrCod=RespDia.getCOD_TX();
+        		SrArg1=RespDia.getTXT_ARG1();
 			}
 			
 			if(StatusOper)
@@ -128,12 +134,14 @@ public class CargoAbono
 				jsonResultado.put("idmov", SrIdMov);
 				jsonResultado.put("status", "1");
 				jsonResultado.put("descripcion","Registro dado de alta");
+				jsonResultado.put("codigos",SrCod );
 			}
 			else
 			{
 				jsonResultado.put("idmov", SrIdMov);
 				jsonResultado.put("status", SrStatus);
 				jsonResultado.put("descripcion",SrDesc);
+				jsonResultado.put("codigos", SrCod);
 			}
 			
 		}
@@ -168,6 +176,7 @@ boolean StatusOper =false;
 String SrStatus="-1";
 String SrIdMov="-999";
 String SrDesc="";
+String SrCod="";
 /*Begin E234*/
 try
 {
@@ -222,6 +231,7 @@ try
 		SrIdMov= "-999";
 		SrStatus= "0";
 		SrDesc="No registra cargo-abono";
+		SrCod=responseMov.getDescripcion();
 		}
 		}
 		else
@@ -242,6 +252,7 @@ try
 			jsonResultado.put("idmov", SrIdMov);
 			jsonResultado.put("status", SrStatus);
 			jsonResultado.put("descripcion",SrDesc);
+			jsonResultado.put("codigos", SrCod);
 		}
 
 }

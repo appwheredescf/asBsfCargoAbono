@@ -10,6 +10,8 @@ public class ResponseServiceCargoAbono extends ResponseService {
 	private String NOMB_PDV;
 	private String COD_PLZ_BANCARIA;
 	private String RECIBO_BANSEFI_NOMB_50;
+	private String TEXT_CODE;
+	private String TEXT_ARG1;
 	
 	public String getFECHACONTABLE() {
 		return FECHACONTABLE;
@@ -64,6 +66,18 @@ public class ResponseServiceCargoAbono extends ResponseService {
 	}
 	public void setRECIBO_BANSEFI_NOMB_50(String rECIBO_BANSEFI_NOMB_50) {
 		RECIBO_BANSEFI_NOMB_50 = rECIBO_BANSEFI_NOMB_50;
+	}
+	public String getCOD_TX() {
+		return TEXT_CODE;
+	}
+	public void setCOD_TX(String cOD_TX) {
+		TEXT_CODE = cOD_TX;
+	}
+	public String getTEXT_ARG1() {
+		return TEXT_ARG1;
+	}
+	public void setTEXT_ARG1(String tEXT_ARG1) {
+		TEXT_ARG1 = tEXT_ARG1;
 	}
 	
 	

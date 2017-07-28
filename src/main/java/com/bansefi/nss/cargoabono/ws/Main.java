@@ -34,9 +34,9 @@ public class Main {
 	public static void main(String[] args) throws Exception 
 	{
 		// TODO Auto-generated method stub
-		String entidad ="0166";
+		String entidad ="016";
 		String sucursal="0001";
-		String terminal ="12000113";
+		String terminal ="12000102";
 		String empleado ="DESA0003";
 		String acuerdo = "22153456";
 		String ID_INTERNO_PE="16396563";
@@ -61,9 +61,10 @@ public class Main {
 		String tipoIdExterno="";
 		String StrClop="22";
 		String StrSubClop="0054";
+		JSONObject prueba;
+		JSONObject prueba2;
 		
-		
-		cargoAbono.Procesar(entidad, 
+		prueba=cargoAbono.Procesar(entidad, 
 				sucursal, 
 				empleado, 
 				terminal, 
@@ -87,7 +88,7 @@ public class Main {
 		ds.ObtieneUltimoMovPendiente(entidad, terminal);
 		
 		
-		cargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
+		prueba2=cargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
 				FecValor, Importe, Concepto, FecOper, HrOper, CajaInt, nombreCliente,
 				Producto, IdExt, tipoIdExterno, StrClop, StrSubClop);
 		
@@ -214,7 +215,8 @@ public class Main {
 		
 		
 		
-		
+		System.out.println(prueba);
+		System.out.println(prueba2);
 		//ds.RegistraCargoAbono(entidad, sucursal, terminal, empleado, "C", "terst", "458.5", "4325", "51485", "0", "2017/05/01", "2017/05/01", "12:00:00");
 		
 		//pasivoTcb.Abono("0166","259719532","50","pruebas","12012103");

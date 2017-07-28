@@ -6,12 +6,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DecimalFormat;
 
+import javax.wsdl.Output;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -119,14 +121,20 @@ public class DiarioElectronicoDS
 			
 			
 			String wsURL = propDs.getURL_DIARIO_ELECTRONICO();
-			
 			outputString=SalidaResponse(xml,wsURL,action,"");
-			
 			if(outputString.contains("SUCCESSFUL"))
 			{
 				response.setStatus(1);
 				response.setDescripcion("EXITO");
 			} else {
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("utf-8")));
+				NodeList nodes=doc.getElementsByTagName("STD_MSJ_PARM_V");
+				Node item = nodes.item(0);
+				Element eElement = (Element) item;
+				response.setCOD_TX( eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent());
+				response.setTXT_ARG1(eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent());
 				response.setStatus(0);
 				response.setDescripcion(outputString);
 			}
@@ -195,7 +203,6 @@ try
 		requestDiario.setCodNumrcoMoneda("MXN");
 		requestDiario.setCodNumrcoMoneda1("MXN");
 		requestDiario.setCodRespuesta("0");
-		
 		requestDiario.setCodTx(StrCodTx);
 		requestDiario.setCodTxDi("");
 		requestDiario.setContrida(cajaInt);
@@ -238,11 +245,19 @@ try
 			response.setHORA_PC(horaOprn);
 			response.setHORA_OPERACION(horaOprn);
 		}
+		else
+		{
+			response.setCOD_TX(responseDia.getCOD_TX());
+			response.setTXT_ARG1(response.getTXT_ARG1());
+			response.setDescripcion(responseDia.getDescripcion());
+		}
 	} 
 	else 
 	{
 		response.setStatus(0);
 		response.setDescripcion(fechaHora.getDescripcion());
+		
+		
 	}
 }
 	catch(Exception ex)
@@ -955,6 +970,7 @@ return response;
 		{
 			log.error("PasivoTcb - Cargo : SalidaResponse. " + ex.getMessage());
 		}
+		
 		return salida;
 	} 
 

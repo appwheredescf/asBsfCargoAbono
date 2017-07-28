@@ -178,6 +178,7 @@ public class PasivoTcb {
 					response.setTITULAR_NOMB_50(NOMBRE_TITULAR);
 					response.setNUM_SEC(NUM_SEC);
 				}
+				
 				else 
 				{
 					
