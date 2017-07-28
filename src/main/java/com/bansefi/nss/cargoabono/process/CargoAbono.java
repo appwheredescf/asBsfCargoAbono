@@ -115,8 +115,8 @@ public class CargoAbono
             	{
             		SrIdMov= "-999";
             		SrStatus= "0";
-            		SrDesc="No registra cargo-abono";
-            		SrCod=responseMov.getDescripcion();
+            		SrDesc=responseMov.getDescripcion();;
+            		
             		
             	}
 			}
@@ -125,8 +125,7 @@ public class CargoAbono
 				SrIdMov= "-998";
         		SrStatus= "0";
         		SrDesc="No registra cargo-abono pendiente";
-        		SrCod=RespDia.getCOD_TX();
-        		SrArg1=RespDia.getTXT_ARG1();
+        		
 			}
 			
 			if(StatusOper)
@@ -134,14 +133,14 @@ public class CargoAbono
 				jsonResultado.put("idmov", SrIdMov);
 				jsonResultado.put("status", "1");
 				jsonResultado.put("descripcion","Registro dado de alta");
-				jsonResultado.put("codigos",SrCod );
+				
 			}
 			else
 			{
 				jsonResultado.put("idmov", SrIdMov);
 				jsonResultado.put("status", SrStatus);
 				jsonResultado.put("descripcion",SrDesc);
-				jsonResultado.put("codigos", SrCod);
+				
 			}
 			
 		}
@@ -230,15 +229,15 @@ try
 		{
 		SrIdMov= "-999";
 		SrStatus= "0";
-		SrDesc="No registra cargo-abono";
-		SrCod=responseMov.getDescripcion();
+		SrDesc=responseMov.getDescripcion();;
+		
 		}
 		}
 		else
 		{
 		SrIdMov= "-999";
 		SrStatus= "0";
-		SrDesc="No registra cargo-abono pendiente";
+		SrDesc="No registra cargo-abono pendiente";/*Error de  directorio*/
 		}
 		
 		if(StatusOper)
@@ -252,7 +251,7 @@ try
 			jsonResultado.put("idmov", SrIdMov);
 			jsonResultado.put("status", SrStatus);
 			jsonResultado.put("descripcion",SrDesc);
-			jsonResultado.put("codigos", SrCod);
+			
 		}
 
 }
