@@ -1,10 +1,13 @@
 package com.bansefi.nss.cargoabono.vo;
 
+import java.util.ArrayList;
+
 public class ResponseService {
 	private int status;
 	private String descripcion;
-	private String COD_TX;
+	private String TEXT_CODE;
 	private String TXT_ARG1;
+	private ArrayList<String> errores= new ArrayList<String>();
 	public int getStatus() {
 		return status;
 	}
@@ -18,10 +21,10 @@ public class ResponseService {
 		this.descripcion = descripcion;
 	}
 	public String getCOD_TX() {
-		return COD_TX;
+		return TEXT_CODE;
 	}
 	public void setCOD_TX(String cOD_TX) {
-		COD_TX = cOD_TX;
+		TEXT_CODE = cOD_TX;
 	}
 	public String getTXT_ARG1() {
 		return TXT_ARG1;

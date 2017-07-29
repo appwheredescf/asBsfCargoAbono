@@ -107,7 +107,7 @@ public class CargoAbono
                 		RespDia.setCOD_RESPUESTA(2);
             			ResponseService pResp01= ProcDia.ActualizaRegistro(RespDia);
             			SrStatus="0";
-            			SrDesc="No pasa a estatus 1 :";
+            			SrDesc=responseMov.getDescripcion();;
             		}
             		
             	}
@@ -115,7 +115,7 @@ public class CargoAbono
             	{
             		SrIdMov= "-999";
             		SrStatus= "0";
-            		SrDesc=responseMov.getDescripcion();;
+            		SrDesc=responseMov.getDescripcion();
             		
             		
             	}

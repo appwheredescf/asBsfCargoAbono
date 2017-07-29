@@ -121,20 +121,14 @@ public class DiarioElectronicoDS
 			
 			
 			String wsURL = propDs.getURL_DIARIO_ELECTRONICO();
+			String actionerror = "urn";
 			outputString=SalidaResponse(xml,wsURL,action,"");
 			if(outputString.contains("SUCCESSFUL"))
 			{
 				response.setStatus(1);
 				response.setDescripcion("EXITO");
 			} else {
-				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-				Document doc = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("utf-8")));
-				NodeList nodes=doc.getElementsByTagName("STD_MSJ_PARM_V");
-				Node item = nodes.item(0);
-				Element eElement = (Element) item;
-				response.setCOD_TX( eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent());
-				response.setTXT_ARG1(eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent());
+			
 				response.setStatus(0);
 				response.setDescripcion(outputString);
 			}
@@ -973,5 +967,5 @@ return response;
 		
 		return salida;
 	} 
-
+	
 }

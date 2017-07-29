@@ -3,6 +3,7 @@ package com.bansefi.nss.cargoabono.tcb;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,8 +18,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
+import com.bansefi.nss.cargoabono.properties.DsProperties;
 import com.bansefi.nss.cargoabono.properties.TcbProperties;
 import com.bansefi.nss.cargoabono.services.PasivosAcuerdosServices;
+import com.bansefi.nss.cargoabono.vo.DiarioElectronicoRequest;
 import com.bansefi.nss.cargoabono.vo.ResponseConsultaClabe;
 import com.bansefi.nss.cargoabono.vo.ResponseDatosCentro;
 import com.bansefi.nss.cargoabono.vo.ResponseDatosEmpleado;
@@ -32,7 +36,8 @@ import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_AUDIT_AUX;
 
 public class PasivoTcb {
 	private static final Logger log = LogManager.getLogger(PasivosAcuerdosServices.class);
-	
+	private DsProperties propDs = new DsProperties();
+	DiarioElectronicoDS diario= new DiarioElectronicoDS();
 	public ResponseServiceCargoAbono Cargo(
 			String entidad, 
 			String acuerdo, 
@@ -190,9 +195,36 @@ public class PasivoTcb {
 					{
 						Node item = STD_MSJ_PARM_V.item(i);
 						Element eElement = (Element) item;
-						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-						errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
+						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(i).getTextContent();
+						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(i).getTextContent();
+						String action="urn:getDescError";
+						String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
+						   "<soap:Header/>"+
+						   "<soap:Body>"+
+						     "<dat:getDescError>"+
+						        "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
+						      "</dat:getDescError>"+
+						   "</soap:Body>"+
+						"</soap:Envelope>";
+						
+						String wsURL=propDs.getURL_ERROR_DESC();
+						String outputString=diario.SalidaResponse(xml,wsURL,action,"");
+							try
+							{
+								DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
+								DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
+								Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("utf-8")));
+								
+								NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
+								Node item2 = RespuetaDiario.item(i);
+								Element eElement2 = (Element) item;
+								errores += TEXT_CODE + "|" + TEXT_ARG1 +eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent()+ ", ";
+								
+							}catch(Exception e)
+							{
+								errores="La obtenciond errores fallo";
+							}
+						
 					}
 					response.setDescripcion(errores);
 				}
@@ -373,7 +405,32 @@ public class PasivoTcb {
 						Element eElement = (Element) item;
 						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
 						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-						errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
+						String action="urn:getDescError";
+						String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
+						   "<soap:Header/>"+
+						   "<soap:Body>"+
+						     "<dat:getDescError>"+
+						        "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
+						      "</dat:getDescError>"+
+						   "</soap:Body>"+
+						"</soap:Envelope>";
+						
+						String wsURL=propDs.getURL_ERROR_DESC();
+						String outputString=diario.SalidaResponse(xml,wsURL,action,"");
+							try
+							{
+								DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
+								DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
+								Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("utf-8")));
+								
+								NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
+								Node item2 = RespuetaDiario.item(i);
+								Element eElement2 = (Element) item;
+								errores += TEXT_CODE + "|" + TEXT_ARG1 +eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent()+ ", ";
+							}catch(Exception e)
+							{
+								errores="La obtenciond errores fallo";
+							}
 					}
 					response.setDescripcion(errores);
 				}
