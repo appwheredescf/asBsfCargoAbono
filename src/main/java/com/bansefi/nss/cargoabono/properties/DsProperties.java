@@ -13,7 +13,7 @@ public class DsProperties
 	public DsProperties()
 	{		
 		this.URL_DIARIO_ELECTRONICO = prop.getProperty("URL_DIARIO_ELECTRONICO");
-		this.URL_DIARIO_ELECTRONICO= prop.getProperty("URL_ERROR_DESC");
+		this.URL_ERROR_DESC= prop.getProperty("URL_ERROR_DESC");
 	}
 
 	public String getURL_DIARIO_ELECTRONICO() {

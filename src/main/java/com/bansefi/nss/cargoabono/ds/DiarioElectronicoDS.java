@@ -121,7 +121,7 @@ public class DiarioElectronicoDS
 			
 			
 			String wsURL = propDs.getURL_DIARIO_ELECTRONICO();
-			String actionerror = "urn";
+			
 			outputString=SalidaResponse(xml,wsURL,action,"");
 			if(outputString.contains("SUCCESSFUL"))
 			{
@@ -243,7 +243,7 @@ try
 		{
 			response.setCOD_TX(responseDia.getCOD_TX());
 			response.setTXT_ARG1(response.getTXT_ARG1());
-			response.setDescripcion(responseDia.getDescripcion());
+			
 		}
 	} 
 	else 

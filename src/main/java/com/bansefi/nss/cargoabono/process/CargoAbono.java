@@ -221,7 +221,7 @@ try
 			RespDia.setCOD_RESPUESTA(2);
 			ResponseService pResp01= ProcDia.ActualizaRegistro(RespDia);
 			SrStatus="0";
-			SrDesc="No pasa a estatus 1 :";
+			SrDesc=pResp.getDescripcion();
 		}
 		
 		}
