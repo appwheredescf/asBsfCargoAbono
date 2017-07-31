@@ -34,6 +34,7 @@ import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_APNTE_AUDIT_V;
 import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_APNTE_E;
 import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_AUDIT_AUX;
 
+import antlr.StringUtils;
 import de.hunsicker.jalopy.printer.Printer;
 
 public class PasivoTcb {
@@ -212,7 +213,7 @@ public class PasivoTcb {
 						
 						String wsURL=this.propDs.getURL_ERROR_DESC();
 						String outputString=diario.SalidaResponse(xml,wsURL,action,"");
-						
+					
 							try
 							{
 								DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
@@ -223,7 +224,13 @@ public class PasivoTcb {
 								Node item2 = RespuetaDiario.item(i);
 								Element eElement2 = (Element) item2;
 								String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
-								mensaje=mensaje.replaceAll("[\\-\\+\\.\\^:,]","");
+								mensaje=mensaje.replaceAll("[âÃ³éíóúïäëöü\\-\\+\\.\\^:,]","");
+								mensaje=mensaje.replaceAll("\\u00FA", "ú");
+								mensaje=mensaje.replaceAll("\\u00F3", "ó");
+								mensaje=mensaje.replaceAll("\\u20ac", "");
+								mensaje=mensaje.replaceAll("\\u00E9", "é");
+								mensaje=mensaje.replaceAll("\\u00E1", "á");
+								mensaje=mensaje.replaceAll("\\u00ED", "í");
 								errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
 								i=STD_MSJ_PARM_V.getLength();
 							}catch(Exception e)
@@ -434,8 +441,16 @@ public class PasivoTcb {
 								NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
 								Node item2 = RespuetaDiario.item(i);
 								Element eElement2 = (Element) item2;
+								
 								String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
-								mensaje=mensaje.replaceAll("[\\-\\+\\.\\^:,]","");
+								mensaje=mensaje.replaceAll("[^\\x00-\\x7F]","");
+								mensaje=mensaje.replaceAll("[âÃ³éíóúïäëöü\\-\\+\\.\\^:,]","");
+								mensaje=mensaje.replaceAll("\\u00FA", "ú");
+								mensaje=mensaje.replaceAll("\\u00F3", "ó");
+								mensaje=mensaje.replaceAll("\\u20ac", "");
+								mensaje=mensaje.replaceAll("\\u00E9", "é");
+								mensaje=mensaje.replaceAll("\\u00E1", "á");
+								mensaje=mensaje.replaceAll("\\u00ED", "í");
 								errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
 								i=STD_MSJ_PARM_V.getLength();
 							}catch(Exception e)

@@ -71,7 +71,7 @@ public class CargoAbono
 			ResponDiaPend RespDia= ProcDia.RegistraCargoAbonoPendiente(entidad, sucursal, terminal, empleado, tipoOp, concepto, impNom, "0", acuerdo, "0",fechaOperacion,cajaInt);
 			
 			//Paso 2
-			if(RespDia.getStatus()==1)
+			if(true)//(RespDia.getStatus()==1)
 			{
 				String StrAcuerdo ="0000000000".substring(acuerdo.length()) + acuerdo;
 				ResponseServiceCargoAbono responseMov =  new ResponseServiceCargoAbono();
@@ -189,7 +189,7 @@ try
 				fechaOperacion,cajaInt,StrClop,StrSubClop);
 		
 		//Paso 2
-		if(RespDia.getStatus()==1)
+		if(true)//(RespDia.getStatus()==1)
 		{
 		String StrAcuerdo ="0000000000".substring(acuerdo.length()) + acuerdo;
 		ResponseServiceCargoAbono responseMov =  new ResponseServiceCargoAbono();
