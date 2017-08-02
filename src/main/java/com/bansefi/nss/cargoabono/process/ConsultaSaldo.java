@@ -65,6 +65,8 @@ public class ConsultaSaldo
 				String stringDate = "";
 				Date date;
 				try {
+					if(horaOpr.length()<2)
+						horaOpr ="00:00:00";
 					date = df.parse(fechaActual + " " + horaOpr);
 					SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 					stringDate = sdf.format(date);

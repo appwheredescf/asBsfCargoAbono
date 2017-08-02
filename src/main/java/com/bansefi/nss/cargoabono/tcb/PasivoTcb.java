@@ -99,6 +99,7 @@ public class PasivoTcb {
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_CARGO());
 			conn.setDoOutput(true);
+			System.out.println(soapXml);
 			//Send the request
 			java.io.OutputStreamWriter wr;
 			try 

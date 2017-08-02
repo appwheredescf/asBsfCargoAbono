@@ -92,7 +92,7 @@ public class CargoAbono
             		RespDia.setNUMSEC(responseMov.getNUM_SEC());
             		RespDia.setIMP_SDO(impNom);
             		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
-            		ResponseService pResp= new ResponseService(); //ProcDia.ActualizaRegistro(RespDia);
+            		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
             		if(pResp.getStatus()==1)
             		{
             			SrIdMov = responseMov.getNUM_SEC();
@@ -321,6 +321,8 @@ return jsonResult;
 				ResponseFechaActual responseFechaActual = oWsAcuerdo.FechaActual();
 				String fechaActual = responseFechaActual.getStatus() == 1 ? responseFechaActual.getFecha() : "";
 				String horaOpr = oDiaElect.getRegistroDiarioElectronico().getHoraPc();//Ae234
+				if(horaOpr.length()<2)
+					horaOpr ="00:00:00";
 				String DATE_FORMAT= "ddMMyyHHmmss";
 				String DateFormatSerie="ddMMyy";
 				DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

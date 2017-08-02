@@ -34,27 +34,27 @@ public class Main {
 	public static void main(String[] args) throws Exception 
 	{
 		// TODO Auto-generated method stub
-		String entidad ="016";
-		String sucursal="0001";
-		String terminal ="12000102";
-		String empleado ="DESA0001";
-		String acuerdo = "22153456";
+		String entidad ="0166";
+		String sucursal="0121";
+		String terminal ="12012103";
+		String empleado ="E1662129";
+		String acuerdo = "259719532";
 		String ID_INTERNO_PE="16396563";
 		String ID_DOM="2";
 		String FecCn="2015/01/23";
 		/**/
 		CargoAbono cargoAbono = new CargoAbono();
 
-		String horaOpr="19:29:04";
+		String horaOpr="19:10:04";
 		String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="1.15";
+		String Importe="2.15";
 		String TipOper="C";
-		String FecValor="2017-07-28";
-		String Concepto="prueba depura";
-		String FecOper="2017-07-28";
-		String HrOper="19:30:57";
+		String FecValor="2017-08-01";
+		String Concepto="prueba depura   123";
+		String FecOper="2017-08-01";
+		String HrOper="19:10:57";
 		String CajaInt="A";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";
 		String IdExt="DVI        ";
@@ -63,6 +63,22 @@ public class Main {
 		String StrSubClop="0054";
 		JSONObject prueba;
 		JSONObject prueba2;
+
+		ConsultaSaldo oSal = new ConsultaSaldo();
+		oSal.Comprobante(entidad, sucursal, acuerdo, terminal, horaOpr, nombreCliente, idExterno, empleado);
+		
+		
+		CargoAbono prosCargA = new CargoAbono();				
+		prosCargA.ComprobanteCargoAbono(terminal,entidad);		
+		
+
+		
+		cargoAbono.ProcesaPendientes(entidad,terminal);
+		
+
+		
+		
+		
 		
 		prueba=cargoAbono.Procesar(entidad, 
 				sucursal, 
@@ -81,11 +97,27 @@ public class Main {
 				IdExt, 
 				tipoIdExterno);
 
+
 		
+		
+
+		
+		
+
+		
+		
+		cargoAbono.ConsultaPendienteDiario(entidad,terminal);
 		
 		
 		DiarioElectronicoDS ds = new DiarioElectronicoDS();
 		ds.ObtieneUltimoMovPendiente(entidad, terminal);
+		
+		
+		
+				
+		
+		
+		
 		
 		
 		prueba2=cargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
@@ -93,7 +125,7 @@ public class Main {
 				Producto, IdExt, tipoIdExterno, StrClop, StrSubClop);
 		
 		
-		cargoAbono.ProcesaPendientes(entidad,terminal);
+
 		
 		
 
@@ -103,7 +135,7 @@ public class Main {
 		
 		
 		
-		cargoAbono.ConsultaPendienteDiario(entidad,terminal);
+		
 		
 		
 		
@@ -167,8 +199,7 @@ public class Main {
 				"1234567890", 
 			"51");
 		 * */
-		ConsultaSaldo oSal = new ConsultaSaldo();
-		oSal.Comprobante(entidad, sucursal, acuerdo, terminal, horaOpr, nombreCliente, idExterno, empleado);
+		
 		
 		
 		
@@ -210,7 +241,7 @@ public class Main {
 		
 		
 		
-		CargoAbono prosCargA = new CargoAbono();
+		
 		
 		
 		
@@ -226,7 +257,7 @@ public class Main {
 	
 
 		
-		//prosCargA.ComprobanteCargoAbono("2579");
+		//
 		
 		
 		//JSONObject oResp= prosCargA.Procesar("0166", "0001", "DESA0006", "12000108", "11267234", "X", "2017/06/09", "1", "prueba", "2017/06/09", "01:01:01", "C", "Prueba", "11", "1355063", "");
