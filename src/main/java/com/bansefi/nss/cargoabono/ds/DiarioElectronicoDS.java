@@ -217,7 +217,11 @@ try
 		requestDiario.setImpSdo(importaSldo);
 		requestDiario.setMasMenosDi("0");
 		requestDiario.setModoTx("0");
-		requestDiario.setNumPuesto("00");
+		
+		String StrPuesto="00";
+		if(terminal.length()>2)
+			StrPuesto = terminal.substring(terminal.length()-2);
+		requestDiario.setNumPuesto(StrPuesto);
 		requestDiario.setNumSec(numSec);
 		requestDiario.setNumSecAc(numSecAc);
 		requestDiario.setNumSecAnul("0");
