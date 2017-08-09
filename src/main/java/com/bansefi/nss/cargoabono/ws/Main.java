@@ -33,6 +33,77 @@ public class Main {
 
 	public static void main(String[] args) throws Exception 
 	{
+		
+		String entidad ="0166";
+		String sucursal="0001";//"0121";
+		String terminal ="12000102";//"12012103";
+		String empleado ="DESA0003";//"E1662129";
+		String acuerdo ="259719532";//"22012512";// ;"259719532";
+		String ID_INTERNO_PE="16396563";
+		String ID_DOM="2";
+		String FecCn="2015/01/23";
+		/**/
+		CargoAbono cargoAbono = new CargoAbono();
+
+		String horaOpr="09:10:04";
+		String nombreCliente="Prueba ";
+		String idExterno="1112";
+		String Producto="CUENTAHORRO";
+		String Importe="5.55";
+		String TipOper="C";
+		String FecValor="2017-08-04";
+		String Concepto="prueba depura   [2]";
+		String FecOper="2017-08-09";
+		String HrOper="10:10:57";
+		String CajaInt="A";
+		String nombreClien="EMILIA RAMIREZ MENDOZA";
+		String IdExt="DVI        ";
+		String tipoIdExterno="";
+		String StrClop="22";
+		String StrSubClop="0054";
+		
+		cargoAbono.Procesar(entidad, 
+				sucursal, 
+				empleado, 
+				terminal, 
+				acuerdo, 
+				TipOper, 
+				FecValor, 
+				Importe, 
+				Concepto, 
+				FecOper, 
+				HrOper, 
+				CajaInt, 
+				nombreClien, 
+				Producto, 
+				IdExt, 
+				tipoIdExterno);
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+/*		
+		
+		
+		
 		// TODO Auto-generated method stub
 		String entidad ="0166";
 		String sucursal="0121";
@@ -42,7 +113,7 @@ public class Main {
 		String ID_INTERNO_PE="16396563";
 		String ID_DOM="2";
 		String FecCn="2015/01/23";
-		/**/
+	
 		CargoAbono cargoAbono = new CargoAbono();
 
 		String horaOpr="19:10:04";
@@ -97,7 +168,7 @@ public class Main {
 				IdExt, 
 				tipoIdExterno);
 
-
+*/
 		
 		
 
@@ -120,7 +191,7 @@ public class Main {
 		
 		
 		
-		prueba2=cargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
+		cargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
 				FecValor, Importe, Concepto, FecOper, HrOper, CajaInt, nombreCliente,
 				Producto, IdExt, tipoIdExterno, StrClop, StrSubClop);
 		
@@ -246,8 +317,8 @@ public class Main {
 		
 		
 		
-		System.out.println(prueba);
-		System.out.println(prueba2);
+		//System.out.println(prueba);
+		//System.out.println(prueba2);
 		//ds.RegistraCargoAbono(entidad, sucursal, terminal, empleado, "C", "terst", "458.5", "4325", "51485", "0", "2017/05/01", "2017/05/01", "12:00:00");
 		
 		//pasivoTcb.Abono("0166","259719532","50","pruebas","12012103");

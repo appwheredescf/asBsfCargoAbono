@@ -64,14 +64,14 @@ public class CargoAbono
 		try
 		{
 			impNom =impNom.replace(",", "");
-			concepto = "DVI        " + concepto + " " + tipoIdExterno + " " + idexterno;
+			concepto = "C DVI        " + concepto + " " + tipoIdExterno + " " + idexterno;
 			//Registro de Cargo/Abono en 3 pasos
 			//Paso 1
 			DiarioElectronicoDS ProcDia = new DiarioElectronicoDS();
 			ResponDiaPend RespDia= ProcDia.RegistraCargoAbonoPendiente(entidad, sucursal, terminal, empleado, tipoOp, concepto, impNom, "0", acuerdo, "0",fechaOperacion,cajaInt);
 			
 			//Paso 2
-			if(RespDia.getStatus()==1)
+			if(RespDia.getStatus()==234) //1
 			{
 				String StrAcuerdo ="0000000000".substring(acuerdo.length()) + acuerdo;
 				ResponseServiceCargoAbono responseMov =  new ResponseServiceCargoAbono();
