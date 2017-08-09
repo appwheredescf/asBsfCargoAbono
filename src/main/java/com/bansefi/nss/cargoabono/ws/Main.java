@@ -36,7 +36,7 @@ public class Main {
 		
 		String entidad ="0166";
 		String sucursal="0001";//"0121";
-		String terminal ="12000102";//"12012103";
+		String terminal ="12100304";//"12012103";
 		String empleado ="DESA0003";//"E1662129";
 		String acuerdo ="259719532";//"22012512";// ;"259719532";
 		String ID_INTERNO_PE="16396563";
@@ -45,11 +45,13 @@ public class Main {
 		/**/
 		CargoAbono cargoAbono = new CargoAbono();
 
+		
+		
 		String horaOpr="09:10:04";
 		String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="5.55";
+		String Importe="5.56";
 		String TipOper="C";
 		String FecValor="2017-08-04";
 		String Concepto="prueba depura   [2]";
@@ -92,7 +94,7 @@ public class Main {
 		
 		
 		
-		
+		cargoAbono.ProcesaPendientes(entidad,terminal);
 		
 		
 		
@@ -144,7 +146,7 @@ public class Main {
 		
 
 		
-		cargoAbono.ProcesaPendientes(entidad,terminal);
+		
 		
 
 		

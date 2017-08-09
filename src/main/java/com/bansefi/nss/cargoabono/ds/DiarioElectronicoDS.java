@@ -84,7 +84,7 @@ public class DiarioElectronicoDS
 					+"<dat:modoTx>" + request.getModoTx() + "</dat:modoTx>"
 					+"<dat:situTx>" + request.getSituTx() + "</dat:situTx>"
 					+"<dat:valorDtllTx>" + request.getValorDtllTx() + "</dat:valorDtllTx>"
-					+"<dat:idEmplAut>" + request.getIdEmplAut() + "</dat:idEmplAut>"
+					+"<dat:idEmplAut>" + request.getIdInternoEmplEp() + "</dat:idEmplAut>"
 					+"<dat:fechaAnul xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://ws.wso2.org/dataservice\"/>"
 					+"<dat:idTermAnul>" + request.getIdTermAnul() + "</dat:idTermAnul>"
 					+"<dat:idEmplAnul>" + request.getIdEmplAnul() + "</dat:idEmplAnul>"
@@ -97,7 +97,7 @@ public class DiarioElectronicoDS
 					+"<dat:fechaOprcn>" + StrFecOper + "</dat:fechaOprcn>"
 					+"<dat:horaOprcn>" + request.getHoraOprcn() + "</dat:horaOprcn>"
 					+"<dat:fechaCtble>" +StFecConr  + "</dat:fechaCtble>"
-					+"<dat:fechaValor xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://ws.wso2.org/dataservice\"/>"
+					+"<dat:fechaValor>"+request.getFechaValor()+"</dat:fechaValor>"
 					+"<dat:codClopSist>" + request.getCodClopSist() + "</dat:codClopSist>"
 					+"<dat:tipoSbclop>" + request.getTipoSbclop() + "</dat:tipoSbclop>"
 					+"<dat:numPuesto>" + request.getNumPuesto() + "</dat:numPuesto>"
@@ -207,7 +207,7 @@ try
 		requestDiario.setDiTextArg5("");
 		requestDiario.setFechaCtble(fechaContable);
 		requestDiario.setFechaOprcn(fechaOperacion);
-		requestDiario.setFechaValor(fechaContable);
+		requestDiario.setFechaValor(fechaOperacion);
 		requestDiario.setHoraOprcn(horaOprn);
 		requestDiario.setIdInternoEmplEp(empleado);
 		requestDiario.setIdInternoTermTn(terminal);

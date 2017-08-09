@@ -71,7 +71,7 @@ public class CargoAbono
 			ResponDiaPend RespDia= ProcDia.RegistraCargoAbonoPendiente(entidad, sucursal, terminal, empleado, tipoOp, concepto, impNom, "0", acuerdo, "0",fechaOperacion,cajaInt);
 			
 			//Paso 2
-			if(RespDia.getStatus()==234) //1
+			if(RespDia.getStatus()==1) 
 			{
 				String StrAcuerdo ="0000000000".substring(acuerdo.length()) + acuerdo;
 				ResponseServiceCargoAbono responseMov =  new ResponseServiceCargoAbono();
@@ -84,7 +84,7 @@ public class CargoAbono
 						responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom, concepto, terminal);
 						break;							
 				}
-            	if(responseMov.getStatus()==1)
+            	if(responseMov.getStatus()==234)//1
             	{
         			//Paso 3
             		RespDia.setTERMINAL(terminal);
@@ -97,17 +97,19 @@ public class CargoAbono
             		{
             			SrIdMov = responseMov.getNUM_SEC();
         				StatusOper =true;
+        
             		}
             		else
             		{
             			if(responseMov.getHORAOPERACION()!=null)
             				if(responseMov.getHORAOPERACION().length()>0)
             					RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
-            			
-                		RespDia.setCOD_RESPUESTA(2);
-            			ResponseService pResp01= ProcDia.ActualizaRegistro(RespDia);
+        				SrDesc="El movimiento se registro en tcb, no se actualizo movimiento en diario, favor de conctactar a sistemas";
+        				//responseMov.setDescripcion(SrDesc);    			
+                		//RespDia.setCOD_RESPUESTA(2);
+            			//ResponseService pResp01= ProcDia.ActualizaRegistro(RespDia);
             			SrStatus="0";
-            			SrDesc=responseMov.getDescripcion();;
+            			//SrDesc=responseMov.getDescripcion();;
             		}
             		
             	}
@@ -117,14 +119,21 @@ public class CargoAbono
             		SrStatus= "0";
             		SrDesc=responseMov.getDescripcion();
             		
-            		
             	}
 			}
 			else
 			{
+				RespDia.setCOD_RESPUESTA(9);
+				RespDia.setTERMINAL(terminal);
+				RespDia.setIMP_SDO(impNom);
+				RespDia.setNUMSEC("0");
+				
+				
+        		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);	
+				
 				SrIdMov= "-998";
         		SrStatus= "0";
-        		SrDesc="No registra cargo-abono pendiente";
+        		SrDesc="No registra cargo-abono";
         		
 			}
 			
