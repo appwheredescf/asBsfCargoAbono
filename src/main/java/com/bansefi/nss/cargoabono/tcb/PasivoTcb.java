@@ -41,12 +41,14 @@ public class PasivoTcb {
 	private static final Logger log = LogManager.getLogger(PasivosAcuerdosServices.class);
 	private DsProperties propDs = new DsProperties();
 	DiarioElectronicoDS diario= new DiarioElectronicoDS();
-	public ResponseServiceCargoAbono Cargo(
+	
+	
+	public ResponseServiceCargoAbono CargoIntervencion(
 			String entidad, 
 			String acuerdo, 
 			String impNom, 
 			String concepto, 
-			String idTerminal) 
+			String idTerminal,String Clop,String SubClop) 
 	{
 		ResponseServiceCargoAbono response = new ResponseServiceCargoAbono();
 		String salida = "";		
@@ -55,11 +57,11 @@ public class PasivoTcb {
 		{
 			ResponseFechaHoraTCB fechaHoraTCB = new ResponseFechaHoraTCB();
 			fechaHoraTCB = FechaContable(idTerminal);
-			String strVista = getVistaCargo(prop.getCARGO_CODTX(), 
+			String strVista = getVistaCargoInterven(prop.getCARGO_CODTX(), 
 					prop.getCARGO_CODAPL(), 
 					prop.getCARGO_TIPOOPER(),
-					prop.getCARGO_CLOP(), 
-					prop.getCARGO_SUBCLOP(), 
+					Clop, 
+					SubClop, 
 					prop.getCARGO_ISO(), 
 					entidad, 
 					acuerdo,
@@ -73,6 +75,7 @@ public class PasivoTcb {
 					+ "	<SOAP-ENV:Body> " + strVista+ "	</SOAP-ENV:Body>"
 					+ "</SOAP-ENV:Envelope>"; 
 
+			System.out.println(soapXml);
 			URL url;
 			java.net.URLConnection conn = null;
 			try 
@@ -261,6 +264,452 @@ public class PasivoTcb {
 		}
 		return response;
 	}
+
+	
+	
+	
+	public ResponseServiceCargoAbono Cargo(
+			String entidad, 
+			String acuerdo, 
+			String impNom, 
+			String concepto, 
+			String idTerminal) 
+	{
+		ResponseServiceCargoAbono response = new ResponseServiceCargoAbono();
+		String salida = "";		
+		TcbProperties prop = new TcbProperties();
+		try
+		{
+			ResponseFechaHoraTCB fechaHoraTCB = new ResponseFechaHoraTCB();
+			fechaHoraTCB = FechaContable(idTerminal);
+			String strVista = getVistaCargo(prop.getCARGO_CODTX(), 
+					prop.getCARGO_CODAPL(), 
+					prop.getCARGO_TIPOOPER(),
+					prop.getCARGO_CLOP(), 
+					prop.getCARGO_SUBCLOP(), 
+					prop.getCARGO_ISO(), 
+					entidad, 
+					acuerdo,
+					impNom, 
+					concepto, 
+					idTerminal,
+					fechaHoraTCB.getFechaOprcn(),
+					fechaHoraTCB.getHoraOprcn(),
+					fechaHoraTCB.getFechaCble());
+			String soapXml = "<SOAP-ENV:Envelope xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'>"
+					+ "	<SOAP-ENV:Body> " + strVista+ "	</SOAP-ENV:Body>"
+					+ "</SOAP-ENV:Envelope>"; 
+
+			System.out.println(soapXml);
+			URL url;
+			java.net.URLConnection conn = null;
+			try 
+			{
+				url = new URL(prop.getURL_CARGO());
+				try 
+				{
+					conn = url.openConnection();
+				} 
+				catch (IOException e) 
+				{
+					log.info("PasivoTcb - Cargo : View In .- " + strVista);
+					log.info("PasivoTcb - Cargo : URL_CARGO .- " + prop.getURL_CARGO());
+					log.error("PasivoTcb - Cargo : IOException. " + e.getMessage());
+				}
+			} 
+			catch (MalformedURLException e1) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e1.getMessage());
+				log.info("PasivoTcb - Cargo : View In .- " + strVista);
+				log.info("PasivoTcb - Cargo : URL_CARGO .- " + prop.getURL_CARGO());
+				log.error("PasivoTcb - Cargo : MalformedURLException. " + e1.getMessage());
+			}
+			conn.setRequestProperty("SOAPAction", prop.getURL_CARGO());
+			conn.setDoOutput(true);
+			System.out.println(soapXml);
+			//Send the request
+			java.io.OutputStreamWriter wr;
+			try 
+			{
+				wr = new java.io.OutputStreamWriter(conn.getOutputStream());
+				wr.write(soapXml);
+				wr.flush();
+			} 
+			catch (IOException e2) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e2.getMessage());
+				log.info("PasivoTcb - Cargo : View In .- " + strVista);
+				log.error("PasivoTcb - Cargo : OutputStreamWriter. " + e2.getMessage());
+			}
+
+			// Read the response
+			java.io.BufferedReader rd = null;
+			try 
+			{
+				rd = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+			} 
+			catch (IOException e1) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e1.getMessage());
+				log.info("PasivoTcb - Cargo : View In .- " + strVista);
+				log.error("PasivoTcb - Cargo : BufferedReader. " + e1.getMessage());
+			}
+
+			try
+			{
+				String line = "";
+				while ((line = rd.readLine()) != null) 
+				{ 
+					//LECTURA DE VISTA DE SALIDA
+					salida += line;	
+				}
+				
+				salida = salida.replaceAll("<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">", "");
+				salida = salida.replaceAll("<SOAP-ENV:Body>", "");
+				salida = salida.replaceAll("</SOAP-ENV:Body>", "");
+				salida = salida.replaceAll("</SOAP-ENV:Envelope>", "");
+				salida = salida.trim();
+				
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
+				NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_IMPUTAC_VTNLLA_PASIVO_TRN_O");
+				System.out.println(strVista);
+				System.out.println(salida);
+				String RTRN_CD = "";
+				for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
+				{
+					Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
+					Element eElement = (Element) item;
+					RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
+				}
+				
+				if(RTRN_CD.equals("1"))
+				{
+					Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("PSV_NOMBRE_TITULAR_V").item(0);
+					String NOMBRE_TITULAR = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_50").item(0).getTextContent();
+					
+					Element INF_RECIBO_BANSEFI_V = (Element)doc.getElementsByTagName("INF_RECIBO_BANSEFI_V").item(0);
+					String NOMB_PDV = INF_RECIBO_BANSEFI_V.getElementsByTagName("NOMB_PDV").item(0).getTextContent();
+					String RECIBO_BANSEFI_NOMB_50 = INF_RECIBO_BANSEFI_V.getElementsByTagName("NOMB_50").item(0).getTextContent();
+					String COD_PLZ_BANCARIA = INF_RECIBO_BANSEFI_V.getElementsByTagName("COD_PLZ_BANCARIA").item(0).getTextContent();
+					Element TR_IMPUTAC_VTNLLA_PASIVO_EVT_Z = (Element)doc.getElementsByTagName("TR_IMPUTAC_VTNLLA_PASIVO_EVT_Z").item(0);
+					String FECHA_VALOR = TR_IMPUTAC_VTNLLA_PASIVO_EVT_Z.getElementsByTagName("FECHA_VALOR").item(0).getTextContent();
+					Element STD_TRN_O_PARM_V = (Element)doc.getElementsByTagName("STD_TRN_O_PARM_V").item(0);
+					String FECHA_OPRCN = STD_TRN_O_PARM_V.getElementsByTagName("FECHA_OPRCN").item(0).getTextContent();
+					String HORA_OPRCN = STD_TRN_O_PARM_V.getElementsByTagName("HORA_OPRCN").item(0).getTextContent();
+					Element PSV_APUNTE_V = (Element)doc.getElementsByTagName("PSV_APUNTE_V").item(0);
+					String NUM_SEC = PSV_APUNTE_V.getElementsByTagName("NUM_SEC").item(0).getTextContent();
+					
+					response.setStatus(1);
+					response.setCOD_PLZ_BANCARIA(COD_PLZ_BANCARIA);
+					response.setFECHACONTABLE(FECHA_VALOR);
+					response.setFECHAVALOR(FECHA_VALOR);
+					response.setFECHAOPERA(FECHA_OPRCN);
+					response.setHORAOPERACION(HORA_OPRCN);
+					response.setNOMB_PDV(NOMB_PDV);
+					response.setRECIBO_BANSEFI_NOMB_50(RECIBO_BANSEFI_NOMB_50);
+					response.setTITULAR_NOMB_50(NOMBRE_TITULAR);
+					response.setNUM_SEC(NUM_SEC);
+				}
+				
+				else 
+				{
+					
+					log.info("PasivoTcb - Cargo : View In .- " + strVista);
+					log.info("PasivoTcb - Cargo : View Out .- " + salida);
+					String errores = "";
+					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
+					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
+					{
+						
+						Node item = STD_MSJ_PARM_V.item(i);
+						Element eElement = (Element) item;
+						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(i).getTextContent();
+						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(i).getTextContent();
+						String action="urn:getDescError";
+						String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
+						   "<soapenv:Header/>"+
+						   "<soapenv:Body>"+
+						      "<dat:getDescError>"+
+						         "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
+						      "</dat:getDescError>"+
+						   "</soapenv:Body>"+
+						"</soapenv:Envelope>";
+						
+						String wsURL=this.propDs.getURL_ERROR_DESC();
+						String outputString=diario.SalidaResponse(xml,wsURL,action,"");
+					
+							try
+							{
+								DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
+								DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
+								Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("UTF-8")));
+								
+								NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
+								Node item2 = RespuetaDiario.item(i);
+								Element eElement2 = (Element) item2;
+								String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
+								mensaje=mensaje.replaceAll("[âÃ³éíóúïäëöü\\-\\+\\.\\^:,]","");
+								mensaje=mensaje.replaceAll("\\u00FA", "ú");
+								mensaje=mensaje.replaceAll("\\u00F3", "ó");
+								mensaje=mensaje.replaceAll("\\u20ac", "");
+								mensaje=mensaje.replaceAll("\\u00E9", "é");
+								mensaje=mensaje.replaceAll("\\u00E1", "á");
+								mensaje=mensaje.replaceAll("\\u00ED", "í");
+								errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
+								i=STD_MSJ_PARM_V.getLength();
+							}catch(Exception e)
+							{
+								System.out.println(e.getMessage());
+								errores="La obtencion de errores fallo:"+e.getMessage();
+							}
+						
+					}
+					response.setDescripcion(errores);
+				}
+			}
+			catch (Exception e) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e.getMessage());
+				System.out.println(e.getMessage());
+				log.info("PasivoTcb - Cargo : View In .- " + strVista);
+				log.error("PasivoTcb - Cargo : Exception Read Out. " + e.getMessage());
+			}
+		} 
+		catch (Exception e) 
+		{
+			response.setStatus(-1);
+			response.setDescripcion(e.getMessage());
+			log.error("PasivoTcb - Cargo : Exception. " + e.getMessage());
+		}
+		return response;
+	}
+
+	public ResponseServiceCargoAbono AbonoIntervencion(
+			String entidad, 
+			String acuerdo, 
+			String impNom, 
+			String concepto, 
+			String idTerminal,String Clop ,String SubClop) 
+	{
+		ResponseServiceCargoAbono response = new ResponseServiceCargoAbono();
+		String salida = "";		
+		TcbProperties prop = new TcbProperties();
+		try
+		{
+			ResponseFechaHoraTCB fechaHoraTCB = new ResponseFechaHoraTCB();
+			fechaHoraTCB = FechaContable(idTerminal);
+			String strVista = getVistaAbonoInterven(prop.getABONO_CODTX(), 
+					prop.getABONO_CODAPL(), 
+					prop.getABONO_TIPOOPER(),
+					Clop, 
+					SubClop, 
+					prop.getABONO_ISO(), 
+					entidad, 
+					acuerdo,
+					impNom, 
+					concepto, 
+					idTerminal,
+					fechaHoraTCB.getFechaOprcn(),
+					fechaHoraTCB.getHoraOprcn(),
+					fechaHoraTCB.getFechaCble());
+			String soapXml = "<SOAP-ENV:Envelope xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'>"
+					+ "	<SOAP-ENV:Body> " + strVista+ "	</SOAP-ENV:Body>"
+					+ "</SOAP-ENV:Envelope>"; 
+
+			URL url;
+			java.net.URLConnection conn = null;
+			try 
+			{
+				url = new URL(prop.getURL_ABONO());
+				try 
+				{
+					conn = url.openConnection();
+				} 
+				catch (IOException e) 
+				{
+					log.info("PasivoTcb - ABONO : View In .- " + strVista);
+					log.info("PasivoTcb - ABONO : URL_CARGO .- " + prop.getURL_ABONO());
+					log.error("PasivoTcb - ABONO : IOException. " + e.getMessage());
+				}
+			} 
+			catch (MalformedURLException e1) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e1.getMessage());
+				log.info("PasivoTcb - ABONO : View In .- " + strVista);
+				log.info("PasivoTcb - ABONO : URL_CARGO .- " + prop.getURL_ABONO());
+				log.error("PasivoTcb - ABONO : MalformedURLException. " + e1.getMessage());
+			}
+			conn.setRequestProperty("SOAPAction", prop.getURL_ABONO());
+			conn.setDoOutput(true);
+			//Send the request
+			java.io.OutputStreamWriter wr;
+			try 
+			{
+				wr = new java.io.OutputStreamWriter(conn.getOutputStream());
+				wr.write(soapXml);
+				wr.flush();
+			} 
+			catch (IOException e2) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e2.getMessage());
+				log.info("PasivoTcb - ABONO : View In .- " + strVista);
+				log.error("PasivoTcb - ABONO : OutputStreamWriter. " + e2.getMessage());
+			}
+
+			// Read the response
+			java.io.BufferedReader rd = null;
+			try 
+			{
+				rd = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+			} 
+			catch (IOException e1) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e1.getMessage());
+				log.info("PasivoTcb - ABONO : View In .- " + strVista);
+				log.error("PasivoTcb - ABONO : BufferedReader. " + e1.getMessage());
+			}
+			try
+			{
+				String line = "";
+				while ((line = rd.readLine()) != null) 
+				{ 
+					//LECTURA DE VISTA DE SALIDA
+					salida += line;	
+				}
+				
+				salida = salida.replaceAll("<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">", "");
+				salida = salida.replaceAll("<SOAP-ENV:Body>", "");
+				salida = salida.replaceAll("</SOAP-ENV:Body>", "");
+				salida = salida.replaceAll("</SOAP-ENV:Envelope>", "");
+				salida = salida.trim();
+				
+				System.out.println(strVista);
+				System.out.println(salida);
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
+				NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_IMPUT_VTNLLA_PASIVO_2_TRN_O");
+				
+				String RTRN_CD = "";
+				for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
+				{
+					Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
+					Element eElement = (Element) item;
+					RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
+				}
+				
+				if(RTRN_CD.equals("1"))
+				{
+					Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("PSV_NOMBRE_TITULAR_V").item(0);
+					String NOMBRE_TITULAR = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_50").item(0).getTextContent();
+					
+					Element INF_RECIBO_BANSEFI_V = (Element)doc.getElementsByTagName("INF_RECIBO_BANSEFI_V").item(0);
+					String NOMB_PDV = INF_RECIBO_BANSEFI_V.getElementsByTagName("NOMB_PDV").item(0).getTextContent();
+					String RECIBO_BANSEFI_NOMB_50 = INF_RECIBO_BANSEFI_V.getElementsByTagName("NOMB_50").item(0).getTextContent();
+					String COD_PLZ_BANCARIA = INF_RECIBO_BANSEFI_V.getElementsByTagName("COD_PLZ_BANCARIA").item(0).getTextContent();
+					Element TR_IMPUTAC_VTNLLA_PASIVO_EVT_Z = (Element)doc.getElementsByTagName("TR_IMPUTAC_VTNLLA_PASIVO_EVT_Z").item(0);
+					String FECHA_VALOR = TR_IMPUTAC_VTNLLA_PASIVO_EVT_Z.getElementsByTagName("FECHA_VALOR").item(0).getTextContent();
+					Element STD_TRN_O_PARM_V = (Element)doc.getElementsByTagName("STD_TRN_O_PARM_V").item(0);
+					String FECHA_OPRCN = STD_TRN_O_PARM_V.getElementsByTagName("FECHA_OPRCN").item(0).getTextContent();
+					String HORA_OPRCN = STD_TRN_O_PARM_V.getElementsByTagName("HORA_OPRCN").item(0).getTextContent();
+					
+					Element PSV_APUNTE_V = (Element)doc.getElementsByTagName("PSV_APUNTE_V").item(0);
+					String NUM_SEC = PSV_APUNTE_V.getElementsByTagName("NUM_SEC").item(0).getTextContent();
+					response.setStatus(1);
+					response.setCOD_PLZ_BANCARIA(COD_PLZ_BANCARIA);
+					response.setFECHACONTABLE(FECHA_VALOR);
+					response.setFECHAVALOR(FECHA_VALOR);
+					response.setFECHAOPERA(FECHA_OPRCN);
+					response.setHORAOPERACION(HORA_OPRCN);
+					response.setNOMB_PDV(NOMB_PDV);
+					response.setRECIBO_BANSEFI_NOMB_50(RECIBO_BANSEFI_NOMB_50);
+					response.setTITULAR_NOMB_50(NOMBRE_TITULAR);
+					response.setNUM_SEC(NUM_SEC);
+					
+				}
+				else 
+				{
+					log.info("PasivoTcb - ABONO : View In .- " + strVista);
+					log.info("PasivoTcb - ABONO : View Out .- " + salida);
+					String errores = "";
+					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
+					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
+					{
+						Node item = STD_MSJ_PARM_V.item(i);
+						Element eElement = (Element) item;
+						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(i).getTextContent();
+						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(i).getTextContent();
+						String action="urn:getDescError";
+						String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
+						   "<soapenv:Header/>"+
+						   "<soapenv:Body>"+
+						      "<dat:getDescError>"+
+						         "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
+						      "</dat:getDescError>"+
+						   "</soapenv:Body>"+
+						"</soapenv:Envelope>";
+						
+						String wsURL=this.propDs.getURL_ERROR_DESC();
+						String outputString=diario.SalidaResponse(xml,wsURL,action,"");
+						
+							try
+							{
+								DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
+								DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
+								Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("UTF-8")));
+								
+								NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
+								Node item2 = RespuetaDiario.item(i);
+								Element eElement2 = (Element) item2;
+								
+								String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
+								mensaje=mensaje.replaceAll("[^\\x00-\\x7F]","");
+								mensaje=mensaje.replaceAll("[âÃ³éíóúïäëöü\\-\\+\\.\\^:,]","");
+								mensaje=mensaje.replaceAll("\\u00FA", "ú");
+								mensaje=mensaje.replaceAll("\\u00F3", "ó");
+								mensaje=mensaje.replaceAll("\\u20ac", "");
+								mensaje=mensaje.replaceAll("\\u00E9", "é");
+								mensaje=mensaje.replaceAll("\\u00E1", "á");
+								mensaje=mensaje.replaceAll("\\u00ED", "í");
+								errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
+								i=STD_MSJ_PARM_V.getLength();
+							}catch(Exception e)
+							{
+								System.out.println(e.getMessage());
+								errores="La obtencion de errores fallo:"+e.getMessage();
+							}
+					}
+					response.setDescripcion(errores);
+				}
+			}
+			catch (Exception e)
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e.getMessage());
+				System.out.println(e.getMessage());
+				log.info("PasivoTcb - ABONO : View In .- " + strVista);
+				log.error("PasivoTcb - ABONO : Exception Read Out. " + e.getMessage());
+			}
+		} 
+		catch (Exception e) 
+		{
+			response.setStatus(-1);
+			response.setDescripcion(e.getMessage());
+			log.error("PasivoTcb - ABONO : Exception. " + e.getMessage());
+		}
+		return response;
+	}
+
+	
 	
 	public ResponseServiceCargoAbono Abono(
 			String entidad, 
@@ -1868,6 +2317,918 @@ public class PasivoTcb {
 				+ "			</TR_IMPUT_VTNLLA_PASIVO_2_TRN>";
 		return xmlIn;
 	}
+	
+	public String getVistaCargoInterven(String COD_TX, String COD_APLCCN_SUBAPL,String TIPO_OPRCN, String CLOP, String TIPO_SBCLOP, String COD_NUMRCO_MONEDA, 
+			String COD_NRBE_EN, 
+			String NUM_SEC_AC,
+			String IMP_NOMINAL,
+			String TEXTO_REMITENTE,
+			String ID_INTERNO_TERM_TN,
+			String FECHA_OPRCN,
+			String HORA_OPRCN,
+			String FECHA_CNTBL){
+String xmlIn = "<TR_IMPUTAC_VTNLLA_PASIVO_TRN>"
++ "			 <TR_IMPUTAC_VTNLLA_PASIVO_TRN_I>"
++ "			  <STD_TRN_I_PARM_V>"
++ "			   <ID_INTERNO_TERM_TN>" + ID_INTERNO_TERM_TN + "</ID_INTERNO_TERM_TN>"
++ "			   <ID_EMPL_AUT></ID_EMPL_AUT>"
++ "			   <NUM_SEC>" + COD_NRBE_EN + "</NUM_SEC>"
++ "			   <COD_TX>" + COD_TX + "</COD_TX>"
++ "			   <COD_TX_DI></COD_TX_DI>"
++ "			  </STD_TRN_I_PARM_V>"
++ "			  <STD_AUTORIZA_V>"
++ "			   <IND_BORRADO_AR></IND_BORRADO_AR>"
++ "			   <DESCR_TX></DESCR_TX>"
++ "			   <IND_AUT_SOLIC></IND_AUT_SOLIC>"
++ "			   <IND_ATRIB_MANC_EP></IND_ATRIB_MANC_EP>"
++ "			   <COD_ESTADO_AR></COD_ESTADO_AR>"
++ "			   <ID_EMPL_SOL_AUT></ID_EMPL_SOL_AUT>"
++ "			   <IND_VERIF_ATRIB></IND_VERIF_ATRIB>"
++ "			   <IND_URG_AR></IND_URG_AR>"
++ "			   <MOTIVO_ACCION_AUT></MOTIVO_ACCION_AUT>"
++ "			   <IND_ESCALABLE></IND_ESCALABLE>"
++ "			   <IMP_AUT>0</IMP_AUT>"
++ "			   <IMPORTE_AR>0</IMPORTE_AR>"
++ "			   <AR_AUT_REMOTA_P>"
++ "			    <COD_NRBE_EN></COD_NRBE_EN>"
++ "			    <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			    <FECHA_OPRCN>" + FECHA_CNTBL + "</FECHA_OPRCN>"
++ "			    <HORA_OPRCN>" + HORA_OPRCN + "</HORA_OPRCN>"
++ "			   </AR_AUT_REMOTA_P>"
++ "			  <AR_TRN_MSJ_PARM_V_OCCUR>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			    <AR_TRN_MSJ_PARM_V>"
++ "			     <TEXT_CODE></TEXT_CODE>"
++ "			     <TEXT_ARG1></TEXT_ARG1>"
++ "			    </AR_TRN_MSJ_PARM_V>"
++ "			  </AR_TRN_MSJ_PARM_V_OCCUR>"
++ "			  <STD_TARGET_TERMINAL_V_OCCUR>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			    <STD_TARGET_TERMINAL_V>"
++ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			     <COD_ECV_SESION></COD_ECV_SESION>"
++ "			    </STD_TARGET_TERMINAL_V>"
++ "			  </STD_TARGET_TERMINAL_V_OCCUR>"
++ "			   <AR_ID_SALTADO_V>"
++ "			    <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
++ "			   </AR_ID_SALTADO_V>"
++ "			  </STD_AUTORIZA_V>"
++ "			  <PSV_PAGO_PARC_DA>"
++ "			   <NOMB_50></NOMB_50>"
++ "			   <NIF></NIF>"
++ "			   <FECHA_EMISION></FECHA_EMISION>"
++ "			   <DOMIC></DOMIC>"
++ "			  </PSV_PAGO_PARC_DA>"
++ "			  <PSV_LIBRETA_V>"
++ "			   <STD_CHAR_01></STD_CHAR_01>"
++ "			  </PSV_LIBRETA_V>"
++ "			  <PSV_INTERVENCION_V>"
++ "			   <STD_CHAR_01>X</STD_CHAR_01>"
++ "			  </PSV_INTERVENCION_V>"
++ "			  <TR_IMPUTAC_VTNLLA_PASIVO_EVT_Y>"
++ "			   <AC_AC_P>"
++ "			    <COD_NRBE_EN>" + COD_NRBE_EN + "</COD_NRBE_EN>"
++ "			    <COD_CENT_UO></COD_CENT_UO>"
++ "			    <NUM_SEC_AC>" + NUM_SEC_AC + "</NUM_SEC_AC>"
++ "			   </AC_AC_P>"
++ "			   <COD_APLCCN_SUBAPL>" +  COD_APLCCN_SUBAPL + "</COD_APLCCN_SUBAPL>"
++ "			   <PSV_ENTIDAD_DESTINO_V>"
++ "			    <COD_NRBE_EN></COD_NRBE_EN>"
++ "			   </PSV_ENTIDAD_DESTINO_V>"
++ "			   <COD_INTERNO_UO></COD_INTERNO_UO>"
++ "			   <TIPO_OPRCN>" + TIPO_OPRCN + "</TIPO_OPRCN>"
++ "			   <FECHA_VALOR>" + FECHA_CNTBL + "</FECHA_VALOR>"
++ "			   <IMP_NOMINAL>" + IMP_NOMINAL + "</IMP_NOMINAL>"
++ "			   <PSV_TP_CLOP_V>"
++ "			    <COD_CLOP_SIST>" + CLOP + "</COD_CLOP_SIST>"
++ "			    <TIPO_SBCLOP>" + TIPO_SBCLOP + "</TIPO_SBCLOP>"
++ "			   </PSV_TP_CLOP_V>"
++ "			   <IND_EMITE_DETALLE></IND_EMITE_DETALLE>"
++ "			   <TEXTO_REMITENTE>" + TEXTO_REMITENTE + "</TEXTO_REMITENTE>"
++ "			   <CP_CHQ_PAG_PROPIO_P>"
++ "			    <COD_NRBE_EN></COD_NRBE_EN>"
++ "			    <COD_CJ_CHQ_PG></COD_CJ_CHQ_PG>"
++ "			    <NUM_CHQ_PAG_CP></NUM_CHQ_PAG_CP>"
++ "			    <COD_CENT_UO></COD_CENT_UO>"
++ "			    <NUM_SEC_AC></NUM_SEC_AC>"
++ "			   </CP_CHQ_PAG_PROPIO_P>"
++ "			  <PSV_ERROR_V_OCCUR>"
++ "			    <PSV_ERROR_V>"
++ "			     <COD_ERROR></COD_ERROR>"
++ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
++ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
++ "			    </PSV_ERROR_V>"
++ "			    <PSV_ERROR_V>"
++ "			     <COD_ERROR></COD_ERROR>"
++ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
++ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
++ "			    </PSV_ERROR_V>"
++ "			    <PSV_ERROR_V>"
++ "			     <COD_ERROR></COD_ERROR>"
++ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
++ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
++ "			    </PSV_ERROR_V>"
++ "			    <PSV_ERROR_V>"
++ "			     <COD_ERROR></COD_ERROR>"
++ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
++ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
++ "			    </PSV_ERROR_V>"
++ "			    <PSV_ERROR_V>"
++ "			     <COD_ERROR></COD_ERROR>"
++ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
++ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
++ "			    </PSV_ERROR_V>"
++ "			  </PSV_ERROR_V_OCCUR>"
++ "			   <PSV_IMP_AUT_V>"
++ "			    <IMP_AUT></IMP_AUT>"
++ "			   </PSV_IMP_AUT_V>"
++ "			   <PSV_ANULACION_V>"
++ "			    <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
++ "			    <FECHA_OPRCN></FECHA_OPRCN>"
++ "			    <HORA_OPRCN></HORA_OPRCN>"
++ "			   </PSV_ANULACION_V>"
++ "			   <IND_PAG_PARCIAL_CP></IND_PAG_PARCIAL_CP>"
++ "			   <NUM_TARJETA></NUM_TARJETA>"
++ "			   <PSV_COD_NUMRCO_MONEDA_V>"
++ "			    <COD_NUMRCO_MONEDA>" + COD_NUMRCO_MONEDA + "</COD_NUMRCO_MONEDA>"
++ "			   </PSV_COD_NUMRCO_MONEDA_V>"
++ "			   <WD_B_NUM_COL_V>"
++ "			    <MI_NUM_COL></MI_NUM_COL>"
++ "			   </WD_B_NUM_COL_V>"
++ "			   <INF_RECIBO_BANSEFI_V>"
++ "			    <NOMB_PDV></NOMB_PDV>"
++ "			    <COD_NRBE_EN></COD_NRBE_EN>"
++ "			    <COD_PLZ_BANCARIA></COD_PLZ_BANCARIA>"
++ "			    <NUM_SEC_AC></NUM_SEC_AC>"
++ "			    <COD_DIG_CR_UO></COD_DIG_CR_UO>"
++ "			    <IMP_INTERES_V>"
++ "			     <STD_DEC_15Y2></STD_DEC_15Y2>"
++ "			    </IMP_INTERES_V>"
++ "			    <IMP_RETENCION_V>"
++ "			     <STD_DEC_15Y2></STD_DEC_15Y2>"
++ "			    </IMP_RETENCION_V>"
++ "			    <NOMB_50></NOMB_50>"
++ "			    <STD_CHAR_40></STD_CHAR_40>"
++ "			   </INF_RECIBO_BANSEFI_V>"
++ "			   <CODIGO_SEGURIDAD></CODIGO_SEGURIDAD>"
++ "			  </TR_IMPUTAC_VTNLLA_PASIVO_EVT_Y>"
++ "			  <TR_LB_VALIDAR_LB_EVT_Y>"
++ "			   <LB_TIPO_SEL_V>"
++ "			    <STD_CHAR_10></STD_CHAR_10>"
++ "			   </LB_TIPO_SEL_V>"
++ "			   <LB_LIBRETA_P>"
++ "			    <COD_NRBE_EN></COD_NRBE_EN>"
++ "			    <COD_CENT_UO></COD_CENT_UO>"
++ "			    <NUM_SEC_AC></NUM_SEC_AC>"
++ "			    <NUM_LIBRETA></NUM_LIBRETA>"
++ "			   </LB_LIBRETA_P>"
++ "			   <IMP_SDO></IMP_SDO>"
++ "			   <PG_ACTLZD></PG_ACTLZD>"
++ "			   <ULT_LIN_ACTLZN></ULT_LIN_ACTLZN>"
++ "			   <IP_OPCION_V>"
++ "			    <OPCION></OPCION>"
++ "			   </IP_OPCION_V>"
++ "			   <COD_NUMRCO_MONEDA></COD_NUMRCO_MONEDA>"
++ "			  </TR_LB_VALIDAR_LB_EVT_Y>"
++ "			 </TR_IMPUTAC_VTNLLA_PASIVO_TRN_I>"
++ "			</TR_IMPUTAC_VTNLLA_PASIVO_TRN>";
+return xmlIn;
+}
+	public String getVistaAbonoInterven(String COD_TX, String COD_APLCCN_SUBAPL,String TIPO_OPRCN, String COD_CLOP_SIST, String TIPO_SBCLOP, String COD_NUMRCO_MONEDA, 
+			String COD_NRBE_EN, 
+			String NUM_SEC_AC,
+			String IMP_NOMINAL,
+			String TEXTO_REMITENTE,
+			String ID_INTERNO_TERM_TN,
+			String FECHA_OPRCN,
+			String HORA_OPRCN,
+			String FECHA_CNTBL)
+	{
+		String xmlIn = "<TR_IMPUT_VTNLLA_PASIVO_2_TRN>"
+				+ "			 <TR_IMPUT_VTNLLA_PASIVO_2_TRN_I>"
+				+ "			  <STD_TRN_I_PARM_V>"
+				+ "			   <ID_INTERNO_TERM_TN>" + ID_INTERNO_TERM_TN + "</ID_INTERNO_TERM_TN>"
+				+ "			   <ID_EMPL_AUT></ID_EMPL_AUT>"
+				+ "			   <NUM_SEC></NUM_SEC>"
+				+ "			   <COD_TX>" + COD_TX + "</COD_TX>"
+				+ "			   <COD_TX_DI></COD_TX_DI>"
+				+ "			  </STD_TRN_I_PARM_V>"
+				+ "			  <STD_AUTORIZA_V>"
+				+ "			   <IND_BORRADO_AR></IND_BORRADO_AR>"
+				+ "			   <DESCR_TX></DESCR_TX>"
+				+ "			   <IND_AUT_SOLIC></IND_AUT_SOLIC>"
+				+ "			   <IND_ATRIB_MANC_EP></IND_ATRIB_MANC_EP>"
+				+ "			   <COD_ESTADO_AR></COD_ESTADO_AR>"
+				+ "			   <ID_EMPL_SOL_AUT></ID_EMPL_SOL_AUT>"
+				+ "			   <IND_VERIF_ATRIB></IND_VERIF_ATRIB>"
+				+ "			   <IND_URG_AR></IND_URG_AR>"
+				+ "			   <MOTIVO_ACCION_AUT></MOTIVO_ACCION_AUT>"
+				+ "			   <IND_ESCALABLE></IND_ESCALABLE>"
+				+ "			   <IMP_AUT>0</IMP_AUT>"
+				+ "			   <IMPORTE_AR>0</IMPORTE_AR>"
+				+ "			   <AR_AUT_REMOTA_P>"
+				+ "			    <COD_NRBE_EN>" + COD_NRBE_EN + "</COD_NRBE_EN>"
+				+ "			    <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			    <FECHA_OPRCN>" + FECHA_CNTBL + "</FECHA_OPRCN>"
+				+ "			    <HORA_OPRCN>" + HORA_OPRCN + "</HORA_OPRCN>"
+				+ "			   </AR_AUT_REMOTA_P>"
+				+ "			  <AR_TRN_MSJ_PARM_V_OCCUR>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			    <AR_TRN_MSJ_PARM_V>"
+				+ "			     <TEXT_CODE></TEXT_CODE>"
+				+ "			     <TEXT_ARG1></TEXT_ARG1>"
+				+ "			    </AR_TRN_MSJ_PARM_V>"
+				+ "			  </AR_TRN_MSJ_PARM_V_OCCUR>"
+				+ "			  <STD_TARGET_TERMINAL_V_OCCUR>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			    <STD_TARGET_TERMINAL_V>"
+				+ "			     <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			     <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			     <COD_ECV_SESION></COD_ECV_SESION>"
+				+ "			    </STD_TARGET_TERMINAL_V>"
+				+ "			  </STD_TARGET_TERMINAL_V_OCCUR>"
+				+ "			   <AR_ID_SALTADO_V>"
+				+ "			    <ID_INTERNO_EMPL_EP></ID_INTERNO_EMPL_EP>"
+				+ "			   </AR_ID_SALTADO_V>"
+				+ "			  </STD_AUTORIZA_V>"
+				+ "			  <PSV_LIBRETA_V>"
+				+ "			   <STD_CHAR_01></STD_CHAR_01>"
+				+ "			  </PSV_LIBRETA_V>"
+				+ "			  <PSV_INTERVENCION_V>"
+				+ "			   <STD_CHAR_01>X</STD_CHAR_01>"
+				+ "			  </PSV_INTERVENCION_V>"
+				+ "			  <TR_IMPUTAC_VTNLLA_PASIVO_EVT_Y>"
+				+ "			   <AC_AC_P>"
+				+ "			    <COD_NRBE_EN>" + COD_NRBE_EN + "</COD_NRBE_EN>"
+				+ "			    <COD_CENT_UO></COD_CENT_UO>"
+				+ "			    <NUM_SEC_AC>" + NUM_SEC_AC + "</NUM_SEC_AC>"
+				+ "			   </AC_AC_P>"
+				+ "			   <COD_APLCCN_SUBAPL>" + COD_APLCCN_SUBAPL + "</COD_APLCCN_SUBAPL>"
+				+ "			   <PSV_ENTIDAD_DESTINO_V>"
+				+ "			    <COD_NRBE_EN></COD_NRBE_EN>"
+				+ "			   </PSV_ENTIDAD_DESTINO_V>"
+				+ "			   <COD_INTERNO_UO></COD_INTERNO_UO>"
+				+ "			   <TIPO_OPRCN>" + TIPO_OPRCN + "</TIPO_OPRCN>"
+				+ "			   <FECHA_VALOR>" + FECHA_CNTBL + "</FECHA_VALOR>"
+				+ "			   <IMP_NOMINAL>" + IMP_NOMINAL + "</IMP_NOMINAL>"
+				+ "			   <PSV_TP_CLOP_V>"
+				+ "			    <COD_CLOP_SIST>" + COD_CLOP_SIST + "</COD_CLOP_SIST>"
+				+ "			    <TIPO_SBCLOP>" + TIPO_SBCLOP + "</TIPO_SBCLOP>"
+				+ "			   </PSV_TP_CLOP_V>"
+				+ "			   <IND_EMITE_DETALLE></IND_EMITE_DETALLE>"
+				+ "			   <TEXTO_REMITENTE>" + TEXTO_REMITENTE + "</TEXTO_REMITENTE>"
+				+ "			   <CP_CHQ_PAG_PROPIO_P>"
+				+ "			    <COD_NRBE_EN></COD_NRBE_EN>"
+				+ "			    <COD_CJ_CHQ_PG></COD_CJ_CHQ_PG>"
+				+ "			    <NUM_CHQ_PAG_CP></NUM_CHQ_PAG_CP>"
+				+ "			    <COD_CENT_UO></COD_CENT_UO>"
+				+ "			    <NUM_SEC_AC></NUM_SEC_AC>"
+				+ "			   </CP_CHQ_PAG_PROPIO_P>"
+				+ "			  <PSV_ERROR_V_OCCUR>"
+				+ "			    <PSV_ERROR_V>"
+				+ "			     <COD_ERROR></COD_ERROR>"
+				+ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
+				+ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
+				+ "			    </PSV_ERROR_V>"
+				+ "			    <PSV_ERROR_V>"
+				+ "			     <COD_ERROR></COD_ERROR>"
+				+ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
+				+ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
+				+ "			    </PSV_ERROR_V>"
+				+ "			    <PSV_ERROR_V>"
+				+ "			     <COD_ERROR></COD_ERROR>"
+				+ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
+				+ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
+				+ "			    </PSV_ERROR_V>"
+				+ "			    <PSV_ERROR_V>"
+				+ "			     <COD_ERROR></COD_ERROR>"
+				+ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
+				+ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
+				+ "			    </PSV_ERROR_V>"
+				+ "			    <PSV_ERROR_V>"
+				+ "			     <COD_ERROR></COD_ERROR>"
+				+ "			     <ID_EMPL_AUT></ID_EMPL_AUT>"
+				+ "			     <ATRIBUIDO_S_N></ATRIBUIDO_S_N>"
+				+ "			    </PSV_ERROR_V>"
+				+ "			  </PSV_ERROR_V_OCCUR>"
+				+ "			   <PSV_IMP_AUT_V>"
+				+ "			    <IMP_AUT></IMP_AUT>"
+				+ "			   </PSV_IMP_AUT_V>"
+				+ "			   <PSV_ANULACION_V>"
+				+ "			    <ID_INTERNO_TERM_TN></ID_INTERNO_TERM_TN>"
+				+ "			    <FECHA_OPRCN></FECHA_OPRCN>"
+				+ "			    <HORA_OPRCN></HORA_OPRCN>"
+				+ "			   </PSV_ANULACION_V>"
+				+ "			   <IND_PAG_PARCIAL_CP></IND_PAG_PARCIAL_CP>"
+				+ "			   <NUM_TARJETA></NUM_TARJETA>"
+				+ "			   <PSV_COD_NUMRCO_MONEDA_V>"
+				+ "			    <COD_NUMRCO_MONEDA>" + COD_NUMRCO_MONEDA + "</COD_NUMRCO_MONEDA>"
+				+ "			   </PSV_COD_NUMRCO_MONEDA_V>"
+				+ "			   <WD_B_NUM_COL_V>"
+				+ "			    <MI_NUM_COL></MI_NUM_COL>"
+				+ "			   </WD_B_NUM_COL_V>"
+				+ "			   <INF_RECIBO_BANSEFI_V>"
+				+ "			    <NOMB_PDV></NOMB_PDV>"
+				+ "			    <COD_NRBE_EN></COD_NRBE_EN>"
+				+ "			    <COD_PLZ_BANCARIA></COD_PLZ_BANCARIA>"
+				+ "			    <NUM_SEC_AC></NUM_SEC_AC>"
+				+ "			    <COD_DIG_CR_UO></COD_DIG_CR_UO>"
+				+ "			    <IMP_INTERES_V>"
+				+ "			     <STD_DEC_15Y2></STD_DEC_15Y2>"
+				+ "			    </IMP_INTERES_V>"
+				+ "			    <IMP_RETENCION_V>"
+				+ "			     <STD_DEC_15Y2></STD_DEC_15Y2>"
+				+ "			    </IMP_RETENCION_V>"
+				+ "			    <NOMB_50></NOMB_50>"
+				+ "			    <STD_CHAR_40></STD_CHAR_40>"
+				+ "			   </INF_RECIBO_BANSEFI_V>"
+				+ "			   <CODIGO_SEGURIDAD></CODIGO_SEGURIDAD>"
+				+ "			  </TR_IMPUTAC_VTNLLA_PASIVO_EVT_Y>"
+				+ "			  <TR_LB_VALIDAR_LB_EVT_Y>"
+				+ "			   <LB_TIPO_SEL_V>"
+				+ "			    <STD_CHAR_10></STD_CHAR_10>"
+				+ "			   </LB_TIPO_SEL_V>"
+				+ "			   <LB_LIBRETA_P>"
+				+ "			    <COD_NRBE_EN></COD_NRBE_EN>"
+				+ "			    <COD_CENT_UO></COD_CENT_UO>"
+				+ "			    <NUM_SEC_AC></NUM_SEC_AC>"
+				+ "			    <NUM_LIBRETA></NUM_LIBRETA>"
+				+ "			   </LB_LIBRETA_P>"
+				+ "			   <IMP_SDO></IMP_SDO>"
+				+ "			   <PG_ACTLZD></PG_ACTLZD>"
+				+ "			   <ULT_LIN_ACTLZN></ULT_LIN_ACTLZN>"
+				+ "			   <IP_OPCION_V>"
+				+ "			    <OPCION></OPCION>"
+				+ "			   </IP_OPCION_V>"
+				+ "			   <COD_NUMRCO_MONEDA></COD_NUMRCO_MONEDA>"
+				+ "			  </TR_LB_VALIDAR_LB_EVT_Y>"
+				+ "					  <PSV_NOMB_ORDENANTE_V>"
+				+ "					   <NOMB_50></NOMB_50>"
+				+ "					  </PSV_NOMB_ORDENANTE_V>"
+				+ "			 </TR_IMPUT_VTNLLA_PASIVO_2_TRN_I>"
+				+ "			</TR_IMPUT_VTNLLA_PASIVO_2_TRN>";
+		return xmlIn;
+	}
+	
 	
 	public String getVistaFechaContable(String terminal){
 		String vista = "";

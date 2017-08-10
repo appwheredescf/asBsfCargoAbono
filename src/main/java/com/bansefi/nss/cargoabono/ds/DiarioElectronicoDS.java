@@ -332,7 +332,7 @@ requestDiario.setDiTextArg4("");
 requestDiario.setDiTextArg5("");
 requestDiario.setFechaCtble(fechaContable);
 requestDiario.setFechaOprcn(fechaOperacion);
-requestDiario.setFechaValor(fechaContable);
+requestDiario.setFechaValor(fechaOperacion);
 requestDiario.setHoraOprcn(horaOprn);
 requestDiario.setIdInternoEmplEp(empleado);
 requestDiario.setIdInternoTermTn(terminal);
@@ -342,7 +342,12 @@ requestDiario.setImpNominalX(StringUtils.leftPad(ImpNominalX, 13, "0"));
 requestDiario.setImpSdo(importaSldo);
 requestDiario.setMasMenosDi("0");
 requestDiario.setModoTx("0");
-requestDiario.setNumPuesto("00");
+
+String StrPuesto="00";
+if(terminal.length()>2)
+	StrPuesto = terminal.substring(terminal.length()-2);
+
+requestDiario.setNumPuesto(StrPuesto);
 requestDiario.setNumSec(numSec);
 requestDiario.setNumSecAc(numSecAc);
 requestDiario.setNumSecAnul("0");

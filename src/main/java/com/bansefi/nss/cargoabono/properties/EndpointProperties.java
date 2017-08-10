@@ -36,6 +36,7 @@ public class EndpointProperties
 	private String usrDb2;
 	private String pwdDb2;
 	private String estatusDiaElect;
+	private String MsgErrorPaso3;
 	//End AE234
 	
 	private Properties prop = Utils.getProperties("com/bansefi/nss/cargoabono/properties/endpoint.properties");
@@ -72,6 +73,7 @@ public class EndpointProperties
 		this.usrDb2 =prop.getProperty("usrDb2");
 		this.pwdDb2 =prop.getProperty("pwdDb2");
 		this.estatusDiaElect =prop.getProperty("estatusDiaElect");
+		this.setMsgErrorPaso3(prop.getProperty("ErrorMsgPaso3"));
 	}
 
 	public String getConsultaClabe() {
@@ -296,6 +298,14 @@ public class EndpointProperties
 
 	public void setEstatusDiaElect(String estatusDiaElect) {
 		this.estatusDiaElect = estatusDiaElect;
+	}
+
+	public String getMsgErrorPaso3() {
+		return MsgErrorPaso3;
+	}
+
+	public void setMsgErrorPaso3(String msgErrorPaso3) {
+		MsgErrorPaso3 = msgErrorPaso3;
 	}
 
 	

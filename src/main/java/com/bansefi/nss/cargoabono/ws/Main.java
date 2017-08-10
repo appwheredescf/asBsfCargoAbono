@@ -33,12 +33,16 @@ public class Main {
 
 	public static void main(String[] args) throws Exception 
 	{
+
+		
+		EndpointProperties prop = new EndpointProperties();
+		String SrDesc=prop.getMsgErrorPaso3();
 		
 		String entidad ="0166";
 		String sucursal="0001";//"0121";
-		String terminal ="12100304";//"12012103";
-		String empleado ="DESA0003";//"E1662129";
-		String acuerdo ="259719532";//"22012512";// ;"259719532";
+		String terminal ="12000102";//"12012103";
+		String empleado ="DESA0001";//"E1662129";
+		String acuerdo ="22030373";//"22012512";// ;"259719532";
 		String ID_INTERNO_PE="16396563";
 		String ID_DOM="2";
 		String FecCn="2015/01/23";
@@ -51,19 +55,22 @@ public class Main {
 		String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="5.56";
-		String TipOper="C";
-		String FecValor="2017-08-04";
-		String Concepto="prueba depura   [2]";
-		String FecOper="2017-08-09";
+		String Importe="3.77";
+		String TipOper="A";
+		String FecValor="2017-08-10";
+		String Concepto="prueba depura   [5]";
+		String FecOper="2017-08-10";
 		String HrOper="10:10:57";
 		String CajaInt="A";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";
 		String IdExt="DVI        ";
 		String tipoIdExterno="";
-		String StrClop="22";
-		String StrSubClop="0054";
+		String StrClop="99";
+		String StrSubClop="0002";
 		
+		//cargoAbono.ProcesaPendientes(entidad,terminal);
+		
+		//CajaInt="I";
 		cargoAbono.Procesar(entidad, 
 				sucursal, 
 				empleado, 
@@ -80,7 +87,7 @@ public class Main {
 				Producto, 
 				IdExt, 
 				tipoIdExterno);
-
+//,StrClop,StrSubClop
 		
 		
 		
@@ -94,7 +101,7 @@ public class Main {
 		
 		
 		
-		cargoAbono.ProcesaPendientes(entidad,terminal);
+		
 		
 		
 		

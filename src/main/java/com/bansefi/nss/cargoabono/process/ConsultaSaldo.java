@@ -109,7 +109,7 @@ public class ConsultaSaldo
 					jsonResultado.put("acuerdo", acuerdo);
 					jsonResultado.put("cotitulares", "");
 					jsonResultado.put("folio", folio);
-					jsonResultado.put("importe_letra", importeLetras);
+					jsonResultado.put("importe_letra", "( " +importeLetras +" )");
 					jsonResultado.put("oficina", datosCentro);
 					jsonResultado.put("contrato", contrato);
 					

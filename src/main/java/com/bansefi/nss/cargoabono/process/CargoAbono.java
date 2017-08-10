@@ -15,6 +15,7 @@ import com.bansefi.nss.cargoabono.commons.CantidadLetras;
 import com.bansefi.nss.cargoabono.commons.FuncionesEncryption;
 import com.bansefi.nss.cargoabono.commons.UtilJson;
 import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
+import com.bansefi.nss.cargoabono.properties.EndpointProperties;
 import com.bansefi.nss.cargoabono.services.PasivosAcuerdosServices;
 import com.bansefi.nss.cargoabono.tcb.PasivoTcb;
 import com.bansefi.nss.cargoabono.vo.DiarioElectronicoRequest;
@@ -78,33 +79,34 @@ public class CargoAbono
             	switch (tipoOp) 
             	{
 					case "C":
-						responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom, concepto, terminal);
+						responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom.replace(".", ","), concepto, terminal);
 						break;
 					case "A":
-						responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom, concepto, terminal);
+						responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom.replace(".", ","), concepto, terminal);
 						break;							
 				}
-            	if(responseMov.getStatus()==234)//1
+            	if(responseMov.getStatus()==1)
             	{
         			//Paso 3
             		RespDia.setTERMINAL(terminal);
-            		RespDia.setCOD_RESPUESTA(1);
+            		RespDia.setCOD_RESPUESTA(1);//1
             		RespDia.setNUMSEC(responseMov.getNUM_SEC());
             		RespDia.setIMP_SDO(impNom);
             		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
             		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
-            		if(pResp.getStatus()==1)
+            		if(pResp.getStatus()==1)//1
             		{
             			SrIdMov = responseMov.getNUM_SEC();
         				StatusOper =true;
-        
             		}
             		else
             		{
             			if(responseMov.getHORAOPERACION()!=null)
             				if(responseMov.getHORAOPERACION().length()>0)
             					RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
-        				SrDesc="El movimiento se registro en tcb, no se actualizo movimiento en diario, favor de conctactar a sistemas";
+            			EndpointProperties prop = new EndpointProperties();
+            			SrDesc=prop.getMsgErrorPaso3();
+        				//SrDesc="El movimiento se registro en tcb, no se actualizo movimiento en diario, favor de conctactar a sistemas";
         				//responseMov.setDescripcion(SrDesc);    			
                 		//RespDia.setCOD_RESPUESTA(2);
             			//ResponseService pResp01= ProcDia.ActualizaRegistro(RespDia);
@@ -205,10 +207,10 @@ try
 		switch (tipoOp) 
 		{
 		case "C":
-			responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom, concepto, terminal);
+			responseMov = pasivoTCB.CargoIntervencion(entidad, StrAcuerdo, impNom.replace(".", ","), concepto, terminal,StrClop,StrSubClop);
 			break;
 		case "A":
-			responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom, concepto, terminal);
+			responseMov = pasivoTCB.AbonoIntervencion(entidad, StrAcuerdo, impNom.replace(".", ","), concepto, terminal,StrClop,StrSubClop);
 			break;							
 		}
 		if(responseMov.getStatus()==1)
@@ -230,7 +232,9 @@ try
 			RespDia.setCOD_RESPUESTA(2);
 			ResponseService pResp01= ProcDia.ActualizaRegistro(RespDia);
 			SrStatus="0";
-			SrDesc=pResp.getDescripcion();
+			//SrDesc=pResp.getDescripcion();
+			EndpointProperties prop = new EndpointProperties();
+			SrDesc=prop.getMsgErrorPaso3(); //"El movimiento se registro en tcb, no se actualizo movimiento en diario, favor de contactar a sistemas";
 		}
 		
 		}
@@ -397,7 +401,7 @@ return jsonResult;
 				jsonResultado.put("importe", StrImporte);
 				jsonResultado.put("folio", oDiaElect.getRegistroDiarioElectronico().getNumSec());
 				jsonResultado.put("producto", "");
-				jsonResultado.put("importe_letra", ImporLetra);
+				jsonResultado.put("importe_letra", "( "+ImporLetra+" )");
 				jsonResultado.put("oficina", strOfic);
 				jsonResultado.put("contrato", oDiaElect.getRegistroDiarioElectronico().getNumSecAc());
 				jsonResultado.put("idExterno", oDiaElect.getRegistroDiarioElectronico().getValorDtllTx());
