@@ -33,7 +33,18 @@ public class Main {
 
 	public static void main(String[] args) throws Exception 
 	{
-
+String StrIdExter="C DVI        |prueba depura   [1.1] |22 Prueba Ident : DVI        |";
+		String[] campos = StrIdExter.split("\\|");
+		
+		
+		String colores = "rojo,amarillo,verde,azul,morado,marrón";
+		String[] arrayColores = colores.split(",");
+		 
+		// En este momento tenemos un array en el que cada elemento es un color.
+		for (int i = 0; i < arrayColores.length; i++) {
+			System.out.println(arrayColores[i]);
+		}
+		
 		
 		EndpointProperties prop = new EndpointProperties();
 		String SrDesc=prop.getMsgErrorPaso3();
@@ -55,23 +66,27 @@ public class Main {
 		String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="3.77";
+		String Importe="8.77";
 		String TipOper="A";
-		String FecValor="2017-08-10";
-		String Concepto="prueba depura   [5]";
+		String FecValor="2017-08-14";
+		String Concepto="prueba depura   [1.1]";
 		String FecOper="2017-08-10";
 		String HrOper="10:10:57";
 		String CajaInt="A";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";
 		String IdExt="DVI        ";
-		String tipoIdExterno="";
+		String tipoIdExterno="22 Prueba Ident";
 		String StrClop="99";
 		String StrSubClop="0002";
+
+		CargoAbono prosCargA = new CargoAbono();				
+
+		prosCargA.ComprobanteCargoAbono(terminal,entidad);		
 		
 		//cargoAbono.ProcesaPendientes(entidad,terminal);
 		
 		//CajaInt="I";
-		cargoAbono.Procesar(entidad, 
+		JSONObject oJResp = cargoAbono.Procesar(entidad, 
 				sucursal, 
 				empleado, 
 				terminal, 
@@ -148,8 +163,7 @@ public class Main {
 		oSal.Comprobante(entidad, sucursal, acuerdo, terminal, horaOpr, nombreCliente, idExterno, empleado);
 		
 		
-		CargoAbono prosCargA = new CargoAbono();				
-		prosCargA.ComprobanteCargoAbono(terminal,entidad);		
+				
 		
 
 		

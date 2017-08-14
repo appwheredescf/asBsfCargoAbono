@@ -65,7 +65,7 @@ public class CargoAbono
 		try
 		{
 			impNom =impNom.replace(",", "");
-			concepto = "C DVI        " + concepto + " " + tipoIdExterno + " " + idexterno;
+			concepto = "C DVI        |" + concepto + " |" + tipoIdExterno + " : " + idexterno+"|";
 			//Registro de Cargo/Abono en 3 pasos
 			//Paso 1
 			DiarioElectronicoDS ProcDia = new DiarioElectronicoDS();
@@ -404,7 +404,20 @@ return jsonResult;
 				jsonResultado.put("importe_letra", "( "+ImporLetra+" )");
 				jsonResultado.put("oficina", strOfic);
 				jsonResultado.put("contrato", oDiaElect.getRegistroDiarioElectronico().getNumSecAc());
-				jsonResultado.put("idExterno", oDiaElect.getRegistroDiarioElectronico().getValorDtllTx());
+				
+				String StrIdExter =oDiaElect.getRegistroDiarioElectronico().getValorDtllTx();
+				try
+				{
+					if(StrIdExter.indexOf( '|' )>0){
+						String[] campos = StrIdExter.split("\\|");
+						StrIdExter =campos[2];	
+					}
+					
+				}catch(Exception ex)
+				{
+					
+				}
+				jsonResultado.put("idExterno",StrIdExter );
 				String StrSerial = terminal+ " "+ sFecSerie+ StrHoraOper.replace(":", "");
 				StrSerial=StrSerial +="  "+oDiaElect.getRegistroDiarioElectronico().getContrida()+" "+oDiaElect.getRegistroDiarioElectronico().getSgnCtbleDi();
 				//StrSerial=StrSerial +="  C "+oDiaElect.getRegistroDiarioElectronico().getSgnCtbleDi();
