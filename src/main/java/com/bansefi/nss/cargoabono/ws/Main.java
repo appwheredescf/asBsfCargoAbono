@@ -32,18 +32,9 @@ import com.bansefi.nss.cargoabono.vo.ResponseService;
 public class Main {
 
 	public static void main(String[] args) throws Exception 
-	{
-String StrIdExter="C DVI        |prueba depura   [1.1] |22 Prueba Ident : DVI        |";
-		String[] campos = StrIdExter.split("\\|");
+	{	
 		
-		
-		String colores = "rojo,amarillo,verde,azul,morado,marrón";
-		String[] arrayColores = colores.split(",");
-		 
-		// En este momento tenemos un array en el que cada elemento es un color.
-		for (int i = 0; i < arrayColores.length; i++) {
-			System.out.println(arrayColores[i]);
-		}
+	String StrCat=	CantidadLetras.Convertir("293333789.88",true);
 		
 		
 		EndpointProperties prop = new EndpointProperties();
@@ -59,8 +50,6 @@ String StrIdExter="C DVI        |prueba depura   [1.1] |22 Prueba Ident : DVI   
 		String FecCn="2015/01/23";
 		/**/
 		CargoAbono cargoAbono = new CargoAbono();
-
-		
 		
 		String horaOpr="09:10:04";
 		String nombreCliente="Prueba ";
@@ -70,7 +59,7 @@ String StrIdExter="C DVI        |prueba depura   [1.1] |22 Prueba Ident : DVI   
 		String TipOper="A";
 		String FecValor="2017-08-14";
 		String Concepto="prueba depura   [1.1]";
-		String FecOper="2017-08-10";
+		String FecOper="2017-08-15";
 		String HrOper="10:10:57";
 		String CajaInt="A";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";

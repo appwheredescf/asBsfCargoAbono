@@ -107,7 +107,14 @@ public class CantidadLetras {
             if (u.equals("")) { //para 20,30,40,50,60,70,80,90
                 return DECENAS[Integer.parseInt(num.substring(0, 1)) + 8];
             } else {
-                return DECENAS[Integer.parseInt(num.substring(0, 1)) + 8] + "y " + u;
+            	if(num.equals("20"))
+            		return DECENAS[Integer.parseInt(num.substring(0, 1)) + 8] + "y " + u;
+            	else
+            		if(Integer.parseInt(num)<30)
+            			return "veinti" + "" + u;
+            		else
+            			return DECENAS[Integer.parseInt(num.substring(0, 1)) + 8] + "y " + u;
+            			
             }
         } else {//numeros entre 11 y 19
             return DECENAS[n - 10];

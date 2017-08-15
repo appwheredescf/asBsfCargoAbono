@@ -17,4 +17,7 @@ public class ResponsePersona extends ResponseService
 	
 	@Getter @Setter
 	public String IdInternoPe;
+	
+	@Getter @Setter
+	public String ProductoAcuerdo;
 }

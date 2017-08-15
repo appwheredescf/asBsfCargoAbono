@@ -362,7 +362,7 @@ return jsonResult;
 				
 				String TitularAcuerdo ="";
 				String strOfic="";
-				
+				String strProdDesc="";
 				//pasivoTcb.ConsultaPersonaXIdInterno(entidad,oDiaElect.getRegistroDiarioElectronico().  terminal);
 				ResponsePersona oPerNum = pasivoTcb.ConsultaAcuerdo(entidad, oDiaElect.getRegistroDiarioElectronico().getNumSecAc(), terminal);
 				if(oPerNum.getStatus()==1)
@@ -371,6 +371,7 @@ return jsonResult;
 					if(oPersona.getStatus()==1)
 					{
 						TitularAcuerdo = oPersona.getNombre()+" "+oPersona.getApPaterno()+" "+oPersona.getApMaterno();
+						strProdDesc =  oPerNum.getProductoAcuerdo();
 					}
 				}
 		
@@ -400,7 +401,7 @@ return jsonResult;
 				jsonResultado.put("nombre", TitularAcuerdo);
 				jsonResultado.put("importe", StrImporte);
 				jsonResultado.put("folio", oDiaElect.getRegistroDiarioElectronico().getNumSec());
-				jsonResultado.put("producto", "");
+				jsonResultado.put("producto",strProdDesc);
 				jsonResultado.put("importe_letra", "( "+ImporLetra+" )");
 				jsonResultado.put("oficina", strOfic);
 				jsonResultado.put("contrato", oDiaElect.getRegistroDiarioElectronico().getNumSecAc());

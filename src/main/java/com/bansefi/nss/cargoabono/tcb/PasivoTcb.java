@@ -3797,7 +3797,7 @@ return xmlIn;
 							Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
 							
 							NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONSULTA_ACUERDO_TRN_O");
-							System.out.println(vista);
+							//System.out.println(vista);
 							System.out.println(salida);
 							String RTRN_CD = "";
 							for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ ){
@@ -3814,6 +3814,10 @@ return xmlIn;
 								String IdInternoPe = PSV_NOMBRE_TITULAR_V.getElementsByTagName("ID_INTERNO_PE").item(0).getTextContent();								
 								
 								oEnSucDet.setIdInternoPe(IdInternoPe);	
+								
+								Element PSV_Producto = (Element)doc.getElementsByTagName("DESCR_PDV_V").item(0);
+								String StrProdc = PSV_Producto.getElementsByTagName("NOMB_PDV").item(0).getTextContent();
+								oEnSucDet.setProductoAcuerdo(StrProdc);
 							} 
 							else 
 							{
