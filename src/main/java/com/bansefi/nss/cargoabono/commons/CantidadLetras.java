@@ -142,11 +142,25 @@ public class CantidadLetras {
         String n="";
         //se comprueba que miles tenga valor entero
         if (Integer.parseInt(m) > 0) {
-            n = getCentenas(m);    
-            if (m.equals("1"))
-            return  "mil " + getCentenas(c);
-            else
-            return n + "mil " + getCentenas(c);
+        	Integer numLen =m.length();  
+        	if(numLen >=2)
+        	{
+        		Integer nNum =Integer.parseInt(m);// m.substring(m.length()-2));
+        		if (nNum==1){
+        			m =Integer.toString(  Integer.parseInt(m) -1); 
+        		}
+        		n = getCentenas(m);
+        		return n + "mil " + getCentenas(c);
+        	}
+        	else
+        	{
+        		n = getCentenas(m);    
+                if (Integer.parseInt(m)==1) 
+                return  "mil " + getCentenas(c);
+                else
+                return n + "mil " + getCentenas(c);	
+        	}
+            
         } else {
             return "" + getCentenas(c);
         }
@@ -160,9 +174,29 @@ public class CantidadLetras {
         String millon = numero.substring(0, numero.length() - 6);
         String n = "";
         if(millon.length() == 1 && millon.equals("1")){
-            n = getCentenas(millon) + "millon ";
+        	if(numero.equals("1000000"))
+        		n = getCentenas(millon) + "millon de ";
+        	else
+        		n = getCentenas(millon) + "millon ";
         }else{
-            n = getUnidades(millon) + "millones ";
+        	switch(numero)
+        	{
+        		case "2000000":
+        		case "3000000":
+        		case "4000000":
+        		case "5000000":
+        		case "6000000":
+        		case "7000000":
+        		case "8000000":
+        		case "9000000":
+        		case "10000000":
+        			n = getUnidades(millon) + "millones de ";
+        			break;
+        		default:
+        			n = getUnidades(millon) + "millones ";
+        			break;
+        	}
+            
         }
         return n + getMiles(miles);        
     }

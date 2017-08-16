@@ -34,9 +34,9 @@ public class Main {
 	public static void main(String[] args) throws Exception 
 	{	
 		String StrCat="";
-	 StrCat=	CantidadLetras.Convertir("2000",true);
+	 StrCat=	CantidadLetras.Convertir("101023",true);
 		
-		
+		//1501023
 		EndpointProperties prop = new EndpointProperties();
 		String SrDesc=prop.getMsgErrorPaso3();
 		
