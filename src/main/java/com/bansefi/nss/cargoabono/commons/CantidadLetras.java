@@ -142,7 +142,10 @@ public class CantidadLetras {
         String n="";
         //se comprueba que miles tenga valor entero
         if (Integer.parseInt(m) > 0) {
-            n = getCentenas(m);           
+            n = getCentenas(m);    
+            if (m.equals("1"))
+            return  "mil " + getCentenas(c);
+            else
             return n + "mil " + getCentenas(c);
         } else {
             return "" + getCentenas(c);

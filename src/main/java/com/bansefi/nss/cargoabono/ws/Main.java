@@ -33,8 +33,8 @@ public class Main {
 
 	public static void main(String[] args) throws Exception 
 	{	
-		
-	String StrCat=	CantidadLetras.Convertir("293333789.88",true);
+		String StrCat="";
+	 StrCat=	CantidadLetras.Convertir("2000",true);
 		
 		
 		EndpointProperties prop = new EndpointProperties();
