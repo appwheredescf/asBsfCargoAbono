@@ -23,8 +23,7 @@ public class ServiciosCargoAbono
 		}
 		catch(Exception ex)
 		{
-			log.error("CargoAbono principal  - " + ex.getMessage());
-			
+			log.error("CargoAbono principal  - " + ex.getMessage());			
 		}
 		return  jsonResult.toString();
 	}
