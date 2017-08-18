@@ -125,7 +125,7 @@ public class CargoAbono
 			}
 			else
 			{
-				RespDia.setCOD_RESPUESTA(9);
+				RespDia.setCOD_RESPUESTA(0);
 				RespDia.setTERMINAL(terminal);
 				RespDia.setIMP_SDO(impNom);
 				RespDia.setNUMSEC("0");
@@ -316,7 +316,7 @@ return jsonResult;
 		return jsonResult;
 	}
 	
-	public JSONObject ComprobanteCargoAbono(String terminal,String entidad)
+	public JSONObject ComprobanteCargoAbono(String terminal,String entidad,String centro)
 	{
 		JSONObject jsonResult = new JSONObject();
 		JSONObject jsonResultado = new JSONObject();
@@ -325,7 +325,7 @@ return jsonResult;
 		try
 		{
 			DiarioElectronicoDS oDElect = new DiarioElectronicoDS();
-			ResponseRegistroDiarioElectronico oDiaElect = oDElect.UltimoMovimiento(terminal, entidad);
+			ResponseRegistroDiarioElectronico oDiaElect = oDElect.UltimoMovimiento(terminal, entidad,centro);
 			if(oDiaElect.getStatus() ==1)
 			{
 				PasivoTcb pasivoTcb = new PasivoTcb();
@@ -578,14 +578,14 @@ return jsonResult;
 		return StrResult;
 	}
 
-	public JSONObject ConsultaPendienteDiario(String entidad,String terminal)
+	public JSONObject ConsultaPendienteDiario(String entidad,String terminal,String centro)
 	{
 		JSONObject jsonResultado = new JSONObject();
 		JSONObject jDetalle = new JSONObject();
 		try	
 		{
 			DiarioElectronicoDS ds = new DiarioElectronicoDS();
-			ResponseServiceObject oDiario =ds.ObtieneUltimoMovPendiente(entidad, terminal);
+			ResponseServiceObject oDiario =ds.ObtieneUltimoMovPendiente(entidad, terminal,centro);
 			if(oDiario.getStatus()==1)
 			{
 				jDetalle.put("status", "1");
@@ -607,7 +607,7 @@ return jsonResult;
 		return jsonResultado;
 	}
 	
-	public JSONObject ProcesaPendientes(String entidad,String terminal)
+	public JSONObject ProcesaPendientes(String entidad,String terminal,String centro)
 	{
 		JSONObject jsonResultado = new JSONObject();
 		JSONObject jResultDetalle = new JSONObject();
@@ -615,7 +615,7 @@ return jsonResult;
 		try
 		{
 			DiarioElectronicoDS ds = new DiarioElectronicoDS();
-			ResponseServiceObject oDiario =ds.ObtieneUltimoMovPendiente(entidad, terminal);
+			ResponseServiceObject oDiario =ds.ObtieneUltimoMovPendiente(entidad, terminal,centro);
 			if(oDiario.getStatus()==1)
 			{
 				DiarioElectronicoRequest oDiElecDet = new DiarioElectronicoRequest();

@@ -196,7 +196,7 @@ try
 		requestDiario.setCodNrbeEnFsc(entidad);
 		requestDiario.setCodNumrcoMoneda("MXN");
 		requestDiario.setCodNumrcoMoneda1("MXN");
-		requestDiario.setCodRespuesta("0");
+		requestDiario.setCodRespuesta("2");
 		requestDiario.setCodTx(StrCodTx);
 		requestDiario.setCodTxDi("");
 		requestDiario.setContrida(cajaInt);
@@ -320,7 +320,7 @@ requestDiario.setCodNrbeEn(entidad);
 requestDiario.setCodNrbeEnFsc(entidad);
 requestDiario.setCodNumrcoMoneda("MXN");
 requestDiario.setCodNumrcoMoneda1("MXN");
-requestDiario.setCodRespuesta("0");
+requestDiario.setCodRespuesta("2");
 
 requestDiario.setCodTx(StrCodTx);
 requestDiario.setCodTxDi("");
@@ -388,7 +388,7 @@ return response;
 
 	
 	
-	public ResponseRegistroDiarioElectronico UltimoMovimiento(String terminal, String entidad)
+	public ResponseRegistroDiarioElectronico UltimoMovimiento(String terminal, String entidad,String centro)
 	{
 		ResponseRegistroDiarioElectronico response = new ResponseRegistroDiarioElectronico();
 		String action = "urn:ConsultaUltimoMovimiento";
@@ -402,6 +402,7 @@ return response;
 				    + " <dat:ConsultaUltimoMovimiento>"
 				    + "	 <dat:TERMINAL>" + terminal + "</dat:TERMINAL>"
 				    + "  <dat:ENTIDAD>" + entidad +"</dat:ENTIDAD>"
+				    + "  <dat:CENTRO>" + centro +"</dat:CENTRO>"
 				    + " </dat:ConsultaUltimoMovimiento>"
 				+"</soapenv:Body>"
 			   +"</soapenv:Envelope>";
@@ -409,7 +410,7 @@ return response;
 			String wsURL = propDs.getURL_DIARIO_ELECTRONICO();
 			
 			outputString= SalidaResponse(xml,wsURL,action,"ConsultaUltimoMovimientoResp");
-			
+			log.error("DiarioElectronicoDS - UltimoMovimiento . " + xml);
 			if(outputString.contains("RespuetaDiario"))
 			{
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -806,7 +807,7 @@ return response;
 		return response;
 	}	
 
-	public ResponseServiceObject ObtieneUltimoMovPendiente(String entidad,String terminal)
+	public ResponseServiceObject ObtieneUltimoMovPendiente(String entidad,String terminal,String centro)
 	{
 		ResponseServiceObject response = new ResponseServiceObject();
 		String action = "ConsultaUltimoMovimientoPendiente";
@@ -821,6 +822,7 @@ return response;
 			Bvista.append("   <dat:ConsultaUltimoMovimientoPendiente>");
 			Bvista.append("       <dat:TERMINAL>"+terminal+"</dat:TERMINAL>");
 			Bvista.append("       <dat:ENTIDAD>"+entidad+"</dat:ENTIDAD>");
+			Bvista.append("       <dat:CENTRO>"+centro+"</dat:CENTRO>");
 			Bvista.append("   </dat:ConsultaUltimoMovimientoPendiente>");
 			Bvista.append(" </soapenv:Body>");
 			Bvista.append("</soapenv:Envelope>");

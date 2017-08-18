@@ -32,17 +32,24 @@ import com.bansefi.nss.cargoabono.vo.ResponseService;
 public class Main {
 
 	public static void main(String[] args) throws Exception 
-	{	
+	{
+		
+
+		String entidad ="0166";
+		String sucursal="0121";//"0121";
+		String terminal ="12012103";//"12012103";
+		String centro="0100";
+		ServiciosCargoAbono ws = new ServiciosCargoAbono();
+		ws.GeneraComprobate(terminal,entidad,centro);
+		
+		
 		String StrCat="";
-	 StrCat=	CantidadLetras.Convertir("101023",true);
+	 StrCat=	CantidadLetras.Convertir("1001023",true);
 		
 		//1501023
 		EndpointProperties prop = new EndpointProperties();
 		String SrDesc=prop.getMsgErrorPaso3();
 		
-		String entidad ="0166";
-		String sucursal="0001";//"0121";
-		String terminal ="12000102";//"12012103";
 		String empleado ="DESA0001";//"E1662129";
 		String acuerdo ="22030373";//"22012512";// ;"259719532";
 		String ID_INTERNO_PE="16396563";
@@ -70,7 +77,7 @@ public class Main {
 
 		CargoAbono prosCargA = new CargoAbono();				
 
-		prosCargA.ComprobanteCargoAbono(terminal,entidad);		
+		//prosCargA.ComprobanteCargoAbono(terminal,entidad);		
 		
 		//cargoAbono.ProcesaPendientes(entidad,terminal);
 		
@@ -189,11 +196,11 @@ public class Main {
 
 		
 		
-		cargoAbono.ConsultaPendienteDiario(entidad,terminal);
+		//cargoAbono.ConsultaPendienteDiario(entidad,terminal);
 		
 		
 		DiarioElectronicoDS ds = new DiarioElectronicoDS();
-		ds.ObtieneUltimoMovPendiente(entidad, terminal);
+		//ds.ObtieneUltimoMovPendiente(entidad, terminal);
 		
 		
 		
@@ -288,7 +295,7 @@ public class Main {
 		
 		ds.ObtieneNumSec(entidad, sucursal, terminal);
 		
-		ds.UltimoMovimiento(terminal, entidad);
+		//ds.UltimoMovimiento(terminal, entidad);
 		
 		
 

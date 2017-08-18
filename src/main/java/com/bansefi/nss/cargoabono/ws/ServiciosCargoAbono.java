@@ -87,7 +87,7 @@ public class ServiciosCargoAbono
 		return jsonResult.toString();
 	}
 	
-	public String GeneraComprobate(String terminal,String entidad)
+	public String GeneraComprobate(String terminal,String entidad,String centro)
 	{
 		
 		/*String result ="";
@@ -105,7 +105,7 @@ public class ServiciosCargoAbono
 		JSONObject jResult = new JSONObject();
 		CargoAbono ProcessCA = new CargoAbono();
 		
-		jResult = ProcessCA.ComprobanteCargoAbono(terminal,entidad);
+		jResult = ProcessCA.ComprobanteCargoAbono(terminal,entidad,centro);
 		
 		return jResult.toString();
 		/*End E234*/
@@ -135,20 +135,20 @@ public class ServiciosCargoAbono
 		return result.toString();
 	}
 
-	public String ProcesaPendientes(String entidad,String terminal)
+	public String ProcesaPendientes(String entidad,String terminal,String centro)
 	{
 		JSONObject result = new JSONObject();
 		CargoAbono processCargoAbono = new CargoAbono();
-		result= processCargoAbono.ProcesaPendientes(entidad, terminal);
+		result= processCargoAbono.ProcesaPendientes(entidad, terminal,centro);
 		
 		return result.toString();
 	}
 	
-	public String ConsultaPendienteDiario(String entidad,String terminal)
+	public String ConsultaPendienteDiario(String entidad,String terminal,String centro)
 	{
 		JSONObject result = new JSONObject();
 		CargoAbono processCargoAbono = new CargoAbono();
-		result= processCargoAbono.ConsultaPendienteDiario(entidad, terminal);
+		result= processCargoAbono.ConsultaPendienteDiario(entidad, terminal,centro);
 		
 		return result.toString();
 	}
