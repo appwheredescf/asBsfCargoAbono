@@ -81,7 +81,7 @@ public class Main {
 
 		
 		ConsultaSaldo oSal = new ConsultaSaldo();
-		System.out.println(oSal.Comprobante(entidad, sucursal, "258210", terminal, horaOpr, nombreCliente, "1234566788", "E1662129"));
+		System.out.println(oSal.Comprobante(entidad, sucursal, "22030373", terminal, horaOpr, nombreCliente, "1234566788", "E1662129"));
 		TFin = System.currentTimeMillis();
 		tiempo = TFin - TInicio;
 		  System.out.println("Tiempo de ejecución en milisegundos: " + tiempo);

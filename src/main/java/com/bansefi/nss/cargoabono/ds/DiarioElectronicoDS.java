@@ -645,7 +645,7 @@ return response;
 			requestDiario.setCodNrbeEnFsc(entidad);
 			requestDiario.setCodNumrcoMoneda("MXN");
 			requestDiario.setCodNumrcoMoneda1("MXN");
-			requestDiario.setCodRespuesta("0");
+			requestDiario.setCodRespuesta("1");
 			requestDiario.setCodTx("DVI50COU");
 			requestDiario.setCodTxDi("xxxx");
 			requestDiario.setContrida("");
