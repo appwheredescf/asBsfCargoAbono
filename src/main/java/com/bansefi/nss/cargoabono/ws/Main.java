@@ -39,7 +39,11 @@ public class Main {
 		String sucursal="0121";//"0121";
 		String terminal ="12012103";//"12012103";
 		String centro="0100";
-		ServiciosCargoAbono ws = new ServiciosCargoAbono();
+		String horaOpr="15:22:00";
+		String nombreCliente="EMILIA RAMIREZ MENDOZA";
+		long TInicio, TFin, tiempo;
+		TInicio = System.currentTimeMillis();
+		/*///ServiciosCargoAbono ws = new ServiciosCargoAbono();
 
 		
 		
@@ -56,9 +60,9 @@ public class Main {
 		String ID_DOM="2";
 		String FecCn="2015/01/23";
 		/**/
-		CargoAbono cargoAbono = new CargoAbono();
+		/*CargoAbono cargoAbono = new CargoAbono();
 		
-		String horaOpr="09:10:04";
+		
 		String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
@@ -73,23 +77,25 @@ public class Main {
 		String IdExt="DVI        ";
 		String tipoIdExterno="22 Prueba Ident";
 		String StrClop="99";
-		String StrSubClop="0002";
+		String StrSubClop="0002";*/
 
 		
 		ConsultaSaldo oSal = new ConsultaSaldo();
-		oSal.Comprobante(entidad, sucursal, acuerdo, terminal, horaOpr, nombreCliente, idExterno, empleado);
+		System.out.println(oSal.Comprobante(entidad, sucursal, "258210", terminal, horaOpr, nombreCliente, "1234566788", "E1662129"));
+		TFin = System.currentTimeMillis();
+		tiempo = TFin - TInicio;
+		  System.out.println("Tiempo de ejecución en milisegundos: " + tiempo);
+		/*///cargoAbono.ProcesaPendientes(entidad, terminal, centro);
 		
-		cargoAbono.ProcesaPendientes(entidad, terminal, centro);
 		
-		
-		CargoAbono prosCargA = new CargoAbono();				
+		//CargoAbono prosCargA = new CargoAbono();				
 
 		//prosCargA.ComprobanteCargoAbono(terminal,entidad);		
 		
 		//cargoAbono.ProcesaPendientes(entidad,terminal);
 		
 		//CajaInt="I";
-		JSONObject oJResp = cargoAbono.Procesar(entidad, 
+		/*JSONObject oJResp = cargoAbono.Procesar(entidad, 
 				sucursal, 
 				empleado, 
 				terminal, 
@@ -205,7 +211,7 @@ public class Main {
 		//cargoAbono.ConsultaPendienteDiario(entidad,terminal);
 		
 		
-		DiarioElectronicoDS ds = new DiarioElectronicoDS();
+		/*DiarioElectronicoDS ds = new DiarioElectronicoDS();
 		//ds.ObtieneUltimoMovPendiente(entidad, terminal);
 		
 		
@@ -299,7 +305,7 @@ public class Main {
 		
 		
 		
-		ds.ObtieneNumSec(entidad, sucursal, terminal);
+		/*ds.ObtieneNumSec(entidad, sucursal, terminal);
 		
 		//ds.UltimoMovimiento(terminal, entidad);
 		
@@ -514,7 +520,7 @@ System.out.println(" ::  "+cadTest);
 		*/
 		//prosConsultaSaldo.Comprobante("0166", "70603253", "12000129");
 		
-		//f.length();
+		//f.length();*/
 	}
 
 	

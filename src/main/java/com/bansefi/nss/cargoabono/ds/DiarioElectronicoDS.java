@@ -97,7 +97,7 @@ public class DiarioElectronicoDS
 					+"<dat:fechaOprcn>" + StrFecOper + "</dat:fechaOprcn>"
 					+"<dat:horaOprcn>" + request.getHoraOprcn() + "</dat:horaOprcn>"
 					+"<dat:fechaCtble>" +StFecConr  + "</dat:fechaCtble>"
-					+"<dat:fechaValor>"+request.getFechaValor()+"</dat:fechaValor>"
+					+"<dat:fechaValor>"+StrFecOper+"</dat:fechaValor>"
 					+"<dat:codClopSist>" + request.getCodClopSist() + "</dat:codClopSist>"
 					+"<dat:tipoSbclop>" + request.getTipoSbclop() + "</dat:tipoSbclop>"
 					+"<dat:numPuesto>" + request.getNumPuesto() + "</dat:numPuesto>"
