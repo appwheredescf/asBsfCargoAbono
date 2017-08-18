@@ -39,11 +39,11 @@ public class ConsultaSaldo
 			//OBTIENE LA CUENTA CLABE
 			
 			PasivoTcb pasivoTcb = new PasivoTcb();
-			ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
+			//ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
 			
 			//ResponseService responseClabe = oWsAcuerdo.ConsultaClabe(acuerdo, entidad, terminal);
 			//responseClabe.getStatus() == 1 ? responseClabe.getDescripcion() : "";
-			String contrato = oConsClab.getStatus() == 1 ? oConsClab.getCOD_NRBE_CLABE_V() : "";
+			String contrato = "";//oConsClab.getStatus() == 1 ? oConsClab.getCOD_NRBE_CLABE_V() : "";
 			
 			//CONSULTA EL SALDO
 			ResponseConsultaSaldo responseSaldo = oWsAcuerdo.ConsultaSaldo(acuerdo, entidad, terminal);
@@ -56,9 +56,9 @@ public class ConsultaSaldo
 				importe = String.format ("%.2f", Double.parseDouble(importe));
 				String importeLetras = CantidadLetras.Convertir(importe, true);
 				
-				ResponseDatosCentro oCen =oPasiv.ConsultaCentro(entidad, centro, terminal);
+				//ResponseDatosCentro oCen =oPasiv.ConsultaCentro(entidad, centro, terminal);
 
-				String datosCentro = oCen.getStatus() == 1 ? centro + " "  + oCen.getNOMBRE() :  "";
+				String datosCentro = "";//oCen.getStatus() == 1 ? centro + " "  + oCen.getNOMBRE() :  "";
 				
 				//SE GENERA FOLIO
 				

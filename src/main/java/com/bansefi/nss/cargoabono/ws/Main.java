@@ -75,6 +75,10 @@ public class Main {
 		String StrClop="99";
 		String StrSubClop="0002";
 
+		
+		ConsultaSaldo oSal = new ConsultaSaldo();
+		oSal.Comprobante(entidad, sucursal, acuerdo, terminal, horaOpr, nombreCliente, idExterno, empleado);
+		
 		cargoAbono.ProcesaPendientes(entidad, terminal, centro);
 		
 		
@@ -158,8 +162,7 @@ public class Main {
 		JSONObject prueba;
 		JSONObject prueba2;
 
-		ConsultaSaldo oSal = new ConsultaSaldo();
-		oSal.Comprobante(entidad, sucursal, acuerdo, terminal, horaOpr, nombreCliente, idExterno, empleado);
+		
 		
 		
 				
