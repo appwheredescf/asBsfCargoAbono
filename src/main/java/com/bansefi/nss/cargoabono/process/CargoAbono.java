@@ -61,6 +61,8 @@ public class CargoAbono
 		String SrDesc="";
 		String SrCod="";
 		String SrArg1="";
+		String StrFeOper="";
+		String StrHoraOper="";
 		/*Begin E234*/
 		try
 		{
@@ -94,6 +96,8 @@ public class CargoAbono
             		RespDia.setIMP_SDO(impNom);
             		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
             		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
+            		StrHoraOper = responseMov.getHORAOPERACION();
+            		StrFeOper = responseMov.getFECHAOPERA();
             		if(pResp.getStatus()==1)//1
             		{
             			SrIdMov = responseMov.getNUM_SEC();
@@ -144,6 +148,8 @@ public class CargoAbono
 				jsonResultado.put("idmov", SrIdMov);
 				jsonResultado.put("status", "1");
 				jsonResultado.put("descripcion","Registro dado de alta");
+				jsonResultado.put("FechaOper",StrFeOper);
+				jsonResultado.put("HoraOper",StrHoraOper);
 				
 			}
 			else

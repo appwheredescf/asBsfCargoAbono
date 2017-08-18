@@ -22,7 +22,9 @@ import com.bansefi.nss.cargoabono.vo.ResponseService;
 
 public class ConsultaSaldo 
 {
-	public JSONObject Comprobante(String entidad, String centro, String acuerdo, String terminal, String horaOpr, String nombreCliente , String idExterno, String empleado)
+	public JSONObject Comprobante(String entidad, String centro, String acuerdo, 
+			String terminal, String horaOpr, String nombreCliente , String idExterno, 
+			String empleado)
 	{
 		JSONObject jsonResult = new JSONObject();
 		JSONObject jsonResultado = new JSONObject();

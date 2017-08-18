@@ -40,11 +40,11 @@ public class Main {
 		String terminal ="12012103";//"12012103";
 		String centro="0100";
 		ServiciosCargoAbono ws = new ServiciosCargoAbono();
-		ws.GeneraComprobate(terminal,entidad,centro);
+
 		
 		
-		String StrCat="";
-	 StrCat=	CantidadLetras.Convertir("1001023",true);
+		//String StrCat="";
+	 //StrCat=	CantidadLetras.Convertir("1001023",true);
 		
 		//1501023
 		EndpointProperties prop = new EndpointProperties();
@@ -62,11 +62,11 @@ public class Main {
 		String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="8.77";
+		String Importe="9.77";
 		String TipOper="A";
-		String FecValor="2017-08-14";
+		String FecValor="2017-08-18";
 		String Concepto="prueba depura   [1.1]";
-		String FecOper="2017-08-15";
+		String FecOper="2017-08-18";
 		String HrOper="10:10:57";
 		String CajaInt="A";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";
@@ -75,6 +75,9 @@ public class Main {
 		String StrClop="99";
 		String StrSubClop="0002";
 
+		cargoAbono.ProcesaPendientes(entidad, terminal, centro);
+		
+		
 		CargoAbono prosCargA = new CargoAbono();				
 
 		//prosCargA.ComprobanteCargoAbono(terminal,entidad);		
@@ -100,7 +103,7 @@ public class Main {
 				tipoIdExterno);
 //,StrClop,StrSubClop
 		
-		
+		ws.GeneraComprobate(terminal,entidad,centro);		
 		
 		
 		
