@@ -81,10 +81,10 @@ public class CargoAbono
             	switch (tipoOp) 
             	{
 					case "C":
-						responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom.replace(".", ","), concepto, terminal);
+						responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom.replace(",", ""), concepto, terminal);
 						break;
 					case "A":
-						responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom.replace(".", ","), concepto, terminal);
+						responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom.replace(",", ""), concepto, terminal);
 						break;							
 				}
             	if(responseMov.getStatus()==1)
@@ -668,14 +668,16 @@ return jsonResult;
 									{
 										int minPas = Integer.parseInt(ArryhoraPas[1])+10;
 										int minDia = Integer.parseInt(ArryhoraDia[1]);
+										
+										String StrHrOper = oDiElecDet.getHoraOprcn(); 
+										String StrFecPc = oDiElecDet.getFechaPc();
+										String StrHrPc = oDiElecDet.getHoraPc();
+										ResponDiaPend RespDia = new ResponDiaPend();
+										
 										if(minDia < minPas )
-										{
-
-											String StrHrOper = oDiElecDet.getHoraOprcn(); 
-											String StrFecPc = oDiElecDet.getFechaPc();
-											String StrHrPc = oDiElecDet.getHoraPc();
+										{											
 											
-											ResponDiaPend RespDia = new ResponDiaPend();
+											
 											RespDia.setNUMSEC(StrNumSec);
 											RespDia.setHORA_OPERACION(StrHrOper);
 											RespDia.setCOD_RESPUESTA(1);
@@ -700,6 +702,32 @@ return jsonResult;
 						            			jResultDetalle.put("idMov",StrNumSec);
 						            		}		
 						            		break;
+										}
+										else
+										{
+											RespDia.setNUMSEC(StrNumSec);
+											RespDia.setHORA_OPERACION(StrHrOper);
+											RespDia.setCOD_RESPUESTA(0);
+											RespDia.setIMP_SDO(importDia);
+											RespDia.setTERMINAL(terminal);
+											RespDia.setFEC_PC(StrFecPc);
+											RespDia.setHORA_PC(StrHrPc);
+						            		
+						            		ResponseService pResp= ds.ActualizaRegistro(RespDia);
+						            		if(pResp.getStatus()==1)
+						            		{
+						            			bProce=true;
+						            			jResultDetalle.put("status", "1");
+						            			jResultDetalle.put("descripcion", "Movimiento pendiente actualizado");
+						            			jResultDetalle.put("idMov",StrNumSec);
+						            		}
+						            		else
+						            		{
+						            			bProce=true;
+						            			jResultDetalle.put("status", "-1");
+						            			jResultDetalle.put("descripcion", "Movimiento pendiente actualizado");
+						            			jResultDetalle.put("idMov",StrNumSec);
+						            		}		
 										}
 										/*
 										if(ArryhoraPas[1].equals(ArryhoraDia[1]))
