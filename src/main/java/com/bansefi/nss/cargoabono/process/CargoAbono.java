@@ -145,11 +145,14 @@ public class CargoAbono
 			
 			if(StatusOper)
 			{
+				PasivoTcb pasivoTcb = new PasivoTcb();
+				ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
 				jsonResultado.put("idmov", SrIdMov);
 				jsonResultado.put("status", "1");
 				jsonResultado.put("descripcion","Registro dado de alta");
 				jsonResultado.put("FechaOper",StrFeOper);
 				jsonResultado.put("HoraOper",StrHoraOper);
+				jsonResultado.put("Clabe",oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V());
 				
 			}
 			else
@@ -261,6 +264,7 @@ try
 		
 		if(StatusOper)
 		{
+			
 			jsonResultado.put("idmov", SrIdMov);
 			jsonResultado.put("status", "1");
 			jsonResultado.put("descripcion","Registro dado de alta");
@@ -364,7 +368,7 @@ return jsonResult;
 				}
 				
 				String ImporLetra = CantidadLetras.Convertir(oDiaElect.getRegistroDiarioElectronico().getImpNominal(), true);
-				String contrato = oConsClab.getStatus() == 1 ? oConsClab.getCOD_NRBE_CLABE_V() : "";
+				String contrato = oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
 				
 				String TitularAcuerdo ="";
 				String strOfic="";
@@ -399,7 +403,7 @@ return jsonResult;
 				
 				String StrImporte =oDiaElect.getRegistroDiarioElectronico().getImpNominal();
 				
-						
+				
 				StrImporte= CantidadLetras.FormatoNumero(StrImporte);
 						
 				jsonResultado.put("fecha", fechaActual);//oResCA.getFechaOperacion());
@@ -410,7 +414,7 @@ return jsonResult;
 				jsonResultado.put("producto",strProdDesc);
 				jsonResultado.put("importe_letra", "( "+ImporLetra+" )");
 				jsonResultado.put("oficina", strOfic);
-				jsonResultado.put("contrato", oDiaElect.getRegistroDiarioElectronico().getNumSecAc());
+				jsonResultado.put("contrato", contrato);
 				
 				String StrIdExter =oDiaElect.getRegistroDiarioElectronico().getValorDtllTx();
 				try

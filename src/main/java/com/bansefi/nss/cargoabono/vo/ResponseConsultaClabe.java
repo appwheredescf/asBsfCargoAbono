@@ -4,10 +4,16 @@ public class ResponseConsultaClabe extends ResponseService {
 	private String COD_NRBE_CLABE_V;
 	private String COD_PLZ_BANCARIA;
 	private String NUM_SEC_AC_CLABE_V;
-	
+	private String COD_DIG_CR_CLABE_V;
 	
 	public String getCOD_NRBE_CLABE_V() {
 		return COD_NRBE_CLABE_V;
+	}
+	public String getCOD_DIG_CR_CLABE_V() {
+		return COD_DIG_CR_CLABE_V;
+	}
+	public void setCOD_DIG_CR_CLABE_V(String cOD_DIG_CR_CLABE_V) {
+		COD_DIG_CR_CLABE_V = cOD_DIG_CR_CLABE_V;
 	}
 	public void setCOD_NRBE_CLABE_V(String cOD_NRBE_CLABE_V) {
 		COD_NRBE_CLABE_V = cOD_NRBE_CLABE_V;

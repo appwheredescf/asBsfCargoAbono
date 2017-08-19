@@ -16,6 +16,7 @@ import com.bansefi.nss.cargoabono.vo.ResponseConsultaClabe;
 import com.bansefi.nss.cargoabono.vo.ResponseConsultaSaldo;
 import com.bansefi.nss.cargoabono.vo.ResponseFechaActual;
 import com.bansefi.nss.cargoabono.vo.ResponseService;
+import com.ibm.db2.jcc.am.oo;
 
 
 public class ConsultaSaldo 
@@ -38,7 +39,7 @@ public class ConsultaSaldo
 			
 			PasivoTcb pasivoTcb = new PasivoTcb();
 			ResponseConsultaClabe oConsClab = pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
-			String contrato = oConsClab.getStatus() == 1 ? oConsClab.getCOD_NRBE_CLABE_V() : "";
+			String contrato = oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
 			
 			//CONSULTA EL SALDO
 			ResponseConsultaSaldo responseSaldo = oWsAcuerdo.ConsultaSaldo(acuerdo, entidad, terminal);

@@ -1363,10 +1363,12 @@ public class PasivoTcb {
 						String COD_NRBE_CLABE_V = eElement.getElementsByTagName("COD_NRBE_CLABE_V").item(0).getTextContent().trim();
 						String COD_PLZ_BANCARIA = eElement.getElementsByTagName("COD_PLZ_BANCARIA").item(0).getTextContent().trim();
 						String NUM_SEC_AC_CLABE_V = eElement.getElementsByTagName("NUM_SEC_AC_CLABE_V").item(0).getTextContent().trim();
+						String COD_DIG_CR_CLABE_V = eElement.getElementsByTagName("COD_DIG_CR_CLABE_V").item(0).getTextContent().trim();
 						response.setStatus(1);
 						response.setCOD_NRBE_CLABE_V(COD_NRBE_CLABE_V);
 						response.setCOD_PLZ_BANCARIA(COD_PLZ_BANCARIA);
 						response.setNUM_SEC_AC_CLABE_V(NUM_SEC_AC_CLABE_V);
+						response.setCOD_DIG_CR_CLABE_V(COD_DIG_CR_CLABE_V);
 					}
 				} 
 				else 
