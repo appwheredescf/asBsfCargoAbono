@@ -81,10 +81,10 @@ public class CargoAbono
             	switch (tipoOp) 
             	{
 					case "C":
-						responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom.replace(",", ""), concepto, terminal);
+						responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom, concepto, terminal);
 						break;
 					case "A":
-						responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom.replace(",", ""), concepto, terminal);
+						responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom, concepto, terminal);
 						break;							
 				}
             	if(responseMov.getStatus()==1)

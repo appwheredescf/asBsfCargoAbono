@@ -38,12 +38,12 @@ public class Main {
 		String entidad ="0166";
 		String sucursal="0121";//"0121";
 		String terminal ="12012103";//"12012103";
-		String centro="0100";
+		String centro="0121";
 		String horaOpr="15:22:00";
 		String nombreCliente="EMILIA RAMIREZ MENDOZA";
 		long TInicio, TFin, tiempo;
 		TInicio = System.currentTimeMillis();
-		/*///ServiciosCargoAbono ws = new ServiciosCargoAbono();
+		
 
 		
 		
@@ -55,47 +55,48 @@ public class Main {
 		String SrDesc=prop.getMsgErrorPaso3();
 		
 		String empleado ="DESA0001";//"E1662129";
-		String acuerdo ="22030373";//"22012512";// ;"259719532";
+		String acuerdo ="11267234";//"22012512";// ;"259719532";
 		String ID_INTERNO_PE="16396563";
 		String ID_DOM="2";
-		String FecCn="2015/01/23";
+		String FecCn="2015/01/21";
 		/**/
-		/*CargoAbono cargoAbono = new CargoAbono();
+		CargoAbono cargoAbono = new CargoAbono();
 		
 		
-		String nombreCliente="Prueba ";
+		//String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="9.77";
+		String Importe="1.23";
 		String TipOper="A";
-		String FecValor="2017-08-18";
+		String FecValor="2017-08-21";
 		String Concepto="prueba depura   [1.1]";
-		String FecOper="2017-08-18";
+		String FecOper="2017-08-21";
 		String HrOper="10:10:57";
 		String CajaInt="A";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";
-		String IdExt="DVI        ";
+		String IdExt="11122";
 		String tipoIdExterno="22 Prueba Ident";
-		String StrClop="99";
-		String StrSubClop="0002";*/
+		String StrClop="01";
+		String StrSubClop="0001";
 
+		cargoAbono.ProcesaPendientes(entidad,terminal,centro);
 		
 		ConsultaSaldo oSal = new ConsultaSaldo();
-		System.out.println(oSal.Comprobante(entidad, sucursal, "22030373", terminal, horaOpr, nombreCliente, "1234566788", "E1662129"));
-		TFin = System.currentTimeMillis();
-		tiempo = TFin - TInicio;
-		  System.out.println("Tiempo de ejecución en milisegundos: " + tiempo);
+		//System.out.println(oSal.Comprobante(entidad, sucursal, "22030373", terminal, horaOpr, nombreCliente, "1234566788", "E1662129"));
+		//TFin = System.currentTimeMillis();
+		//tiempo = TFin - TInicio;
+		  //System.out.println("Tiempo de ejecución en milisegundos: " + tiempo);
 		/*///cargoAbono.ProcesaPendientes(entidad, terminal, centro);
 		
-		
+		*/
 		//CargoAbono prosCargA = new CargoAbono();				
 
 		//prosCargA.ComprobanteCargoAbono(terminal,entidad);		
 		
-		//cargoAbono.ProcesaPendientes(entidad,terminal);
+		
 		
 		//CajaInt="I";
-		/*JSONObject oJResp = cargoAbono.Procesar(entidad, 
+		JSONObject oJResp = cargoAbono.Procesar(entidad, 
 				sucursal, 
 				empleado, 
 				terminal, 
@@ -111,9 +112,11 @@ public class Main {
 				Producto, 
 				IdExt, 
 				tipoIdExterno);
+		
+		StrClop="99";
 //,StrClop,StrSubClop
 		
-		ws.GeneraComprobate(terminal,entidad,centro);		
+		//ws.GeneraComprobate(terminal,entidad,centro);		
 		
 		
 		

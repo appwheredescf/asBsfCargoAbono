@@ -55,6 +55,16 @@ public class PasivoTcb {
 		TcbProperties prop = new TcbProperties();
 		try
 		{
+			try
+			{
+				int CamFormat = Integer.parseInt(prop.getFLAT_REPLACE());
+				if(CamFormat == 1)
+					impNom = impNom.replace(".", ",");
+			}
+			catch(Exception ex){
+				
+			}
+			
 			ResponseFechaHoraTCB fechaHoraTCB = new ResponseFechaHoraTCB();
 			fechaHoraTCB = FechaContable(idTerminal);
 			String strVista = getVistaCargoInterven(prop.getCARGO_CODTX(), 
@@ -280,6 +290,17 @@ public class PasivoTcb {
 		TcbProperties prop = new TcbProperties();
 		try
 		{
+			try
+			{
+				int CamFormat = Integer.parseInt(prop.getFLAT_REPLACE());
+				if(CamFormat == 1)
+					impNom = impNom.replace(".", ",");
+			}
+			catch(Exception ex){
+				
+			}
+			
+			
 			ResponseFechaHoraTCB fechaHoraTCB = new ResponseFechaHoraTCB();
 			fechaHoraTCB = FechaContable(idTerminal);
 			String strVista = getVistaCargo(prop.getCARGO_CODTX(), 
@@ -502,6 +523,16 @@ public class PasivoTcb {
 		TcbProperties prop = new TcbProperties();
 		try
 		{
+			try
+			{
+				int CamFormat = Integer.parseInt(prop.getFLAT_REPLACE());
+				if(CamFormat == 1)
+					impNom = impNom.replace(".", ",");
+			}
+			catch(Exception ex){
+				
+			}
+			
 			ResponseFechaHoraTCB fechaHoraTCB = new ResponseFechaHoraTCB();
 			fechaHoraTCB = FechaContable(idTerminal);
 			String strVista = getVistaAbonoInterven(prop.getABONO_CODTX(), 
@@ -723,6 +754,16 @@ public class PasivoTcb {
 		TcbProperties prop = new TcbProperties();
 		try
 		{
+			try
+			{
+				int CamFormat = Integer.parseInt(prop.getFLAT_REPLACE());
+				if(CamFormat == 1)
+					impNom = impNom.replace(".", ",");
+			}
+			catch(Exception ex){
+				
+			}
+			
 			ResponseFechaHoraTCB fechaHoraTCB = new ResponseFechaHoraTCB();
 			fechaHoraTCB = FechaContable(idTerminal);
 			String strVista = getVistaAbono(prop.getABONO_CODTX(), 
@@ -742,7 +783,7 @@ public class PasivoTcb {
 			String soapXml = "<SOAP-ENV:Envelope xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'>"
 					+ "	<SOAP-ENV:Body> " + strVista+ "	</SOAP-ENV:Body>"
 					+ "</SOAP-ENV:Envelope>"; 
-
+System.out.println(soapXml);
 			URL url;
 			java.net.URLConnection conn = null;
 			try 
@@ -1089,7 +1130,7 @@ public class PasivoTcb {
 			String soapXml = "<SOAP-ENV:Envelope xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'>"
 					+ "	<SOAP-ENV:Body> " + strVista + "	</SOAP-ENV:Body>"
 					+ "</SOAP-ENV:Envelope>"; 
-
+System.out.println(soapXml);
 			URL url;
 			java.net.URLConnection conn = null;
 			try {

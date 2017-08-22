@@ -31,7 +31,7 @@ public class TcbProperties
 	private String ABONO_TIPOOPER;
 	private String ABONO_CLOP;
 	private String ABONO_SUBCLOP;
-	
+	private String FLAT_REPLACE;
 
 	
 	
@@ -61,6 +61,7 @@ public class TcbProperties
 		this.URL_CONS_DOMIC=prop.getProperty("URL_CONS_DOMIC");
 		this.URL_CONS_NOMBRE=prop.getProperty("URL_CONS_NOMBRE");
 		this.URL_CONS_ACUERDO=prop.getProperty("URL_CONS_ACUERDO");
+		this.FLAT_REPLACE= prop.getProperty("FLAT_REPLACE");
 	}
 
 	
@@ -183,5 +184,17 @@ public class TcbProperties
 
 	public void setURL_CONS_ACUERDO(String uRL_CONS_ACUERDO) {
 		URL_CONS_ACUERDO = uRL_CONS_ACUERDO;
+	}
+
+
+
+	public String getFLAT_REPLACE() {
+		return FLAT_REPLACE;
+	}
+
+
+
+	public void setFLAT_REPLACE(String fLAT_REPLACE) {
+		FLAT_REPLACE = fLAT_REPLACE;
 	}
 }
