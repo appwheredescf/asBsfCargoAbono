@@ -64,8 +64,8 @@ public class PasivosAcuerdosServices
 				} else {
 					response.setStatus(0);
 					response.setDescripcion(jsonResponse.optString("ERROR_DESC"));
-					log.error("PasivosAcuerdosServices Entrada - " + input);
-					log.error("PasivosAcuerdosServices . - " + jsonResponse.optString("ERROR_DESC"));
+					log.error("ConsultaClabe Entrada - " + input);
+					log.error("ConsultaClabe . - " + jsonResponse.optString("ERROR_DESC"));
 				}	
 			}
 			else
@@ -78,8 +78,8 @@ public class PasivosAcuerdosServices
 		} catch (Exception ex) {
 			response.setStatus(-1);
 			response.setDescripcion(ex.getMessage());
-			log.error("PasivosAcuerdosServices Entrada - " + input);
-			log.error("PasivosAcuerdosServices . - " + ex.getMessage());
+			log.error("ConsultaClabe Entrada - " + input);
+			log.error("ConsultaClabe" , ex);
 		}		
 		return response;
 	}
@@ -141,7 +141,7 @@ public class PasivosAcuerdosServices
 			response.setStatus(-1);
 			response.setDescripcion(ex.getMessage());
 			log.error("ConsultaSaldo Entrada - " + input);
-			log.error("ConsultaSaldo . - " + ex.getMessage());
+			log.error("ConsultaSaldo" , ex);
 		}		
 		return response;
 	}
@@ -334,7 +334,7 @@ public class PasivosAcuerdosServices
 			response.setStatus(-1);
 			response.setDescripcion(ex.getMessage());
 			log.error("UltimaTransaccion Entrada - " + input);
-			log.error("UltimaTransaccion . - " + ex.getMessage());
+			log.error("UltimaTransaccion" + ex);
 		}		
 		return response;
 	}
@@ -424,7 +424,7 @@ public class PasivosAcuerdosServices
 			response.setStatus(-1);
 			response.setDescripcion(ex.getMessage());
 			log.error("CargoAbono Entrada - " + input);
-			log.error("CargoAbono . - " + ex.getMessage());
+			log.error("CargoAbono" + ex);
 		}		
 		return response;
 	}
@@ -470,7 +470,7 @@ public class PasivosAcuerdosServices
 			response.setStatus(-1);
 			response.setDescripcion(ex.getMessage());
 			log.error("HoraActual Entrada - " + input);
-			log.error("HoraActual . - " + ex.getMessage());
+			log.error("HoraActual" , ex);
 		}		
 		return response;
 	}
@@ -517,7 +517,7 @@ public class PasivosAcuerdosServices
 			response.setStatus(-1);
 			response.setDescripcion(ex.getMessage());
 			log.error("HoraActual Entrada - " + input);
-			log.error("HoraActual . - " + ex.getMessage());
+			log.error("HoraActual", ex);
 		}		
 		return response;
 	}
@@ -596,8 +596,8 @@ public class PasivosAcuerdosServices
 		{
 			oCargAb.setStatus(0);
 			oCargAb.setDescripcion(ex.getMessage());
-			log.error("PasivosAcuerdosServices Entrada - " + input);
-			log.error("PasivosAcuerdosServices . - " + ex.getMessage());
+			log.error("ConsultaIdMovCargoAbono Entrada - " + input);
+			log.error("ConsultaIdMovCargoAbono",ex);
 		}		
 		return oCargAb;
 	}
@@ -623,7 +623,7 @@ public class PasivosAcuerdosServices
 		}
 		catch(Exception ex)
 		{
-			log.error("PasivosAcuerdosServices . - " + ex.getMessage());
+			log.error("ObtCadenaTrans", ex);
 			StrResult="";
 		}
 		return StrResult;
@@ -649,7 +649,7 @@ public class PasivosAcuerdosServices
 		}
 		catch(Exception ex)
 		{
-			log.error("SetDataTrans . - " + ex.getMessage());
+			log.error("SetDataTrans" , ex);
 		}
 		return oDataTras;
 	}
@@ -700,7 +700,8 @@ public class PasivosAcuerdosServices
 		{
 			response.setStatus(-1);
 			response.setDescripcion(ex.getMessage());
-			log.error("RegistraCargoAbono Entrada - " + input+" "+ex.getMessage());
+			log.error("RegistraCargoAbono Entrada" + input);
+			log.error("RegistraCargoAbono", ex);
 		}		
 		return response;
 	}
@@ -730,12 +731,17 @@ public class PasivosAcuerdosServices
 				JSONObject jsonSalida = new JSONObject(salida);
 				JSONObject jsonResponse = jsonSalida.getJSONObject("ActualizaStatusMovimientoCargoAbonoResp").getJSONObject("StatusMovimientoCargoAbono");
 				oResul.setStatus(Integer.parseInt( jsonResponse.optString("estatus")));
+			} else {
+				oResul.setStatus(0);
+				log.error("ActStatusMovCargoAbono Entrada - " + input);
+				log.error("ActStatusMovCargoAbono Salida - " + salida);
 			}
+			
 		}
 		catch(Exception ex)
 		{
 			oResul.setStatus(0);
-			log.error("PasivosAcuerdosServices Entrada - " +ex.getMessage());
+			log.error("ActStatusMovCargoAbono Error" , ex);
 		}
 		return oResul;
 	}	

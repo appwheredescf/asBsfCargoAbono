@@ -3,7 +3,6 @@ package com.bansefi.nss.cargoabono.tcb;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
 import com.bansefi.nss.cargoabono.properties.DsProperties;
 import com.bansefi.nss.cargoabono.properties.TcbProperties;
 import com.bansefi.nss.cargoabono.services.PasivosAcuerdosServices;
-import com.bansefi.nss.cargoabono.vo.DiarioElectronicoRequest;
 import com.bansefi.nss.cargoabono.vo.ResponseConsultaClabe;
 import com.bansefi.nss.cargoabono.vo.ResponseDatosCentro;
 import com.bansefi.nss.cargoabono.vo.ResponseDatosEmpleado;
@@ -34,14 +32,11 @@ import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_APNTE_AUDIT_V;
 import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_APNTE_E;
 import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_AUDIT_AUX;
 
-import antlr.StringUtils;
-import de.hunsicker.jalopy.printer.Printer;
-
 public class PasivoTcb {
 	private static final Logger log = LogManager.getLogger(PasivosAcuerdosServices.class);
 	private DsProperties propDs = new DsProperties();
 	DiarioElectronicoDS diario= new DiarioElectronicoDS();
-	
+	private long timeSleep = 1000;
 	
 	public ResponseServiceCargoAbono CargoIntervencion(
 			String entidad, 
@@ -97,18 +92,18 @@ public class PasivoTcb {
 				} 
 				catch (IOException e) 
 				{
-					log.info("PasivoTcb - Cargo : View In .- " + strVista);
-					log.info("PasivoTcb - Cargo : URL_CARGO .- " + prop.getURL_CARGO());
-					log.error("PasivoTcb - Cargo : IOException. " + e.getMessage());
+					log.info("CargoIntervencion - Cargo : View In .- " + strVista);
+					log.info("CargoIntervencion - Cargo : URL_CARGO .- " + prop.getURL_CARGO());
+					log.error("CargoIntervencion - Cargo : IOException. " , e);
 				}
 			} 
 			catch (MalformedURLException e1) 
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
-				log.info("PasivoTcb - Cargo : View In .- " + strVista);
-				log.info("PasivoTcb - Cargo : URL_CARGO .- " + prop.getURL_CARGO());
-				log.error("PasivoTcb - Cargo : MalformedURLException. " + e1.getMessage());
+				log.info("CargoIntervencion : View In .- " + strVista);
+				log.info("CargoIntervencion  : URL_CARGO .- " + prop.getURL_CARGO());
+				log.error("CargoIntervencion : MalformedURLException. " , e1);
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_CARGO());
 			conn.setDoOutput(true);
@@ -125,8 +120,8 @@ public class PasivoTcb {
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e2.getMessage());
-				log.info("PasivoTcb - Cargo : View In .- " + strVista);
-				log.error("PasivoTcb - Cargo : OutputStreamWriter. " + e2.getMessage());
+				log.info("CargoIntervencion : View In .- " + strVista);
+				log.error("CargoIntervencion : OutputStreamWriter" , e2);
 			}
 
 			// Read the response
@@ -139,8 +134,8 @@ public class PasivoTcb {
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
-				log.info("PasivoTcb - Cargo : View In .- " + strVista);
-				log.error("PasivoTcb - Cargo : BufferedReader. " + e1.getMessage());
+				log.info("CargoIntervencion : View In .- " + strVista);
+				log.error("CargoIntervencion : BufferedReader. " , e1);
 			}
 
 			try
@@ -204,8 +199,8 @@ public class PasivoTcb {
 				else 
 				{
 					
-					log.info("PasivoTcb - Cargo : View In .- " + strVista);
-					log.info("PasivoTcb - Cargo : View Out .- " + salida);
+					log.info("CargoIntervencion : View In .- " + strVista);
+					log.info("CargoIntervencion : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
 					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
@@ -249,12 +244,14 @@ public class PasivoTcb {
 								i=STD_MSJ_PARM_V.getLength();
 							}catch(Exception e)
 							{
+								log.error("CargoIntervencion : Exception" , e);
 								System.out.println(e.getMessage());
 								errores="La obtencion de errores fallo:"+e.getMessage();
 							}
 						
 					}
 					response.setDescripcion(errores);
+					Thread.sleep(timeSleep);
 				}
 			}
 			catch (Exception e) 
@@ -262,15 +259,15 @@ public class PasivoTcb {
 				response.setStatus(-1);
 				response.setDescripcion(e.getMessage());
 				System.out.println(e.getMessage());
-				log.info("PasivoTcb - Cargo : View In .- " + strVista);
-				log.error("PasivoTcb - Cargo : Exception Read Out. " + e.getMessage());
+				log.info("CargoIntervencion  : View In .- " + strVista);
+				log.error("CargoIntervencion : Exception" , e);
 			}
 		} 
 		catch (Exception e) 
 		{
 			response.setStatus(-1);
 			response.setDescripcion(e.getMessage());
-			log.error("PasivoTcb - Cargo : Exception. " + e.getMessage());
+			log.error("CargoIntervencion : Exception. " , e);
 		}
 		return response;
 	}
@@ -333,18 +330,18 @@ public class PasivoTcb {
 				} 
 				catch (IOException e) 
 				{
-					log.info("PasivoTcb - Cargo : View In .- " + strVista);
-					log.info("PasivoTcb - Cargo : URL_CARGO .- " + prop.getURL_CARGO());
-					log.error("PasivoTcb - Cargo : IOException. " + e.getMessage());
+					log.info("Cargo : View In .- " + strVista);
+					log.info("Cargo : URL_CARGO .- " + prop.getURL_CARGO());
+					log.error("Cargo : IOException. " , e);
 				}
 			} 
 			catch (MalformedURLException e1) 
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
-				log.info("PasivoTcb - Cargo : View In .- " + strVista);
-				log.info("PasivoTcb - Cargo : URL_CARGO .- " + prop.getURL_CARGO());
-				log.error("PasivoTcb - Cargo : MalformedURLException. " + e1.getMessage());
+				log.info("Cargo : View In .- " + strVista);
+				log.info("Cargo : URL_CARGO .- " + prop.getURL_CARGO());
+				log.error("Cargo : MalformedURLException. " , e1);
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_CARGO());
 			conn.setDoOutput(true);
@@ -361,8 +358,8 @@ public class PasivoTcb {
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e2.getMessage());
-				log.info("PasivoTcb - Cargo : View In .- " + strVista);
-				log.error("PasivoTcb - Cargo : OutputStreamWriter. " + e2.getMessage());
+				log.info("Cargo : View In .- " + strVista);
+				log.error("Cargo : OutputStreamWriter. " , e2);
 			}
 
 			// Read the response
@@ -375,8 +372,8 @@ public class PasivoTcb {
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
-				log.info("PasivoTcb - Cargo : View In .- " + strVista);
-				log.error("PasivoTcb - Cargo : BufferedReader. " + e1.getMessage());
+				log.info("Cargo : View In .- " + strVista);
+				log.error("Cargo : BufferedReader. " , e1);
 			}
 
 			try
@@ -440,8 +437,8 @@ public class PasivoTcb {
 				else 
 				{
 					
-					log.info("PasivoTcb - Cargo : View In .- " + strVista);
-					log.info("PasivoTcb - Cargo : View Out .- " + salida);
+					log.info("Cargo : View In .- " + strVista);
+					log.info("Cargo : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
 					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
@@ -485,12 +482,14 @@ public class PasivoTcb {
 								i=STD_MSJ_PARM_V.getLength();
 							}catch(Exception e)
 							{
+								log.error("Cargo : Exception. " , e);
 								System.out.println(e.getMessage());
 								errores="La obtencion de errores fallo:"+e.getMessage();
 							}
 						
 					}
 					response.setDescripcion(errores);
+					Thread.sleep(timeSleep);
 				}
 			}
 			catch (Exception e) 
@@ -498,15 +497,15 @@ public class PasivoTcb {
 				response.setStatus(-1);
 				response.setDescripcion(e.getMessage());
 				System.out.println(e.getMessage());
-				log.info("PasivoTcb - Cargo : View In .- " + strVista);
-				log.error("PasivoTcb - Cargo : Exception Read Out. " + e.getMessage());
+				log.info("Cargo : View In .- " + strVista);
+				log.error("Cargo : Exception Read Out. " , e);
 			}
 		} 
 		catch (Exception e) 
 		{
 			response.setStatus(-1);
 			response.setDescripcion(e.getMessage());
-			log.error("PasivoTcb - Cargo : Exception. " + e.getMessage());
+			log.error("Cargo : Exception. " , e);
 		}
 		return response;
 	}
@@ -564,18 +563,18 @@ public class PasivoTcb {
 				} 
 				catch (IOException e) 
 				{
-					log.info("PasivoTcb - ABONO : View In .- " + strVista);
-					log.info("PasivoTcb - ABONO : URL_CARGO .- " + prop.getURL_ABONO());
-					log.error("PasivoTcb - ABONO : IOException. " + e.getMessage());
+					log.info("PasivoTcb - AbonoIntervencion : View In .- " + strVista);
+					log.info("PasivoTcb - AbonoIntervencion : URL_CARGO .- " + prop.getURL_ABONO());
+					log.error("PasivoTcb - AbonoIntervencion : IOException. " , e);
 				}
 			} 
 			catch (MalformedURLException e1) 
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
-				log.info("PasivoTcb - ABONO : View In .- " + strVista);
-				log.info("PasivoTcb - ABONO : URL_CARGO .- " + prop.getURL_ABONO());
-				log.error("PasivoTcb - ABONO : MalformedURLException. " + e1.getMessage());
+				log.info("PasivoTcb - AbonoIntervencion : View In .- " + strVista);
+				log.info("PasivoTcb - AbonoIntervencion : URL_CARGO .- " + prop.getURL_ABONO());
+				log.error("PasivoTcb - AbonoIntervencion : MalformedURLException. " , e1);
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_ABONO());
 			conn.setDoOutput(true);
@@ -591,8 +590,8 @@ public class PasivoTcb {
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e2.getMessage());
-				log.info("PasivoTcb - ABONO : View In .- " + strVista);
-				log.error("PasivoTcb - ABONO : OutputStreamWriter. " + e2.getMessage());
+				log.info("PasivoTcb - AbonoIntervencion : View In .- " + strVista);
+				log.error("PasivoTcb - AbonoIntervencion : OutputStreamWriter. " , e2);
 			}
 
 			// Read the response
@@ -605,8 +604,8 @@ public class PasivoTcb {
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
-				log.info("PasivoTcb - ABONO : View In .- " + strVista);
-				log.error("PasivoTcb - ABONO : BufferedReader. " + e1.getMessage());
+				log.info("PasivoTcb - AbonoIntervencion : View In .- " + strVista);
+				log.error("PasivoTcb - AbonoIntervencion : BufferedReader. " + e1.getMessage());
 			}
 			try
 			{
@@ -669,8 +668,8 @@ public class PasivoTcb {
 				}
 				else 
 				{
-					log.info("PasivoTcb - ABONO : View In .- " + strVista);
-					log.info("PasivoTcb - ABONO : View Out .- " + salida);
+					log.info("PasivoTcb - AbonoIntervencion : View In .- " + strVista);
+					log.info("PasivoTcb - AbonoIntervencion : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
 					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
@@ -717,9 +716,11 @@ public class PasivoTcb {
 							{
 								System.out.println(e.getMessage());
 								errores="La obtencion de errores fallo:"+e.getMessage();
+								log.error("PasivoTcb - AbonoIntervencion : Exception. " + e);
 							}
 					}
 					response.setDescripcion(errores);
+					Thread.sleep(timeSleep);
 				}
 			}
 			catch (Exception e)
@@ -727,15 +728,15 @@ public class PasivoTcb {
 				response.setStatus(-1);
 				response.setDescripcion(e.getMessage());
 				System.out.println(e.getMessage());
-				log.info("PasivoTcb - ABONO : View In .- " + strVista);
-				log.error("PasivoTcb - ABONO : Exception Read Out. " + e.getMessage());
+				log.info("PasivoTcb - AbonoIntervencion : View In .- " + strVista);
+				log.error("PasivoTcb - AbonoIntervencion : Exception Read Out. " , e);
 			}
 		} 
 		catch (Exception e) 
 		{
 			response.setStatus(-1);
 			response.setDescripcion(e.getMessage());
-			log.error("PasivoTcb - ABONO : Exception. " + e.getMessage());
+			log.error("PasivoTcb - AbonoIntervencion : Exception. " , e);
 		}
 		return response;
 	}
@@ -783,7 +784,7 @@ public class PasivoTcb {
 			String soapXml = "<SOAP-ENV:Envelope xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'>"
 					+ "	<SOAP-ENV:Body> " + strVista+ "	</SOAP-ENV:Body>"
 					+ "</SOAP-ENV:Envelope>"; 
-System.out.println(soapXml);
+			System.out.println(soapXml);
 			URL url;
 			java.net.URLConnection conn = null;
 			try 
@@ -806,7 +807,7 @@ System.out.println(soapXml);
 				response.setDescripcion(e1.getMessage());
 				log.info("PasivoTcb - ABONO : View In .- " + strVista);
 				log.info("PasivoTcb - ABONO : URL_CARGO .- " + prop.getURL_ABONO());
-				log.error("PasivoTcb - ABONO : MalformedURLException. " + e1.getMessage());
+				log.error("PasivoTcb - ABONO : MalformedURLException. " , e1);
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_ABONO());
 			conn.setDoOutput(true);
@@ -823,7 +824,7 @@ System.out.println(soapXml);
 				response.setStatus(-1);
 				response.setDescripcion(e2.getMessage());
 				log.info("PasivoTcb - ABONO : View In .- " + strVista);
-				log.error("PasivoTcb - ABONO : OutputStreamWriter. " + e2.getMessage());
+				log.error("PasivoTcb - ABONO : OutputStreamWriter. " , e2);
 			}
 
 			// Read the response
@@ -837,7 +838,7 @@ System.out.println(soapXml);
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
 				log.info("PasivoTcb - ABONO : View In .- " + strVista);
-				log.error("PasivoTcb - ABONO : BufferedReader. " + e1.getMessage());
+				log.error("PasivoTcb - ABONO : BufferedReader. " , e1);
 			}
 			try
 			{
@@ -948,10 +949,12 @@ System.out.println(soapXml);
 							{
 								System.out.println(e.getMessage());
 								errores="La obtencion de errores fallo:"+e.getMessage();
+								log.error("PasivoTcb - ABONO : Exception. " , e);
 							}
 					}
-					response.setDescripcion(errores);
+					response.setDescripcion(errores);					
 				}
+				Thread.sleep(timeSleep);
 			}
 			catch (Exception e)
 			{
@@ -959,14 +962,14 @@ System.out.println(soapXml);
 				response.setDescripcion(e.getMessage());
 				System.out.println(e.getMessage());
 				log.info("PasivoTcb - ABONO : View In .- " + strVista);
-				log.error("PasivoTcb - ABONO : Exception Read Out. " + e.getMessage());
+				log.error("PasivoTcb - ABONO : Exception Read Out. " , e);
 			}
 		} 
 		catch (Exception e) 
 		{
 			response.setStatus(-1);
 			response.setDescripcion(e.getMessage());
-			log.error("PasivoTcb - ABONO : Exception. " + e.getMessage());
+			log.error("PasivoTcb - ABONO : Exception. " , e);
 		}
 		return response;
 	}
@@ -997,7 +1000,7 @@ System.out.println(soapXml);
 					response.setDescripcion(e.getMessage());
 					log.info("PasivoTcb - FechaContable : View In .- " + strVista);
 					log.info("PasivoTcb - FechaContable : URL_FECHA_CTBLE .- " + prop.getURL_FECHA_CTBLE());
-					log.error("PasivoTcb - FechaContable : openConnection. " + e.getMessage());
+					log.error("PasivoTcb - FechaContable : openConnection. " , e);
 				}
 			} 
 			catch (MalformedURLException e1) 
@@ -1006,7 +1009,7 @@ System.out.println(soapXml);
 				response.setDescripcion(e1.getMessage());
 				log.info("PasivoTcb - FechaContable : View In .- " + strVista);
 				log.info("PasivoTcb - FechaContable : URL_FECHA_CTBLE .- " + prop.getURL_FECHA_CTBLE());
-				log.error("PasivoTcb - FechaContable : MalformedURLException. " + e1.getMessage());
+				log.error("PasivoTcb - FechaContable : MalformedURLException. " , e1);
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_CARGO());
 			conn.setDoOutput(true);
@@ -1023,7 +1026,7 @@ System.out.println(soapXml);
 				response.setStatus(-1);
 				response.setDescripcion(e2.getMessage());
 				log.info("PasivoTcb - FechaContable : View In .- " + strVista);
-				log.error("PasivoTcb - FechaContable : OutputStreamWriter. " + e2.getMessage());
+				log.error("PasivoTcb - FechaContable : OutputStreamWriter. " , e2);
 			}
 
 			// Read the response
@@ -1037,7 +1040,7 @@ System.out.println(soapXml);
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
 				log.info("PasivoTcb - FechaContable : View In .- " + strVista);
-				log.error("PasivoTcb - FechaContable : BufferedReader. " + e1.getMessage());
+				log.error("PasivoTcb - FechaContable : BufferedReader. " , e1);
 			}
 			try
 			{
@@ -1097,8 +1100,9 @@ System.out.println(soapXml);
 						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
 						errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
 					}
-					response.setDescripcion(errores);
+					response.setDescripcion(errores);					
 				}
+				Thread.sleep(timeSleep);
 			}
 			catch (Exception e) 
 			{
@@ -1107,14 +1111,14 @@ System.out.println(soapXml);
 				System.out.println(e.getMessage());
 				log.info("PasivoTcb - FechaContable : View In .- " + strVista);
 				log.info("PasivoTcb - FechaContable : View Out .- " + salida);
-				log.error("PasivoTcb - FechaContable : Exception Read Out. " + e.getMessage());
+				log.error("PasivoTcb - FechaContable : Exception Read Out. " , e);
 			}
 		} 
 		catch (Exception e) 
 		{
 			response.setStatus(-1);
 			response.setDescripcion(e.getMessage());
-			log.error("PasivoTcb - FechaContable : Exception. " + e.getMessage());
+			log.error("PasivoTcb - FechaContable : Exception. " , e);
 		}
 		return response;
 	}
@@ -1149,7 +1153,7 @@ System.out.println(soapXml);
 				response.setDescripcion(e1.getMessage());
 				log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
 				log.info("PasivoTcb - UltimasTransacciones : URL_CONS_ULT_TRANS .- " + prop.getURL_CONS_ULT_TRANS());
-				log.error("PasivoTcb - UltimasTransacciones : MalformedURLException. " + e1.getMessage());
+				log.error("PasivoTcb - UltimasTransacciones : MalformedURLException. " , e1);
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_CARGO());
 			conn.setDoOutput(true);
@@ -1163,7 +1167,7 @@ System.out.println(soapXml);
 				response.setStatus(-1);
 				response.setDescripcion(e2.getMessage());
 				log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
-				log.error("PasivoTcb - UltimasTransacciones : OutputStreamWriter. " + e2.getMessage());
+				log.error("PasivoTcb - UltimasTransacciones : OutputStreamWriter. " , e2);
 			}
 
 			// Read the response
@@ -1174,7 +1178,7 @@ System.out.println(soapXml);
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
 				log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
-				log.error("PasivoTcb - UltimasTransacciones : BufferedReader. " + e1.getMessage());
+				log.error("PasivoTcb - UltimasTransacciones : BufferedReader. " , e1);
 			}
 
 			try{
@@ -1295,19 +1299,19 @@ System.out.println(soapXml);
 					}
 					response.setDescripcion(errores);
 				}
-
+				Thread.sleep(timeSleep);
 			}catch (Exception e) {
 				response.setStatus(-1);
 				response.setDescripcion(e.getMessage());
 				System.out.println(e.getMessage());
 				log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
 				log.info("PasivoTcb - UltimasTransacciones : View Out .- " + salida);
-				log.error("PasivoTcb - UltimasTransacciones : Exception Read Out. " + e.getMessage());
+				log.error("PasivoTcb - UltimasTransacciones : Exception Read Out. " , e);
 			}
 		} catch (Exception e) {
 			response.setStatus(-1);
 			response.setDescripcion(e.getMessage());
-			log.error("PasivoTcb - FechaContable : Exception. " + e.getMessage());
+			log.error("PasivoTcb - UltimasTransacciones : Exception. " + e.getMessage());
 		}
 		return response;
 	}
@@ -1333,14 +1337,14 @@ System.out.println(soapXml);
 					response.setDescripcion(e.getMessage());
 					log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
 					log.info("PasivoTcb - ConsultaClabe : URL_CLABE .- " + prop.getURL_CLABE());
-					log.error("PasivoTcb - ConsultaClabe : openConnection. " + e.getMessage());
+					log.error("PasivoTcb - ConsultaClabe : openConnection. " , e);
 				}
 			} catch (MalformedURLException e1) {
 				response.setStatus(-1);
 				response.setDescripcion(e1.getMessage());
 				log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
 				log.info("PasivoTcb - ConsultaClabe : URL_CLABE .- " + prop.getURL_CLABE());
-				log.error("PasivoTcb - ConsultaClabe : MalformedURLException. " + e1.getMessage());
+				log.error("PasivoTcb - ConsultaClabe : MalformedURLException. " , e1);
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_CLABE());
 			conn.setDoOutput(true);
@@ -1355,7 +1359,7 @@ System.out.println(soapXml);
 				response.setStatus(-1);
 				response.setDescripcion(e2.getMessage());
 				log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
-				log.error("PasivoTcb - ConsultaClabe : OutputStreamWriter. " + e2.getMessage());
+				log.error("PasivoTcb - ConsultaClabe : OutputStreamWriter. " , e2);
 			}
 
 			// Read the response
@@ -1430,6 +1434,7 @@ System.out.println(soapXml);
 					}
 					response.setDescripcion(errores);
 				}
+				Thread.sleep(timeSleep);
 			}
 			catch (Exception e) 
 			{
@@ -1438,14 +1443,14 @@ System.out.println(soapXml);
 				System.out.println(e.getMessage());
 				log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
 				log.info("PasivoTcb - ConsultaClabe : View Out .- " + salida);
-				log.error("PasivoTcb - ConsultaClabe : Exception Read Out. " + e.getMessage());
+				log.error("PasivoTcb - ConsultaClabe : Exception Read Out. " , e);
 			}
 		} 
 		catch (Exception e) 
 		{
 			response.setStatus(-1);
 			response.setDescripcion(e.getMessage());
-			log.error("PasivoTcb - ConsultaClabe : Exception. " + e.getMessage());
+			log.error("PasivoTcb - ConsultaClabe : Exception. ", e);
 		}
 		return response;
 	}
@@ -3526,64 +3531,65 @@ return xmlIn;
 			vista =getVistaConsultaEmplead(entidad,empleado,terminal);
 			TcbProperties prop = new TcbProperties();
 			String StrUrl=prop.getURL_CONS_SUCURSALES();
-							salida =SalidaResponse(vista,StrUrl);
-							
-							DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-							DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-							Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
-							NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONS_EMPL_TRN_O");
-							System.out.println(vista);
-							System.out.println(salida);
-							String RTRN_CD = "";
-							for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ ){
-								Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
-								Element eElement = (Element) item;
-								RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
-							}
-							
-							if(RTRN_CD.equals("1"))
-							{
-								Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("TR_CONS_EMPL_EVT_Z").item(0);
-								String NOMBRE_EMPL = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_50").item(0).getTextContent();
-								String ID_INTERNO_PE = PSV_NOMBRE_TITULAR_V.getElementsByTagName("ID_INTERNO_PE").item(0).getTextContent();
-								String CARGO = PSV_NOMBRE_TITULAR_V.getElementsByTagName("COD_CARGO_EMPL").item(0).getTextContent();
-								String fecha = PSV_NOMBRE_TITULAR_V.getElementsByTagName("FECHA_ALTA_PER").item(0).getTextContent();
-								String FECHA_NCTO = PSV_NOMBRE_TITULAR_V.getElementsByTagName("FEC_NCTO_CONST_PE").item(0).getTextContent();
-								
-								
-								oResponEmp.setNOMBRE(NOMBRE_EMPL);
-								oResponEmp.setCARGO(CARGO);
-								oResponEmp.setFECHA_ALTA(fecha);
-								oResponEmp.setFECHA_NCTO(FECHA_NCTO);
-								oResponEmp.setID_INTERNO_PE(ID_INTERNO_PE);
-								oResponEmp.setStatus(1);
-							} else 
-							{
-								oResponEmp.setStatus(-1);
-								log.info("PasivoTcb - respServConsultaEmpleado : View In .- " + vista);
-								log.info("PasivoTcb - respServConsultaEmpleado : View Out .- " + salida);
-								String errores = "";
-								NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-								for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ ){
-									Node item = STD_MSJ_PARM_V.item(i);
-									Element eElement = (Element) item;
-									String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-									String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-									errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-								}
-								oResponEmp.setDescripcion(errores);
-							}
-							
-						}
+			salida =SalidaResponse(vista,StrUrl);
+			
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
+			NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONS_EMPL_TRN_O");
+			System.out.println(vista);
+			System.out.println(salida);
+			String RTRN_CD = "";
+			for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ ){
+				Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
+				Element eElement = (Element) item;
+				RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
+			}
+			
+			if(RTRN_CD.equals("1"))
+			{
+				Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("TR_CONS_EMPL_EVT_Z").item(0);
+				String NOMBRE_EMPL = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_50").item(0).getTextContent();
+				String ID_INTERNO_PE = PSV_NOMBRE_TITULAR_V.getElementsByTagName("ID_INTERNO_PE").item(0).getTextContent();
+				String CARGO = PSV_NOMBRE_TITULAR_V.getElementsByTagName("COD_CARGO_EMPL").item(0).getTextContent();
+				String fecha = PSV_NOMBRE_TITULAR_V.getElementsByTagName("FECHA_ALTA_PER").item(0).getTextContent();
+				String FECHA_NCTO = PSV_NOMBRE_TITULAR_V.getElementsByTagName("FEC_NCTO_CONST_PE").item(0).getTextContent();
+				
+				
+				oResponEmp.setNOMBRE(NOMBRE_EMPL);
+				oResponEmp.setCARGO(CARGO);
+				oResponEmp.setFECHA_ALTA(fecha);
+				oResponEmp.setFECHA_NCTO(FECHA_NCTO);
+				oResponEmp.setID_INTERNO_PE(ID_INTERNO_PE);
+				oResponEmp.setStatus(1);
+			} else 
+			{
+				oResponEmp.setStatus(-1);
+				log.info("PasivoTcb - respServConsultaEmpleado : View In .- " + vista);
+				log.info("PasivoTcb - respServConsultaEmpleado : View Out .- " + salida);
+				String errores = "";
+				NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
+				for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ ){
+					Node item = STD_MSJ_PARM_V.item(i);
+					Element eElement = (Element) item;
+					String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
+					String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
+					errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
+				}
+				oResponEmp.setDescripcion(errores);
+			}
+			Thread.sleep(timeSleep);
+		}
 		catch (Exception e) 
 		{
 			oResponEmp.setStatus(-1);
 			oResponEmp.setDescripcion(e.getMessage());
-							System.out.println(e.getMessage());
-							log.info("PasivoTcb - respServConsultaEmpleado : View In .- " + vista);
-							log.error("PasivoTcb - respServConsultaEmpleado : Exception Read Out. " + e.getMessage());
+			System.out.println(e.getMessage());
+			log.info("PasivoTcb - respServConsultaEmpleado : View In .- " + vista);
+			log.error("PasivoTcb - respServConsultaEmpleado : Exception Read Out. " , e);
 		}
 			/*End*/
+		
 		return oResponEmp;
 	}	
 
@@ -3592,7 +3598,7 @@ return xmlIn;
 		String StrReturn ="";
 		try
 		{
-			  String vista= GetVistaDomicilio( ID_INTERNO_PE, ID_DOM, entidad, terminal);
+			String vista= GetVistaDomicilio( ID_INTERNO_PE, ID_DOM, entidad, terminal);
 			  TcbProperties prop = new TcbProperties();
 			  String StrUrl = prop.getURL_CONS_DOMIC();
 			  
@@ -3617,43 +3623,42 @@ return xmlIn;
 					Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("TR_PE_CONS_DOMIC_EVT_Z").item(0);
 					
 					String CodPost = PSV_NOMBRE_TITULAR_V.getElementsByTagName("COD_POSTAL_AG").item(0).getTextContent();
-					oResp.setCP(CodPost);
-							
+					oResp.setCP(CodPost);							
 		
-		NodeList TR_IMPUTAC_DOMICIL = doc.getElementsByTagName("COMP_DOMIC_V");
-		String TypDoc="";
-		String sCalle="";
-		String sNumExt="";
-		String sNumInt="";
-		String sColonia="";
-		for(int i = 0 ; i < TR_IMPUTAC_DOMICIL.getLength()  ; i++ )
-		{
-			Node item = TR_IMPUTAC_DOMICIL.item(i);
-			Element eElement = (Element) item;
-			TypDoc = eElement.getElementsByTagName("COD_COMP_DOMIC").item(0).getTextContent();
-			
-			switch(TypDoc)
-			{
-	            case "01": //calle
-	            	sCalle =  eElement.getElementsByTagName("VAL_COMP_DOMIC_DR").item(0).getTextContent();
-	               break;
-	            case "02": // num exterior
-	            	sNumExt = eElement.getElementsByTagName("VAL_COMP_DOMIC_DR").item(0).getTextContent();
-	               break;
-	            case "05": // num imterior
-	            	sNumInt = eElement.getElementsByTagName("VAL_COMP_DOMIC_DR").item(0).getTextContent();
-	               break;
-	            case "10": // colonia
-	            	sColonia = eElement.getElementsByTagName("VAL_COMP_DOMIC_DR").item(0).getTextContent();
-	               break;
-	            default:
-	               break;
-          }
-		}
-		oResp.setCOLONIA(sColonia);
-		oResp.setCALLE(sCalle);
-		oResp.setNUMEROEXT(sNumExt);
-		oResp.setNUMEROINT(sNumInt);
+					NodeList TR_IMPUTAC_DOMICIL = doc.getElementsByTagName("COMP_DOMIC_V");
+					String TypDoc="";
+					String sCalle="";
+					String sNumExt="";
+					String sNumInt="";
+					String sColonia="";
+					for(int i = 0 ; i < TR_IMPUTAC_DOMICIL.getLength()  ; i++ )
+					{
+						Node item = TR_IMPUTAC_DOMICIL.item(i);
+						Element eElement = (Element) item;
+						TypDoc = eElement.getElementsByTagName("COD_COMP_DOMIC").item(0).getTextContent();
+						
+						switch(TypDoc)
+						{
+				            case "01": //calle
+				            	sCalle =  eElement.getElementsByTagName("VAL_COMP_DOMIC_DR").item(0).getTextContent();
+				               break;
+				            case "02": // num exterior
+				            	sNumExt = eElement.getElementsByTagName("VAL_COMP_DOMIC_DR").item(0).getTextContent();
+				               break;
+				            case "05": // num imterior
+				            	sNumInt = eElement.getElementsByTagName("VAL_COMP_DOMIC_DR").item(0).getTextContent();
+				               break;
+				            case "10": // colonia
+				            	sColonia = eElement.getElementsByTagName("VAL_COMP_DOMIC_DR").item(0).getTextContent();
+				               break;
+				            default:
+				               break;
+						}
+					}
+					oResp.setCOLONIA(sColonia);
+					oResp.setCALLE(sCalle);
+					oResp.setNUMEROEXT(sNumExt);
+					oResp.setNUMEROINT(sNumInt);
 				}
 				else 
 				{
@@ -3672,11 +3677,13 @@ return xmlIn;
 					oResp.setDescripcion(errores);
 					oResp.setStatus(-1);
 				}
+				Thread.sleep(timeSleep);
 		}
 		catch(Exception ex)
 		{
 			oResp.setStatus(-1);
 			oResp.setDescripcion(ex.getMessage());
+			log.error("PasivoTcb - ObtenDomicilio : Exception Read Out. " , ex);
 		}
 		return oResp;
 	}
@@ -3688,65 +3695,66 @@ return xmlIn;
 		try
 		{
 			String salida="";
-				vista =getVistaConsultaCentro(entidad,centro,terminal);
-				TcbProperties prop = new TcbProperties();
-				String Strurl =prop.getURL_CONS_SUCURSALES();
-				salida =SalidaResponse(vista,Strurl);
-							
-							DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-							DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-							Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
-							
-							NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONS_CENTRO_TRN_O");
-							System.out.println(vista);
-							System.out.println(salida);
-							String RTRN_CD = "";
-							for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
-							{
-								Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
-								Element eElement = (Element) item;
-								RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
-							}
-							
-							if(RTRN_CD.equals("1"))
-							{	
-								oEnSucDet.setStatus(1);	
-								
-								Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("TR_CONS_CENTRO_EVT_Z").item(0);
-								String NOMBRE_Centro = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_CENT_UO").item(0).getTextContent();
-								String FECHA_ALTA = PSV_NOMBRE_TITULAR_V.getElementsByTagName("FECHA_ALTA_UO").item(0).getTextContent();
-								String ID_INTERNO_PE = PSV_NOMBRE_TITULAR_V.getElementsByTagName("ID_INTERNO_PE").item(0).getTextContent();
-								String ID_DOM = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NUM_DIR_PRAL").item(0).getTextContent();
-								oEnSucDet.setNOMBRE(NOMBRE_Centro);
-								oEnSucDet.setFECHA_ALTA(FECHA_ALTA);
-								oEnSucDet = ObtenDomicilio(ID_INTERNO_PE,ID_DOM,entidad,terminal,oEnSucDet);
-								
-							} 
-							else 
-							{
-								oEnSucDet.setStatus(-1);	
-								log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-								log.info("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
-								String errores = "";
-								NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-								for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-								{
-									Node item = STD_MSJ_PARM_V.item(i);
-									Element eElement = (Element) item;
-									String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-									String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-									errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-								}
-								oEnSucDet.setDescripcion(errores);
-							}
-						}
+			vista =getVistaConsultaCentro(entidad,centro,terminal);
+			TcbProperties prop = new TcbProperties();
+			String Strurl =prop.getURL_CONS_SUCURSALES();
+			salida =SalidaResponse(vista,Strurl);
+						
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
+			
+			NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONS_CENTRO_TRN_O");
+			System.out.println(vista);
+			System.out.println(salida);
+			String RTRN_CD = "";
+			for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
+			{
+				Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
+				Element eElement = (Element) item;
+				RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
+			}
+			
+			if(RTRN_CD.equals("1"))
+			{	
+				oEnSucDet.setStatus(1);	
+				
+				Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("TR_CONS_CENTRO_EVT_Z").item(0);
+				String NOMBRE_Centro = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_CENT_UO").item(0).getTextContent();
+				String FECHA_ALTA = PSV_NOMBRE_TITULAR_V.getElementsByTagName("FECHA_ALTA_UO").item(0).getTextContent();
+				String ID_INTERNO_PE = PSV_NOMBRE_TITULAR_V.getElementsByTagName("ID_INTERNO_PE").item(0).getTextContent();
+				String ID_DOM = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NUM_DIR_PRAL").item(0).getTextContent();
+				oEnSucDet.setNOMBRE(NOMBRE_Centro);
+				oEnSucDet.setFECHA_ALTA(FECHA_ALTA);
+				oEnSucDet = ObtenDomicilio(ID_INTERNO_PE,ID_DOM,entidad,terminal,oEnSucDet);
+				
+			} 
+			else 
+			{
+				oEnSucDet.setStatus(-1);	
+				log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
+				log.info("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
+				String errores = "";
+				NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
+				for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
+				{
+					Node item = STD_MSJ_PARM_V.item(i);
+					Element eElement = (Element) item;
+					String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
+					String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
+					errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
+				}
+				oEnSucDet.setDescripcion(errores);
+			}
+			Thread.sleep(timeSleep);
+		}
 		catch (Exception e) 
 		{
 				oEnSucDet.setStatus(-1);
 				oEnSucDet.setDescripcion(e.getMessage());
 				System.out.println(e.getMessage());
 				log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-				log.error("PasivoTcb - respServConsultaCentro : Exception Read Out. " + e.getMessage());
+				log.error("PasivoTcb - respServConsultaCentro : Exception Read Out. " , e);
 		}
 			/*End*/
 		return oEnSucDet;
@@ -3762,63 +3770,64 @@ return xmlIn;
 		try
 		{
 			String salida="";
-				vista =GetVistaBusquedaPersonaXIdInterno(entidad,idPersona,terminal);
-				TcbProperties prop = new TcbProperties();
-				String Strurl =prop.getURL_CONS_NOMBRE();
-				salida =SalidaResponse(vista,Strurl);
-							
-							DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-							DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-							Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
-							
-							NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONS_MINIMA_PERSONA_TRN_O");
-							
-							String RTRN_CD = "";
-							for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
-							{
-								Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
-								Element eElement = (Element) item;
-								RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
-							}
-							
-							if(RTRN_CD.equals("1"))
-							{
-								oEnSucDet.setStatus(1);	
-								Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("TR_CONS_MINIMA_PERSONA_EVT_Z").item(0);
-								String IdInternoPe = PSV_NOMBRE_TITULAR_V.getElementsByTagName("ID_INTERNO_PE").item(0).getTextContent();
-								String ApPaterno = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_IN_APE_1_IN").item(0).getTextContent();
-								String ApMaterno = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_IN_APE_2_IN").item(0).getTextContent();
-								String nombre = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_IN_NOMB_PILA").item(0).getTextContent();
-								oEnSucDet.setApMaterno(ApMaterno);
-								oEnSucDet.setApPaterno(ApPaterno);
-								oEnSucDet.setNombre(nombre);
-								oEnSucDet.setIdInternoPe(IdInternoPe);								
-							} 
-							else 
-							{
-								oEnSucDet.setStatus(-1);	
-								log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-								log.info("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
-								String errores = "";
-								NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-								for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-								{
-									Node item = STD_MSJ_PARM_V.item(i);
-									Element eElement = (Element) item;
-									String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-									String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-									errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-								}
-								oEnSucDet.setDescripcion(errores);
-							}
-						}
+			vista =GetVistaBusquedaPersonaXIdInterno(entidad,idPersona,terminal);
+			TcbProperties prop = new TcbProperties();
+			String Strurl =prop.getURL_CONS_NOMBRE();
+			salida =SalidaResponse(vista,Strurl);
+						
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
+			
+			NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONS_MINIMA_PERSONA_TRN_O");
+				
+			String RTRN_CD = "";
+			for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
+			{
+				Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
+				Element eElement = (Element) item;
+				RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
+			}
+			
+			if(RTRN_CD.equals("1"))
+			{
+				oEnSucDet.setStatus(1);	
+				Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("TR_CONS_MINIMA_PERSONA_EVT_Z").item(0);
+				String IdInternoPe = PSV_NOMBRE_TITULAR_V.getElementsByTagName("ID_INTERNO_PE").item(0).getTextContent();
+				String ApPaterno = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_IN_APE_1_IN").item(0).getTextContent();
+				String ApMaterno = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_IN_APE_2_IN").item(0).getTextContent();
+				String nombre = PSV_NOMBRE_TITULAR_V.getElementsByTagName("NOMB_IN_NOMB_PILA").item(0).getTextContent();
+				oEnSucDet.setApMaterno(ApMaterno);
+				oEnSucDet.setApPaterno(ApPaterno);
+				oEnSucDet.setNombre(nombre);
+				oEnSucDet.setIdInternoPe(IdInternoPe);								
+			} 
+			else 
+			{
+				oEnSucDet.setStatus(-1);	
+				log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
+				log.info("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
+				String errores = "";
+				NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
+				for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
+				{
+					Node item = STD_MSJ_PARM_V.item(i);
+					Element eElement = (Element) item;
+					String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
+					String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
+					errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
+				}
+				oEnSucDet.setDescripcion(errores);
+			}
+			Thread.sleep(timeSleep);
+		}
 		catch (Exception e) 
 		{
-				oEnSucDet.setStatus(-1);
-				oEnSucDet.setDescripcion(e.getMessage());
-				System.out.println(e.getMessage());
-				log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-				log.error("PasivoTcb - respServConsultaCentro : Exception Read Out. " + e.getMessage());
+			oEnSucDet.setStatus(-1);
+			oEnSucDet.setDescripcion(e.getMessage());
+			System.out.println(e.getMessage());
+			log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
+			log.error("PasivoTcb - respServConsultaCentro : Exception Read Out. " , e);
 		}
 			/*End*/
 		return oEnSucDet;
@@ -3831,63 +3840,64 @@ return xmlIn;
 		try
 		{
 			String salida="";
-				vista =GetVistaBusquedaAcuerdo(entidad,acuerdo,terminal);
-				TcbProperties prop = new TcbProperties();
-				String Strurl =prop.getURL_CONS_ACUERDO();
-				salida =SalidaResponse(vista,Strurl);
-							
-							DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-							DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-							Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
-							
-							NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONSULTA_ACUERDO_TRN_O");
-							//System.out.println(vista);
-							System.out.println(salida);
-							String RTRN_CD = "";
-							for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ ){
-								Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
-								Element eElement = (Element) item;
-								RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
-							}
-							
-							if(RTRN_CD.equals("1"))
-							{		
-								oEnSucDet.setStatus(1);	
-								
-								Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("PERSONA_AC_V").item(0);
-								String IdInternoPe = PSV_NOMBRE_TITULAR_V.getElementsByTagName("ID_INTERNO_PE").item(0).getTextContent();								
-								
-								oEnSucDet.setIdInternoPe(IdInternoPe);	
-								
-								Element PSV_Producto = (Element)doc.getElementsByTagName("DESCR_PDV_V").item(0);
-								String StrProdc = PSV_Producto.getElementsByTagName("NOMB_PDV").item(0).getTextContent();
-								oEnSucDet.setProductoAcuerdo(StrProdc);
-							} 
-							else 
-							{
-								oEnSucDet.setStatus(-1);	
-								log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-								log.info("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
-								String errores = "";
-								NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-								for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-								{
-									Node item = STD_MSJ_PARM_V.item(i);
-									Element eElement = (Element) item;
-									String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-									String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-									errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-								}
-								oEnSucDet.setDescripcion(errores);
-							}
-						}
+			vista =GetVistaBusquedaAcuerdo(entidad,acuerdo,terminal);
+			TcbProperties prop = new TcbProperties();
+			String Strurl =prop.getURL_CONS_ACUERDO();
+			salida =SalidaResponse(vista,Strurl);
+						
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
+			
+			NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONSULTA_ACUERDO_TRN_O");
+			//System.out.println(vista);
+			System.out.println(salida);
+			String RTRN_CD = "";
+			for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ ){
+				Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
+				Element eElement = (Element) item;
+				RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
+			}
+			
+			if(RTRN_CD.equals("1"))
+			{		
+				oEnSucDet.setStatus(1);	
+				
+				Element PSV_NOMBRE_TITULAR_V = (Element)doc.getElementsByTagName("PERSONA_AC_V").item(0);
+				String IdInternoPe = PSV_NOMBRE_TITULAR_V.getElementsByTagName("ID_INTERNO_PE").item(0).getTextContent();								
+				
+				oEnSucDet.setIdInternoPe(IdInternoPe);	
+				
+				Element PSV_Producto = (Element)doc.getElementsByTagName("DESCR_PDV_V").item(0);
+				String StrProdc = PSV_Producto.getElementsByTagName("NOMB_PDV").item(0).getTextContent();
+				oEnSucDet.setProductoAcuerdo(StrProdc);
+			} 
+			else 
+			{
+				oEnSucDet.setStatus(-1);	
+				log.info("PasivoTcb - ConsultaAcuerdo : View In .- " + vista);
+				log.info("PasivoTcb - ConsultaAcuerdo : View Out .- " + salida);
+				String errores = "";
+				NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
+				for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
+				{
+					Node item = STD_MSJ_PARM_V.item(i);
+					Element eElement = (Element) item;
+					String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
+					String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
+					errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
+				}
+				oEnSucDet.setDescripcion(errores);
+			}
+			Thread.sleep(timeSleep);
+		}
 		catch (Exception e) 
 		{
-				oEnSucDet.setStatus(-1);
-				oEnSucDet.setDescripcion(e.getMessage());
-				System.out.println(e.getMessage());
-				log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-				log.error("PasivoTcb - respServConsultaCentro : Exception Read Out. " + e.getMessage());
+			oEnSucDet.setStatus(-1);
+			oEnSucDet.setDescripcion(e.getMessage());
+			System.out.println(e.getMessage());
+			log.info("PasivoTcb - ConsultaAcuerdo : View In .- " + vista);
+			log.error("PasivoTcb - ConsultaAcuerdo : Exception Read Out. " , e);
 		}
 			/*End*/
 		return oEnSucDet;
@@ -3913,15 +3923,15 @@ return xmlIn;
 				catch (IOException e) 
 				{
 					log.info("PasivoTcb - SalidaResponse : View In .- " + vista);
-					log.info("PasivoTcb - SalidaResponse : URL_CARGO .- " + StrUrl);
-					log.error("PasivoTcb - SalidaResponse : IOException. " + e.getMessage());
+					log.info("PasivoTcb - SalidaResponse : URL .- " + StrUrl);
+					log.error("PasivoTcb - SalidaResponse : IOException. ", e);
 				}
 			} 
 			catch (MalformedURLException e1) 
 			{
 				log.info("PasivoTcb - SalidaResponse : View In .- " + vista);
-				log.info("PasivoTcb - SalidaResponse : URL_CARGO .- " + StrUrl);
-				log.error("PasivoTcb - SalidaResponse : MalformedURLException. " + e1.getMessage());
+				log.info("PasivoTcb - SalidaResponse : URL .- " + StrUrl);
+				log.error("PasivoTcb - SalidaResponse : MalformedURLException. ", e1);
 			}
 			conn.setRequestProperty("SOAPAction", StrUrl);
 			conn.setDoOutput(true);
@@ -3936,45 +3946,47 @@ return xmlIn;
 			catch (IOException e2) 
 			{
 				log.info("PasivoTcb - SalidaResponse : View In .- " + vista);
-				log.error("PasivoTcb - SalidaResponse : OutputStreamWriter. " + e2.getMessage());
+				log.error("PasivoTcb - SalidaResponse : OutputStreamWriter. " , e2);
 			}
 
 			/*Begin */
 			// Read the response
-						java.io.BufferedReader rd = null;
-						try 
-						{
-							rd = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
-						} 
-						catch (IOException e1) 
-						{
-							log.info("PasivoTcb - SalidaResponse : View In .- " + vista);
-							log.error("PasivoTcb - SalidaResponse : BufferedReader. " + e1.getMessage());
-						}
-						try
-						{
-							String line = "";
-							//LECTURA DE VISTA DE SALIDA
-							while ((line = rd.readLine()) != null) 
-							{ 				
-								salida += line;	
-							}
-							
-							salida = salida.replaceAll("<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">", "");
-							salida = salida.replaceAll("<SOAP-ENV:Body>", "");
-							salida = salida.replaceAll("</SOAP-ENV:Body>", "");
-							salida = salida.replaceAll("</SOAP-ENV:Envelope>", "");
-							salida = salida.trim();
-						}
-						catch(Exception ex)
-						{
-							log.error("PasivoTcb - Cargo : BufferedReader. " + ex.getMessage());
-						}
+			java.io.BufferedReader rd = null;
+			try 
+			{
+				rd = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+			} 
+			catch (IOException e1) 
+			{
+				log.info("PasivoTcb - SalidaResponse : View In .- " + vista);
+				log.error("PasivoTcb - SalidaResponse : BufferedReader. " , e1);
+			}
+			try
+			{
+				String line = "";
+				//LECTURA DE VISTA DE SALIDA
+				while ((line = rd.readLine()) != null) 
+				{ 				
+					salida += line;	
+				}
+				
+				salida = salida.replaceAll("<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">", "");
+				salida = salida.replaceAll("<SOAP-ENV:Body>", "");
+				salida = salida.replaceAll("</SOAP-ENV:Body>", "");
+				salida = salida.replaceAll("</SOAP-ENV:Envelope>", "");
+				salida = salida.trim();
+			}
+			catch(Exception ex)
+			{
+				log.error("PasivoTcb - SalidaResponse : BufferedReader. ", ex);
+			}
+			Thread.sleep(timeSleep);
 		}
 		catch(Exception ex)
 		{
-			log.error("PasivoTcb - Cargo : BufferedReader. " + ex.getMessage());
+			log.error("PasivoTcb - SalidaResponse : BufferedReader. ", ex);
 		}
+		
 		return salida;
 	} 
 
