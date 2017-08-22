@@ -33,11 +33,17 @@ public class Main {
 
 	public static void main(String[] args) throws Exception 
 	{
-		
-
+		String acuerdo ="11267234";//"22012512";// ;"259719532";
 		String entidad ="0166";
-		String sucursal="0121";//"0121";
 		String terminal ="12012103";//"12012103";
+		
+		PasivoTcb Pas = new PasivoTcb();
+		Pas.ConsultaClabe(acuerdo,entidad,terminal);
+		
+		
+		
+		String sucursal="0121";//"0121";
+		
 		String centro="0121";
 		String horaOpr="15:22:00";
 		String nombreCliente="EMILIA RAMIREZ MENDOZA";
@@ -55,7 +61,7 @@ public class Main {
 		String SrDesc=prop.getMsgErrorPaso3();
 		
 		String empleado ="DESA0001";//"E1662129";
-		String acuerdo ="11267234";//"22012512";// ;"259719532";
+		
 		String ID_INTERNO_PE="16396563";
 		String ID_DOM="2";
 		String FecCn="2015/01/21";

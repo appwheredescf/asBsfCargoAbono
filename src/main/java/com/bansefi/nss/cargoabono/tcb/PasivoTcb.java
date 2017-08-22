@@ -1344,6 +1344,7 @@ System.out.println(soapXml);
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_CLABE());
 			conn.setDoOutput(true);
+			System.out.println(soapXml);
 			//Send the request
 			java.io.OutputStreamWriter wr;
 			try {
