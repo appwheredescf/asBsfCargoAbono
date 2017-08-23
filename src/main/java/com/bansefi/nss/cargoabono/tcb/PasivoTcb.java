@@ -203,53 +203,7 @@ public class PasivoTcb {
 					log.info("CargoIntervencion : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-					{
-						
-						Node item = STD_MSJ_PARM_V.item(i);
-						Element eElement = (Element) item;
-						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(i).getTextContent();
-						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(i).getTextContent();
-						String action="urn:getDescError";
-						String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
-						   "<soapenv:Header/>"+
-						   "<soapenv:Body>"+
-						      "<dat:getDescError>"+
-						         "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
-						      "</dat:getDescError>"+
-						   "</soapenv:Body>"+
-						"</soapenv:Envelope>";
-						
-						String wsURL=this.propDs.getURL_ERROR_DESC();
-						String outputString=diario.SalidaResponse(xml,wsURL,action,"");
-					
-							try
-							{
-								DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
-								DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
-								Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("UTF-8")));
-								
-								NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
-								Node item2 = RespuetaDiario.item(i);
-								Element eElement2 = (Element) item2;
-								String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
-								mensaje=mensaje.replaceAll("[âÃ³éíóúïäëöü\\-\\+\\.\\^:,]","");
-								mensaje=mensaje.replaceAll("\\u00FA", "ú");
-								mensaje=mensaje.replaceAll("\\u00F3", "ó");
-								mensaje=mensaje.replaceAll("\\u20ac", "");
-								mensaje=mensaje.replaceAll("\\u00E9", "é");
-								mensaje=mensaje.replaceAll("\\u00E1", "á");
-								mensaje=mensaje.replaceAll("\\u00ED", "í");
-								errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
-								i=STD_MSJ_PARM_V.getLength();
-							}catch(Exception e)
-							{
-								log.error("CargoIntervencion : Exception" , e);
-								System.out.println(e.getMessage());
-								errores="La obtencion de errores fallo:"+e.getMessage();
-							}
-						
-					}
+					errores =ObtMensajeTcb(STD_MSJ_PARM_V);
 					response.setDescripcion(errores);
 					Thread.sleep(timeSleep);
 				}
@@ -272,7 +226,65 @@ public class PasivoTcb {
 		return response;
 	}
 
-	
+	public String ObtMensajeTcb(NodeList STD_MSJ_PARM_V)
+	{
+		String errores="";
+		try
+		{
+			for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
+			{
+				
+				Node item = STD_MSJ_PARM_V.item(i);
+				Element eElement = (Element) item;
+				String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(i).getTextContent();
+				String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(i).getTextContent();
+				String action="urn:getDescError";
+				String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
+				   "<soapenv:Header/>"+
+				   "<soapenv:Body>"+
+				      "<dat:getDescError>"+
+				         "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
+				      "</dat:getDescError>"+
+				   "</soapenv:Body>"+
+				"</soapenv:Envelope>";
+				
+				String wsURL=this.propDs.getURL_ERROR_DESC();
+				String outputString=diario.SalidaResponse(xml,wsURL,action,"");
+			
+					try
+					{
+						DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+						DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
+						DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
+						DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+						Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("UTF-8")));
+						
+						NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
+						Node item2 = RespuetaDiario.item(i);
+						Element eElement2 = (Element) item2;
+						String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
+						mensaje=mensaje.replaceAll("[âÃ³éíóúïäëöü\\-\\+\\.\\^:,]","");
+						mensaje=mensaje.replaceAll("\\u00FA", "ú");
+						mensaje=mensaje.replaceAll("\\u00F3", "ó");
+						mensaje=mensaje.replaceAll("\\u20ac", "");
+						mensaje=mensaje.replaceAll("\\u00E9", "é");
+						mensaje=mensaje.replaceAll("\\u00E1", "á");
+						mensaje=mensaje.replaceAll("\\u00ED", "í");
+						errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
+						i=STD_MSJ_PARM_V.getLength();
+					}catch(Exception e)
+					{
+						log.error("ObtMensajeTcb : Exception" , e);
+						System.out.println(e.getMessage());
+						errores="La obtencion de errores fallo:"+e.getMessage();
+					}
+				
+			}
+		}catch(Exception ex){
+			errores="";
+		}
+		return errores;
+	}
 	
 	
 	public ResponseServiceCargoAbono Cargo(
@@ -441,53 +453,7 @@ public class PasivoTcb {
 					log.info("Cargo : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-					{
-						
-						Node item = STD_MSJ_PARM_V.item(i);
-						Element eElement = (Element) item;
-						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(i).getTextContent();
-						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(i).getTextContent();
-						String action="urn:getDescError";
-						String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
-						   "<soapenv:Header/>"+
-						   "<soapenv:Body>"+
-						      "<dat:getDescError>"+
-						         "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
-						      "</dat:getDescError>"+
-						   "</soapenv:Body>"+
-						"</soapenv:Envelope>";
-						
-						String wsURL=this.propDs.getURL_ERROR_DESC();
-						String outputString=diario.SalidaResponse(xml,wsURL,action,"");
-					
-							try
-							{
-								DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
-								DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
-								Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("UTF-8")));
-								
-								NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
-								Node item2 = RespuetaDiario.item(i);
-								Element eElement2 = (Element) item2;
-								String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
-								mensaje=mensaje.replaceAll("[âÃ³éíóúïäëöü\\-\\+\\.\\^:,]","");
-								mensaje=mensaje.replaceAll("\\u00FA", "ú");
-								mensaje=mensaje.replaceAll("\\u00F3", "ó");
-								mensaje=mensaje.replaceAll("\\u20ac", "");
-								mensaje=mensaje.replaceAll("\\u00E9", "é");
-								mensaje=mensaje.replaceAll("\\u00E1", "á");
-								mensaje=mensaje.replaceAll("\\u00ED", "í");
-								errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
-								i=STD_MSJ_PARM_V.getLength();
-							}catch(Exception e)
-							{
-								log.error("Cargo : Exception. " , e);
-								System.out.println(e.getMessage());
-								errores="La obtencion de errores fallo:"+e.getMessage();
-							}
-						
-					}
+					errores = ObtMensajeTcb(STD_MSJ_PARM_V);
 					response.setDescripcion(errores);
 					Thread.sleep(timeSleep);
 				}
@@ -672,53 +638,8 @@ public class PasivoTcb {
 					log.info("PasivoTcb - AbonoIntervencion : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-					{
-						Node item = STD_MSJ_PARM_V.item(i);
-						Element eElement = (Element) item;
-						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(i).getTextContent();
-						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(i).getTextContent();
-						String action="urn:getDescError";
-						String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
-						   "<soapenv:Header/>"+
-						   "<soapenv:Body>"+
-						      "<dat:getDescError>"+
-						         "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
-						      "</dat:getDescError>"+
-						   "</soapenv:Body>"+
-						"</soapenv:Envelope>";
-						
-						String wsURL=this.propDs.getURL_ERROR_DESC();
-						String outputString=diario.SalidaResponse(xml,wsURL,action,"");
-						
-							try
-							{
-								DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
-								DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
-								Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("UTF-8")));
-								
-								NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
-								Node item2 = RespuetaDiario.item(i);
-								Element eElement2 = (Element) item2;
-								
-								String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
-								mensaje=mensaje.replaceAll("[^\\x00-\\x7F]","");
-								mensaje=mensaje.replaceAll("[âÃ³éíóúïäëöü\\-\\+\\.\\^:,]","");
-								mensaje=mensaje.replaceAll("\\u00FA", "ú");
-								mensaje=mensaje.replaceAll("\\u00F3", "ó");
-								mensaje=mensaje.replaceAll("\\u20ac", "");
-								mensaje=mensaje.replaceAll("\\u00E9", "é");
-								mensaje=mensaje.replaceAll("\\u00E1", "á");
-								mensaje=mensaje.replaceAll("\\u00ED", "í");
-								errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
-								i=STD_MSJ_PARM_V.getLength();
-							}catch(Exception e)
-							{
-								System.out.println(e.getMessage());
-								errores="La obtencion de errores fallo:"+e.getMessage();
-								log.error("PasivoTcb - AbonoIntervencion : Exception. " + e);
-							}
-					}
+					errores = ObtMensajeTcb(STD_MSJ_PARM_V);
+					
 					response.setDescripcion(errores);
 					Thread.sleep(timeSleep);
 				}
@@ -905,53 +826,7 @@ public class PasivoTcb {
 					log.info("PasivoTcb - ABONO : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-					{
-						Node item = STD_MSJ_PARM_V.item(i);
-						Element eElement = (Element) item;
-						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(i).getTextContent();
-						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(i).getTextContent();
-						String action="urn:getDescError";
-						String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
-						   "<soapenv:Header/>"+
-						   "<soapenv:Body>"+
-						      "<dat:getDescError>"+
-						         "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
-						      "</dat:getDescError>"+
-						   "</soapenv:Body>"+
-						"</soapenv:Envelope>";
-						
-						String wsURL=this.propDs.getURL_ERROR_DESC();
-						String outputString=diario.SalidaResponse(xml,wsURL,action,"");
-						
-							try
-							{
-								DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
-								DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
-								Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("UTF-8")));
-								
-								NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
-								Node item2 = RespuetaDiario.item(i);
-								Element eElement2 = (Element) item2;
-								
-								String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
-								mensaje=mensaje.replaceAll("[^\\x00-\\x7F]","");
-								mensaje=mensaje.replaceAll("[âÃ³éíóúïäëöü\\-\\+\\.\\^:,]","");
-								mensaje=mensaje.replaceAll("\\u00FA", "ú");
-								mensaje=mensaje.replaceAll("\\u00F3", "ó");
-								mensaje=mensaje.replaceAll("\\u20ac", "");
-								mensaje=mensaje.replaceAll("\\u00E9", "é");
-								mensaje=mensaje.replaceAll("\\u00E1", "á");
-								mensaje=mensaje.replaceAll("\\u00ED", "í");
-								errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
-								i=STD_MSJ_PARM_V.getLength();
-							}catch(Exception e)
-							{
-								System.out.println(e.getMessage());
-								errores="La obtencion de errores fallo:"+e.getMessage();
-								log.error("PasivoTcb - ABONO : Exception. " , e);
-							}
-					}
+					errores = ObtMensajeTcb(STD_MSJ_PARM_V);
 					response.setDescripcion(errores);					
 				}
 				Thread.sleep(timeSleep);
@@ -1092,14 +967,7 @@ public class PasivoTcb {
 					log.info("PasivoTcb - FechaContable : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_MSJ_PARM_V");
-					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-					{
-						Node item = STD_MSJ_PARM_V.item(i);
-						Element eElement = (Element) item;
-						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-						errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-					}
+					errores = ObtieneMensajeError(STD_MSJ_PARM_V);
 					response.setDescripcion(errores);					
 				}
 				Thread.sleep(timeSleep);
@@ -1134,7 +1002,7 @@ public class PasivoTcb {
 			String soapXml = "<SOAP-ENV:Envelope xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'>"
 					+ "	<SOAP-ENV:Body> " + strVista + "	</SOAP-ENV:Body>"
 					+ "</SOAP-ENV:Envelope>"; 
-System.out.println(soapXml);
+//System.out.println(soapXml);
 			URL url;
 			java.net.URLConnection conn = null;
 			try {
@@ -1290,13 +1158,7 @@ System.out.println(soapXml);
 					log.info("PasivoTcb - UltimasTransacciones : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_MSJ_PARM_V");
-					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ ){
-						Node item = STD_MSJ_PARM_V.item(i);
-						Element eElement = (Element) item;
-						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-						errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-					}
+					errores = ObtieneMensajeError(STD_MSJ_PARM_V);
 					response.setDescripcion(errores);
 				}
 				Thread.sleep(timeSleep);
@@ -1425,13 +1287,7 @@ System.out.println(soapXml);
 					log.info("PasivoTcb - ConsultaClabe : View Out .- " + salida);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ ){
-						Node item = STD_MSJ_PARM_V.item(i);
-						Element eElement = (Element) item;
-						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-						errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-					}
+					errores = ObtieneMensajeError(STD_MSJ_PARM_V);
 					response.setDescripcion(errores);
 				}
 				Thread.sleep(timeSleep);
@@ -3569,13 +3425,7 @@ return xmlIn;
 				log.info("PasivoTcb - respServConsultaEmpleado : View Out .- " + salida);
 				String errores = "";
 				NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-				for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ ){
-					Node item = STD_MSJ_PARM_V.item(i);
-					Element eElement = (Element) item;
-					String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-					String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-					errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-				}
+				errores = ObtieneMensajeError(STD_MSJ_PARM_V);
 				oResponEmp.setDescripcion(errores);
 			}
 			Thread.sleep(timeSleep);
@@ -3608,7 +3458,7 @@ return xmlIn;
 				Document doc = dBuilder.parse(new ByteArrayInputStream(StrReturn.getBytes("utf-8")));
 				
 				NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_PE_CONS_DOMIC_TRN");
-				System.out.println(vista);
+				//System.out.println(vista);
 				
 				String RTRN_CD = "";
 				for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
@@ -3665,15 +3515,7 @@ return xmlIn;
 					log.info("PasivoTcb - respSerDomicilio : View In .- " + vista);
 					String errores = "";
 					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-					for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-					{
-						Node item = STD_MSJ_PARM_V.item(i);
-						Element eElement = (Element) item;
-						String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-						String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-						errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-						
-					}
+					errores = ObtieneMensajeError(STD_MSJ_PARM_V);
 					oResp.setDescripcion(errores);
 					oResp.setStatus(-1);
 				}
@@ -3736,14 +3578,7 @@ return xmlIn;
 				log.info("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
 				String errores = "";
 				NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-				for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-				{
-					Node item = STD_MSJ_PARM_V.item(i);
-					Element eElement = (Element) item;
-					String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-					String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-					errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-				}
+				errores = ObtieneMensajeError(STD_MSJ_PARM_V);
 				oEnSucDet.setDescripcion(errores);
 			}
 			Thread.sleep(timeSleep);
@@ -3809,14 +3644,7 @@ return xmlIn;
 				log.info("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
 				String errores = "";
 				NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-				for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-				{
-					Node item = STD_MSJ_PARM_V.item(i);
-					Element eElement = (Element) item;
-					String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-					String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-					errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-				}
+				errores = ObtieneMensajeError(STD_MSJ_PARM_V);
 				oEnSucDet.setDescripcion(errores);
 			}
 			Thread.sleep(timeSleep);
@@ -3879,14 +3707,7 @@ return xmlIn;
 				log.info("PasivoTcb - ConsultaAcuerdo : View Out .- " + salida);
 				String errores = "";
 				NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
-				for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
-				{
-					Node item = STD_MSJ_PARM_V.item(i);
-					Element eElement = (Element) item;
-					String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
-					String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
-					errores += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
-				}
+				errores = ObtieneMensajeError(STD_MSJ_PARM_V);
 				oEnSucDet.setDescripcion(errores);
 			}
 			Thread.sleep(timeSleep);
@@ -3903,6 +3724,31 @@ return xmlIn;
 		return oEnSucDet;
 	}
 		
+	
+	public String ObtieneMensajeError(NodeList STD_MSJ_PARM_V)
+	{
+		String StrReturn="";
+		try
+		{
+			for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
+			{
+				Node item = STD_MSJ_PARM_V.item(i);
+				Element eElement = (Element) item;
+				String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(0).getTextContent();
+				String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(0).getTextContent();
+				StrReturn += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
+			}
+		}catch(Exception ex ){
+			log.info("PasivoTcb - ObtieneMensajeError : " + ex.getMessage());
+		}
+		return StrReturn;
+	}
+	
+	
+	
+	
+	
+	
 	public String SalidaResponse(String vista,String StrUrl)
 	{
 		String salida="";
