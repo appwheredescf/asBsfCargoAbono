@@ -80,7 +80,7 @@ public class PasivoTcb {
 					+ "	<SOAP-ENV:Body> " + strVista+ "	</SOAP-ENV:Body>"
 					+ "</SOAP-ENV:Envelope>"; 
 
-			System.out.println(soapXml);
+			//System.out.println(soapXml);
 			URL url;
 			java.net.URLConnection conn = null;
 			try 
@@ -107,7 +107,7 @@ public class PasivoTcb {
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_CARGO());
 			conn.setDoOutput(true);
-			System.out.println(soapXml);
+			//System.out.println(soapXml);
 			//Send the request
 			java.io.OutputStreamWriter wr;
 			try 
@@ -157,8 +157,8 @@ public class PasivoTcb {
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 				Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
 				NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_IMPUTAC_VTNLLA_PASIVO_TRN_O");
-				System.out.println(strVista);
-				System.out.println(salida);
+				//System.out.println(strVista);
+				//System.out.println(salida);
 				String RTRN_CD = "";
 				for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
 				{
@@ -212,7 +212,7 @@ public class PasivoTcb {
 			{
 				response.setStatus(-1);
 				response.setDescripcion(e.getMessage());
-				System.out.println(e.getMessage());
+				//System.out.println(e.getMessage());
 				log.info("CargoIntervencion  : View In .- " + strVista);
 				log.error("CargoIntervencion : Exception" , e);
 			}
@@ -330,7 +330,7 @@ public class PasivoTcb {
 					+ "	<SOAP-ENV:Body> " + strVista+ "	</SOAP-ENV:Body>"
 					+ "</SOAP-ENV:Envelope>"; 
 
-			System.out.println(soapXml);
+			//System.out.println(soapXml);
 			URL url;
 			java.net.URLConnection conn = null;
 			try 
@@ -407,8 +407,8 @@ public class PasivoTcb {
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 				Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
 				NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_IMPUTAC_VTNLLA_PASIVO_TRN_O");
-				System.out.println(strVista);
-				System.out.println(salida);
+				//System.out.println(strVista);
+				//System.out.println(salida);
 				String RTRN_CD = "";
 				for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
 				{
@@ -434,7 +434,7 @@ public class PasivoTcb {
 					Element PSV_APUNTE_V = (Element)doc.getElementsByTagName("PSV_APUNTE_V").item(0);
 					String NUM_SEC = PSV_APUNTE_V.getElementsByTagName("NUM_SEC").item(0).getTextContent();
 					
-					response.setStatus(1);
+					
 					response.setCOD_PLZ_BANCARIA(COD_PLZ_BANCARIA);
 					response.setFECHACONTABLE(FECHA_VALOR);
 					response.setFECHAVALOR(FECHA_VALOR);
@@ -444,6 +444,7 @@ public class PasivoTcb {
 					response.setRECIBO_BANSEFI_NOMB_50(RECIBO_BANSEFI_NOMB_50);
 					response.setTITULAR_NOMB_50(NOMBRE_TITULAR);
 					response.setNUM_SEC(NUM_SEC);
+					response.setStatus(1);
 				}
 				
 				else 
@@ -588,8 +589,8 @@ public class PasivoTcb {
 				salida = salida.replaceAll("</SOAP-ENV:Envelope>", "");
 				salida = salida.trim();
 				
-				System.out.println(strVista);
-				System.out.println(salida);
+				//System.out.println(strVista);
+				//System.out.println(salida);
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 				Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
@@ -776,8 +777,8 @@ public class PasivoTcb {
 				salida = salida.replaceAll("</SOAP-ENV:Envelope>", "");
 				salida = salida.trim();
 				
-				System.out.println(strVista);
-				System.out.println(salida);
+				//System.out.println(strVista);
+				//System.out.println(salida);
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 				Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
@@ -1065,7 +1066,7 @@ public class PasivoTcb {
 				salida = salida.replaceAll("</SOAP-ENV:Envelope>", "");
 				salida = salida.trim();
 				
-				System.out.println(salida);
+				//System.out.println(salida);
 				
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -1210,7 +1211,7 @@ public class PasivoTcb {
 			}
 			conn.setRequestProperty("SOAPAction", prop.getURL_CLABE());
 			conn.setDoOutput(true);
-			System.out.println(soapXml);
+			//System.out.println(soapXml);
 			//Send the request
 			java.io.OutputStreamWriter wr;
 			try {
@@ -3679,7 +3680,7 @@ return xmlIn;
 			
 			NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONSULTA_ACUERDO_TRN_O");
 			//System.out.println(vista);
-			System.out.println(salida);
+			//System.out.println(salida);
 			String RTRN_CD = "";
 			for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ ){
 				Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
