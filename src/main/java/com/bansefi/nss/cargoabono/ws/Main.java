@@ -12,8 +12,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 import org.json.JSONObject;
-
-import com.bansefi.nss.cargoabono.commons.BD2Connect;
 import com.bansefi.nss.cargoabono.commons.CantidadLetras;
 import com.bansefi.nss.cargoabono.commons.EncryptionDecryption;
 import com.bansefi.nss.cargoabono.commons.FuncionesEncryption;

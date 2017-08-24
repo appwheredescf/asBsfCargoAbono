@@ -5,17 +5,13 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import com.bansefi.nss.cargoabono.commons.DBServer;
 import com.bansefi.nss.cargoabono.commons.UtilJson;
 import com.bansefi.nss.cargoabono.properties.EndpointProperties;
 import com.bansefi.nss.cargoabono.vo.ActualizaStatusMovimientoCargoAbono;
 import com.bansefi.nss.cargoabono.vo.EntDataTrans;
 import com.bansefi.nss.cargoabono.vo.EntMovCargoAbono;
-import com.bansefi.nss.cargoabono.vo.EntPendienteCargAbono;
 import com.bansefi.nss.cargoabono.vo.EntResponRegCargAbono;
 import com.bansefi.nss.cargoabono.vo.MovimientoCargoAbono;
-import com.bansefi.nss.cargoabono.vo.ResponseConsulPendi;
 import com.bansefi.nss.cargoabono.vo.ResponseConsultaSaldo;
 import com.bansefi.nss.cargoabono.vo.ResponseFechaActual;
 import com.bansefi.nss.cargoabono.vo.ResponseHoraActual;
@@ -522,29 +518,7 @@ public class PasivosAcuerdosServices
 		return response;
 	}
 	
-	public  EntPendienteCargAbono ConsultaPendientes(String sucursal, String entidad, String terminal, String empleado) 
-	{
-		EntPendienteCargAbono response = new EntPendienteCargAbono();
-		try 
-		{
-			EndpointProperties endpointProperties = new EndpointProperties();
-			String StrCnn = endpointProperties.getConnSucursales();
-			DBServer dbConn = new DBServer();
-			Boolean bConn = dbConn.dbOpenConnect(StrCnn, endpointProperties.getConnSucUsr(),endpointProperties.getConnSucPwd() );
-			if(bConn)
-			{
-				response= dbConn.dbConsultaPendientes(entidad, sucursal, terminal, empleado);
-			}
-		} 
-		catch (Exception ex) 
-		{
-			response.setStatus(-1);
-			response.setDescripcion(ex.getMessage());
-			
-			log.error("PasivosAcuerdosServices [ConsultaPendientes]. - " + ex.getMessage());
-		}		
-		return response;
-	}
+	
 	
 	/*Begin E234 */
 	

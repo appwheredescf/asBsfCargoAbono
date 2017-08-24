@@ -1,32 +1,24 @@
 package com.bansefi.nss.cargoabono.process;
 
-import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import com.bansefi.nss.cargoabono.commons.CantidadLetras;
-import com.bansefi.nss.cargoabono.commons.FuncionesEncryption;
 import com.bansefi.nss.cargoabono.commons.UtilJson;
 import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
 import com.bansefi.nss.cargoabono.properties.EndpointProperties;
 import com.bansefi.nss.cargoabono.services.PasivosAcuerdosServices;
 import com.bansefi.nss.cargoabono.tcb.PasivoTcb;
 import com.bansefi.nss.cargoabono.vo.DiarioElectronicoRequest;
-import com.bansefi.nss.cargoabono.vo.EntDataTrans;
 import com.bansefi.nss.cargoabono.vo.EntInsertDiarioElect;
-import com.bansefi.nss.cargoabono.vo.EntPendienteCargAbono;
-import com.bansefi.nss.cargoabono.vo.MovimientoCargoAbono;
 import com.bansefi.nss.cargoabono.vo.ResponDiaPend;
 import com.bansefi.nss.cargoabono.vo.ResponseConsultaClabe;
 import com.bansefi.nss.cargoabono.vo.ResponseDatosCentro;
-import com.bansefi.nss.cargoabono.vo.ResponseDatosEmpleado;
 import com.bansefi.nss.cargoabono.vo.ResponseFechaActual;
 import com.bansefi.nss.cargoabono.vo.ResponsePersona;
 import com.bansefi.nss.cargoabono.vo.ResponseRegistroDiarioElectronico;
@@ -41,6 +33,7 @@ public class CargoAbono
 {
 	private static final Logger log = LogManager.getLogger(CargoAbono.class);
 	private UtilJson utilJson = UtilJson.getInstance();
+	
 	
 	public JSONObject Procesar( String entidad, 
 								String sucursal,	String empleado, 
@@ -59,8 +52,6 @@ public class CargoAbono
 		String SrStatus="-1";
 		String SrIdMov="-999";
 		String SrDesc="";
-		String SrCod="";
-		String SrArg1="";
 		String StrFeOper="";
 		String StrHoraOper="";
 		/*Begin E234*/
@@ -280,51 +271,15 @@ try
 }
 catch(Exception ex)
 {
-jsonResultado.put("idmov", "-999");
-jsonResultado.put("status", "-1");
-jsonResultado.put("descripcion", ex.getMessage());
+	jsonResultado.put("idmov", "-999");
+	jsonResultado.put("status", "-1");
+	jsonResultado.put("descripcion", ex.getMessage());
 log.error("Procesar  - " + ex.getMessage());
 }
 /*End E234*/
 jsonResult.put("RespuestaCargoAbono", jsonResultado);
 return jsonResult;
 }
-	public JSONObject ConsultaPendientes(String entidad,String sucursal,String terminal,String empleado)
-	{
-		JSONObject jsonResult = new JSONObject();
-		JSONObject jsonResultado = new JSONObject();
-		try
-		{
-			PasivosAcuerdosServices wAcuerdo = new PasivosAcuerdosServices();
-			EntPendienteCargAbono oResult = 	wAcuerdo.ConsultaPendientes(sucursal, entidad, terminal, empleado);
-			if(oResult.getStatus()>0)
-			{
-				jsonResultado.put("idMovimiento", oResult.getIdMovimiento());
-				jsonResultado.put("entidad", oResult.getEntidad());
-				jsonResultado.put("tipoOp", oResult.getTipoOp());
-				jsonResultado.put("fechaValor", oResult.getFechaValor());
-				jsonResultado.put("sucursal", oResult.getSucursal());
-				jsonResultado.put("idTerminal",oResult.getIdTerminal() );
-				jsonResultado.put("idEmpleado", oResult.getIdEmpleado());
-				jsonResultado.put("horaOp", oResult.getHoraOper());
-				jsonResultado.put("fechaContable",oResult.getFechaContable() );
-				jsonResultado.put("statusProceso", oResult.getStatusPendiente());
-				jsonResultado.put("dateProceso", oResult.getDateProcess());
-				jsonResultado.put("dateCambioStatus", oResult.getDateCambioStatus());
-				jsonResultado.put("folioTrans", oResult.getFolioTrans().toString());
-				jsonResultado.put("dataTrans", oResult.getDataTrans());
-			}
-			
-		}
-		catch(Exception ex)
-		{
-			jsonResultado.put("status", -1);
-			jsonResultado.put("descripcion", ex.getMessage());
-			log.error("ConsultaPendientes  - " + ex.getMessage());
-		}
-		jsonResult.put("RespuestaConsultaPendientes", jsonResultado);
-		return jsonResult;
-	}
 	
 	public JSONObject ComprobanteCargoAbono(String terminal,String entidad,String centro)
 	{

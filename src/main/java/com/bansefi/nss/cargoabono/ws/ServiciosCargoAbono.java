@@ -52,39 +52,7 @@ public class ServiciosCargoAbono
 		}
 		return  jsonResult.toString();
 	}	
-	public String ConsultaPendientes(String entidad, String sucursal, String terminal, String empleado){
-		/*String result = "{RespuestaConsultaPendientes:{ idMovimiento:2340,"
-												+ "entidad:'0166',"
-												+ "tipoOp:'A',"
-												+ "fechaValor:'2017/04/27',"
-												+ "sucursal:'0243',"
-												+ "idTerminal:'12024309',"
-												+ "idEmpleado:'E1662029',"
-												+ "horaOp:'13:47:52',"
-												+ "fechaContable:'2014/03/04',"
-												+ "statusProceso:2,"
-												+ "dateProceso:'2017-04-27T13:47:45.39',"
-												+ "dateCambioStatus:'2017-04-27T13:47:50.667',"
-												+ "folioTrans:'562463',"
-												+ "dataTrans:'EOAVf2R8uTvkeo2mnKqipZcH3efRaGG8gIjm7HcRWnAa9zpYVLaTvbLSF6I/4gGJuvCJdgjWKEEPVzBSpWISyBRdMOGi4flcL0uaeEz8AyQf+Ze8dNbaHdoME6MtzREW8/ypW718BTHSB6OEHkl0vc9b97HkHWxeNh4SCBKaTmbpdMW1GVStCbOFmAdA2t39ogoAGYv1uZOLEX6FGiJ5vGYauq3KUGGTyom7BYIfogkvCAFU+/4Le52++k1z9Zsq7nbi54Vi0FyKm1GJT4Ozr2isNZ2CndzJOI5TqlZ1eKgQLBJROOwvnJKJ8h0mNgwfhUd7iiw9Gz8B3ar4CNiyySnNYOfKewmFDDS+l1WgNp5pM+i8R4ghoY7dgbnx9exrzdMFIeq6y7wwvVAZtefywPhpoDZCq3pN+HhU5/6ehnetcIUlBwSBPGhU33AJwmv/ESwGoLehUtQ+m7gd/LO6Wg=='}}";
-		*/
-		JSONObject jsonResult = new JSONObject();
-		try
-		{
-			CargoAbono processCargoAbono = new CargoAbono();
-			
-			jsonResult = processCargoAbono.ConsultaPendientes(entidad, sucursal, terminal, empleado);	
-		}
-		catch(Exception ex)
-		{
-			JSONObject jsonResultado = new JSONObject();
-			jsonResultado.put("error", -1);
-			jsonResultado.put("descripcion", ex.getMessage());
-			jsonResult.put("RespuestaConsultaPendientes", jsonResultado);
-		}
-		
-		return jsonResult.toString();
-	}
+	
 	
 	public String GeneraComprobate(String terminal,String entidad,String centro)
 	{

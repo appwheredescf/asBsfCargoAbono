@@ -36,7 +36,7 @@ public class PasivoTcb {
 	private static final Logger log = LogManager.getLogger(PasivosAcuerdosServices.class);
 	private DsProperties propDs = new DsProperties();
 	DiarioElectronicoDS diario= new DiarioElectronicoDS();
-	private long timeSleep = 1000;
+	private long timeSleep = 0;
 	
 	public ResponseServiceCargoAbono CargoIntervencion(
 			String entidad, 
