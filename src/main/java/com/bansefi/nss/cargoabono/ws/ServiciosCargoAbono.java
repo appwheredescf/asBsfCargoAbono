@@ -54,7 +54,7 @@ public class ServiciosCargoAbono
 	}	
 	
 	
-	public String GeneraComprobate(String terminal,String entidad,String centro)
+	public String GeneraComprobate(String terminal,String entidad,String centro,String empleado)
 	{
 		
 		/*String result ="";
@@ -72,7 +72,7 @@ public class ServiciosCargoAbono
 		JSONObject jResult = new JSONObject();
 		CargoAbono ProcessCA = new CargoAbono();
 		
-		jResult = ProcessCA.ComprobanteCargoAbono(terminal,entidad,centro);
+		jResult = ProcessCA.ComprobanteCargoAbono(terminal,entidad,centro,empleado);
 		
 		return jResult.toString();
 		/*End E234*/

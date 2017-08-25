@@ -4,6 +4,7 @@ package com.bansefi.nss.cargoabono.ws;
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.crypto.Cipher;
@@ -15,56 +16,47 @@ import org.json.JSONObject;
 import com.bansefi.nss.cargoabono.commons.CantidadLetras;
 import com.bansefi.nss.cargoabono.commons.EncryptionDecryption;
 import com.bansefi.nss.cargoabono.commons.FuncionesEncryption;
+import com.bansefi.nss.cargoabono.commons.UtilJson;
+import com.bansefi.nss.cargoabono.consInter.CargoAbonoDS;
 import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
+import com.bansefi.nss.cargoabono.process.CDatosSucursales;
 import com.bansefi.nss.cargoabono.process.CargoAbono;
 import com.bansefi.nss.cargoabono.process.ConsultaSaldo;
 import com.bansefi.nss.cargoabono.properties.EndpointProperties;
 import com.bansefi.nss.cargoabono.services.PasivosAcuerdosServices;
 import com.bansefi.nss.cargoabono.tcb.PasivoTcb;
 import com.bansefi.nss.cargoabono.vo.DiarioElectronicoRequest;
+import com.bansefi.nss.cargoabono.vo.EntDescImpr;
 import com.bansefi.nss.cargoabono.vo.EntInsertDiarioElect;
+import com.bansefi.nss.cargoabono.vo.ReqInserMovCarAbo;
 import com.bansefi.nss.cargoabono.vo.ResponseCargoAbono;
 import com.bansefi.nss.cargoabono.vo.ResponseFechaActual;
 import com.bansefi.nss.cargoabono.vo.ResponseService;
+import com.bansefi.nss.cargoabono.vo.ResqConsMovCarAbon;
 
 public class Main {
 
+
 	public static void main(String[] args) throws Exception 
 	{
-		String acuerdo ="11267234";//"22012512";// ;"259719532";
-		String entidad ="0166";
-		String terminal ="12012103";//"12012103";
-		
-		PasivoTcb Pas = new PasivoTcb();
-		Pas.ConsultaClabe(acuerdo,entidad,terminal);
-		
-		
-		
-		String sucursal="0121";//"0121";
-		
-		String centro="0121";
-		String horaOpr="15:22:00";
-		String nombreCliente="EMILIA RAMIREZ MENDOZA";
-		long TInicio, TFin, tiempo;
-		TInicio = System.currentTimeMillis();
-		
 
-		
-		
-		//String StrCat="";
-	 //StrCat=	CantidadLetras.Convertir("1001023",true);
-		
-		//1501023
-		EndpointProperties prop = new EndpointProperties();
-		String SrDesc=prop.getMsgErrorPaso3();
-		
-		String empleado ="DESA0001";//"E1662129";
+		CargoAbono cargoAbono = new CargoAbono();		
+
+String empleado ="DESA0001";//"E1662129";
 		
 		String ID_INTERNO_PE="16396563";
 		String ID_DOM="2";
 		String FecCn="2015/01/21";
+		String terminal ="12012103";//"12012103";
+		String entidad ="0166";
+		String centro="0121";
 		/**/
-		CargoAbono cargoAbono = new CargoAbono();
+		
+
+		//CargoAbono prosCargA = new CargoAbono();				
+
+		cargoAbono.ComprobanteCargoAbono(terminal,entidad,centro,empleado);
+		
 		
 		
 		//String nombreCliente="Prueba ";
@@ -79,27 +71,29 @@ public class Main {
 		String CajaInt="A";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";
 		String IdExt="11122";
-		String tipoIdExterno="22 Prueba Ident";
+		
 		String StrClop="01";
 		String StrSubClop="0001";
 
-		cargoAbono.ProcesaPendientes(entidad,terminal,centro);
+		String sucursal="0121";//"0121";
 		
-		ConsultaSaldo oSal = new ConsultaSaldo();
-		//System.out.println(oSal.Comprobante(entidad, sucursal, "22030373", terminal, horaOpr, nombreCliente, "1234566788", "E1662129"));
-		//TFin = System.currentTimeMillis();
-		//tiempo = TFin - TInicio;
-		  //System.out.println("Tiempo de ejecución en milisegundos: " + tiempo);
-		/*///cargoAbono.ProcesaPendientes(entidad, terminal, centro);
 		
-		*/
-		//CargoAbono prosCargA = new CargoAbono();				
-
-		//prosCargA.ComprobanteCargoAbono(terminal,entidad);		
+		String horaOpr="15:22:00";
 		
 		
 		
-		//CajaInt="I";
+		String acuerdo ="11267234";//"22012512";// ;"259719532";
+		String impNom="100";
+		String concepto="Prueba";
+		String nombreCliente="EMILIA RAMIREZ MENDOZA";
+		String producto="Produc";
+		String idexterno="1111";
+		String tipoIdExterno="Descr";
+		String SrIdMov="11";
+		String SgnCtbleDi="A";
+		String StrHoraOper="100110";
+		String cajaInt="C";
+		
 		JSONObject oJResp = cargoAbono.Procesar(entidad, 
 				sucursal, 
 				empleado, 
@@ -116,6 +110,112 @@ public class Main {
 				Producto, 
 				IdExt, 
 				tipoIdExterno);
+		
+		
+		EndpointProperties oPro = new EndpointProperties();
+		String Strurl = oPro.getUrlEncripta();
+		
+		
+		
+		
+		JSONObject datosEntrada = new JSONObject();
+		datosEntrada.put("text","{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\"}");
+		
+		String input =datosEntrada.toString();
+		
+		CDatosSucursales oClip = new CDatosSucursales();
+		ResponseService rsp= oClip.EncriptarDescr(input, Strurl);
+		
+		datosEntrada = new JSONObject();
+		 Strurl = oPro.getUrlDesEncripta();
+		datosEntrada.put("text",rsp.getDescripcion());
+		input =datosEntrada.toString();
+		ResponseService oRep= oClip.EncriptarDescr(input, Strurl);
+		
+		EntDescImpr oR= oClip.SerealObjImp(oRep.getDescripcion());
+		
+		
+		
+		CargoAbonoDS oDs = new CargoAbonoDS();
+		/*
+		ResqConsMovCarAbon request = new ResqConsMovCarAbon();
+		request.setEntidad("0166");
+		request.setIdEmpleado("E1663380");
+		request.setSucursal("0001");
+		request.setTerminal("12000132");
+		oDs.ConsultMovCargAbon(request);*/
+		
+		ReqInserMovCarAbo oIns= new ReqInserMovCarAbo();
+		oIns.setCajaInt("C");
+		oIns.setDataTrans("DataEncript");
+		oIns.setEmpleado("E1663380");
+		oIns.setEntidad("0166");
+		oIns.setFechaOper("24/08/2017");
+		oIns.setFechaVal("24/08/2017");
+		oIns.setHoraOper("17:30:10");
+		oIns.setSucursal("001");
+		oIns.setTerminal("12000132");
+		oIns.setTipOper("A");
+		
+		oDs.InsertaMovCargAbon(oIns);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		PasivoTcb Pas = new PasivoTcb();
+		Pas.ConsultaClabe(acuerdo,entidad,terminal);
+		
+		
+		
+		
+		long TInicio, TFin, tiempo;
+		TInicio = System.currentTimeMillis();
+		
+
+		
+		
+		//String StrCat="";
+	 //StrCat=	CantidadLetras.Convertir("1001023",true);
+		
+		//1501023
+		EndpointProperties prop = new EndpointProperties();
+		String SrDesc=prop.getMsgErrorPaso3();
+		
+		
+		cargoAbono.ProcesaPendientes(entidad,terminal,centro);
+		
+		ConsultaSaldo oSal = new ConsultaSaldo();
+		//System.out.println(oSal.Comprobante(entidad, sucursal, "22030373", terminal, horaOpr, nombreCliente, "1234566788", "E1662129"));
+		//TFin = System.currentTimeMillis();
+		//tiempo = TFin - TInicio;
+		  //System.out.println("Tiempo de ejecución en milisegundos: " + tiempo);
+		/*///cargoAbono.ProcesaPendientes(entidad, terminal, centro);
+		
+		*/
+		
+		
+		
+		
+		//CajaInt="I";
+		
 		
 		StrClop="99";
 //,StrClop,StrSubClop

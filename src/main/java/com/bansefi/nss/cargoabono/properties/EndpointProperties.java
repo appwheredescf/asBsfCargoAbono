@@ -37,6 +37,9 @@ public class EndpointProperties
 	private String pwdDb2;
 	private String estatusDiaElect;
 	private String MsgErrorPaso3;
+	private String UrlConsCargAbo;
+	private String UrlEncripta;
+	private String UrlDesEncripta;
 	//End AE234
 	
 	private Properties prop = Utils.getProperties("com/bansefi/nss/cargoabono/properties/endpoint.properties");
@@ -74,6 +77,9 @@ public class EndpointProperties
 		this.pwdDb2 =prop.getProperty("pwdDb2");
 		this.estatusDiaElect =prop.getProperty("estatusDiaElect");
 		this.setMsgErrorPaso3(prop.getProperty("ErrorMsgPaso3"));
+		this.UrlConsCargAbo=prop.getProperty("URL_CONSMOVCARG");
+		this.UrlEncripta=prop.getProperty("URL_ENCRIPTAR");
+		this.UrlDesEncripta=prop.getProperty("URL_DESENCRIP");
 	}
 
 	public String getConsultaClabe() {
@@ -306,6 +312,30 @@ public class EndpointProperties
 
 	public void setMsgErrorPaso3(String msgErrorPaso3) {
 		MsgErrorPaso3 = msgErrorPaso3;
+	}
+
+	public String getUrlConsCargAbo() {
+		return UrlConsCargAbo;
+	}
+
+	public void setUrlConsCargAbo(String urlConsCargAbo) {
+		UrlConsCargAbo = urlConsCargAbo;
+	}
+
+	public String getUrlEncripta() {
+		return UrlEncripta;
+	}
+
+	public void setUrlEncripta(String urlEncripta) {
+		UrlEncripta = urlEncripta;
+	}
+
+	public String getUrlDesEncripta() {
+		return UrlDesEncripta;
+	}
+
+	public void setUrlDesEncripta(String urlDesEncripta) {
+		UrlDesEncripta = urlDesEncripta;
 	}
 
 	

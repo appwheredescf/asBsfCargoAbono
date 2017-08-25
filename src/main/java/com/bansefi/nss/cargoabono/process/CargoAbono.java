@@ -3,6 +3,7 @@ package com.bansefi.nss.cargoabono.process;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -10,12 +11,16 @@ import org.json.JSONObject;
 
 import com.bansefi.nss.cargoabono.commons.CantidadLetras;
 import com.bansefi.nss.cargoabono.commons.UtilJson;
+import com.bansefi.nss.cargoabono.consInter.CargoAbonoDS;
 import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
 import com.bansefi.nss.cargoabono.properties.EndpointProperties;
 import com.bansefi.nss.cargoabono.services.PasivosAcuerdosServices;
 import com.bansefi.nss.cargoabono.tcb.PasivoTcb;
 import com.bansefi.nss.cargoabono.vo.DiarioElectronicoRequest;
+import com.bansefi.nss.cargoabono.vo.EntDescImpr;
 import com.bansefi.nss.cargoabono.vo.EntInsertDiarioElect;
+import com.bansefi.nss.cargoabono.vo.ReqInserMovCarAbo;
+import com.bansefi.nss.cargoabono.vo.RespConsMovCarAbon;
 import com.bansefi.nss.cargoabono.vo.ResponDiaPend;
 import com.bansefi.nss.cargoabono.vo.ResponseConsultaClabe;
 import com.bansefi.nss.cargoabono.vo.ResponseDatosCentro;
@@ -26,6 +31,7 @@ import com.bansefi.nss.cargoabono.vo.ResponseService;
 import com.bansefi.nss.cargoabono.vo.ResponseServiceCargoAbono;
 import com.bansefi.nss.cargoabono.vo.ResponseServiceObject;
 import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion;
+import com.bansefi.nss.cargoabono.vo.ResqConsMovCarAbon;
 
 
 
@@ -54,6 +60,7 @@ public class CargoAbono
 		String SrDesc="";
 		String StrFeOper="";
 		String StrHoraOper="";
+		String Clabe="";
 		/*Begin E234*/
 		try
 		{
@@ -93,6 +100,54 @@ public class CargoAbono
             		{
             			SrIdMov = responseMov.getNUM_SEC();
         				StatusOper =true;
+        				
+        				
+        				/*Begin Insert into Table -Intermedia*/
+        				try
+        				{
+        					PasivoTcb pasivoTcb = new PasivoTcb();
+        					ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
+        					Clabe=oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
+        					ReqInserMovCarAbo oIns= new ReqInserMovCarAbo();
+        					oIns.setCajaInt(cajaInt);
+        					
+        					oIns.setEmpleado(empleado);
+        					oIns.setEntidad(entidad);
+        					oIns.setFechaOper(StrFeOper);
+        					oIns.setFechaVal(responseMov.getFECHAVALOR());
+        					oIns.setHoraOper(StrHoraOper);
+        					oIns.setSucursal(sucursal);
+        					oIns.setTerminal(terminal);
+        					oIns.setTipOper(tipoOp);
+        					
+        					EndpointProperties prop = new EndpointProperties();
+        					String Strurl =prop.getUrlEncripta();
+        					JSONObject datosEntrada = new JSONObject();
+        					
+        					
+        					String SgnCtbleDi="H";
+        					
+        					if(tipoOp.equals("C"))
+        						SgnCtbleDi="D";
+        					
+        					
+        					datosEntrada.put("text","{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\"}");
+        					String input =datosEntrada.toString();
+        					
+        					CDatosSucursales oClip = new CDatosSucursales();
+        					ResponseService rsp= oClip.EncriptarDescr(input, Strurl);
+        					if(rsp.getStatus()==1)
+        					{
+        						oIns.setDataTrans(rsp.getDescripcion());
+        						CargoAbonoDS oDs = new CargoAbonoDS();
+        						ResponseService statMov = oDs.InsertaMovCargAbon(oIns);
+        					}
+        							
+        				}catch(Exception ex){
+        					
+        				}
+        				/*End Insert into Table -Intermedia*/
+        				
             		}
             		else
             		{
@@ -136,14 +191,12 @@ public class CargoAbono
 			
 			if(StatusOper)
 			{
-				PasivoTcb pasivoTcb = new PasivoTcb();
-				ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
 				jsonResultado.put("idmov", SrIdMov);
 				jsonResultado.put("status", "1");
 				jsonResultado.put("descripcion","Registro dado de alta");
 				jsonResultado.put("FechaOper",StrFeOper);
 				jsonResultado.put("HoraOper",StrHoraOper);
-				jsonResultado.put("Clabe",oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V());
+				jsonResultado.put("Clabe",Clabe);
 				
 			}
 			else
@@ -281,126 +334,85 @@ jsonResult.put("RespuestaCargoAbono", jsonResultado);
 return jsonResult;
 }
 	
-	public JSONObject ComprobanteCargoAbono(String terminal,String entidad,String centro)
+	public JSONObject ComprobanteCargoAbono(String terminal,String entidad,String centro,String Empleado)
 	{
 		JSONObject jsonResult = new JSONObject();
 		JSONObject jsonResultado = new JSONObject();
 
-		PasivosAcuerdosServices oWsAcuerdo = new PasivosAcuerdosServices();
+		CargoAbonoDS oCons = new CargoAbonoDS();
 		try
 		{
-			DiarioElectronicoDS oDElect = new DiarioElectronicoDS();
-			ResponseRegistroDiarioElectronico oDiaElect = oDElect.UltimoMovimiento(terminal, entidad,centro);
-			if(oDiaElect.getStatus() ==1)
+			ResqConsMovCarAbon request = new ResqConsMovCarAbon();
+			request.setEntidad(entidad);
+			request.setTerminal(terminal);
+			request.setIdEmpleado(Empleado);
+			request.setSucursal(centro);
+			
+			RespConsMovCarAbon oCar = oCons.ConsultMovCargAbon(request);
+			if(oCar.getStatus()==1)
 			{
-				PasivoTcb pasivoTcb = new PasivoTcb();
-				ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(oDiaElect.getRegistroDiarioElectronico().getNumSecAc(), entidad, terminal);
-				
-				ResponseFechaActual responseFechaActual = oWsAcuerdo.FechaActual();
-				String fechaActual = responseFechaActual.getStatus() == 1 ? responseFechaActual.getFecha() : "";
-				String horaOpr = oDiaElect.getRegistroDiarioElectronico().getHoraPc();//Ae234
-				if(horaOpr.length()<2)
-					horaOpr ="00:00:00";
-				String DATE_FORMAT= "ddMMyyHHmmss";
-				String DateFormatSerie="ddMMyy";
-				DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-				String stringDate = "";
-				String sFecSerie="";
-				Date date;
-				try 
-				{
-					date = df.parse(fechaActual + " " + horaOpr);
-					SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-					stringDate = sdf.format(date);
-					
-					SimpleDateFormat sdfSerie = new SimpleDateFormat(DateFormatSerie);
-					sFecSerie = sdfSerie.format(date);	
-				} 
-				catch (ParseException e) 
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				String ImporLetra = CantidadLetras.Convertir(oDiaElect.getRegistroDiarioElectronico().getImpNominal(), true);
-				String contrato = oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
-				
-				String TitularAcuerdo ="";
-				String strOfic="";
-				String strProdDesc="";
-				//pasivoTcb.ConsultaPersonaXIdInterno(entidad,oDiaElect.getRegistroDiarioElectronico().  terminal);
-				ResponsePersona oPerNum = pasivoTcb.ConsultaAcuerdo(entidad, oDiaElect.getRegistroDiarioElectronico().getNumSecAc(), terminal);
-				if(oPerNum.getStatus()==1)
-				{
-					ResponsePersona oPersona = pasivoTcb.ConsultaPersonaXIdInterno(entidad, oPerNum.getIdInternoPe(), terminal);
-					if(oPersona.getStatus()==1)
-					{
-						TitularAcuerdo = oPersona.getNombre()+" "+oPersona.getApPaterno()+" "+oPersona.getApMaterno();
-						strProdDesc =  oPerNum.getProductoAcuerdo();
-					}
-				}
-		
-				/*ResponseDatosEmpleado RspNomEmple = pasivoTcb.ConsultaEmpleado(entidad, oDiaElect.getRegistroDiarioElectronico().getIdInternoEmplEp(), terminal);
-				if(RspNomEmple.getStatus()==1)
-				{
-					NomEmple = RspNomEmple.getNOMBRE();
-				}*/
-				
-				String StrHoraOper =oDiaElect.getRegistroDiarioElectronico().getHoraOprcn();
-				if(StrHoraOper.length()>8)
-					StrHoraOper=StrHoraOper.substring(0, 8);
-				
-				ResponseDatosCentro oDatCent = pasivoTcb.ConsultaCentro(entidad, oDiaElect.getRegistroDiarioElectronico().getCodInternoUo(), terminal);
-				if(oDatCent.getStatus()==1)
-				{
-					strOfic = oDiaElect.getRegistroDiarioElectronico().getCodInternoUo()+" "+oDatCent.getNOMBRE();
-				}
-				
-				String StrImporte =oDiaElect.getRegistroDiarioElectronico().getImpNominal();
-				
-				
-				StrImporte= CantidadLetras.FormatoNumero(StrImporte);
-						
-				jsonResultado.put("fecha", fechaActual);//oResCA.getFechaOperacion());
-				jsonResultado.put("hora", StrHoraOper);
-				jsonResultado.put("nombre", TitularAcuerdo);
-				jsonResultado.put("importe", StrImporte);
-				jsonResultado.put("folio", oDiaElect.getRegistroDiarioElectronico().getNumSec());
-				jsonResultado.put("producto",strProdDesc);
-				jsonResultado.put("importe_letra", "( "+ImporLetra+" )");
-				jsonResultado.put("oficina", strOfic);
-				jsonResultado.put("contrato", contrato);
-				
-				String StrIdExter =oDiaElect.getRegistroDiarioElectronico().getValorDtllTx();
 				try
 				{
-					if(StrIdExter.indexOf( '|' )>0){
-						String[] campos = StrIdExter.split("\\|");
-						StrIdExter =campos[2];	
+					EndpointProperties oPro = new EndpointProperties();
+					JSONObject datosEntrada = new JSONObject();
+					 String Strurl = oPro.getUrlDesEncripta();
+					datosEntrada.put("text",oCar.getDataTrans());
+					String input =datosEntrada.toString();
+					CDatosSucursales oClip = new CDatosSucursales();
+					ResponseService oRep= oClip.EncriptarDescr(input, Strurl);
+					EntDescImpr res = new EntDescImpr();
+					
+					if(oRep.getStatus()==1)
+						res= oClip.SerealObjImp(oRep.getDescripcion());	
+					
+					PasivosAcuerdosServices oWsAcuerdo = new PasivosAcuerdosServices();
+					ResponseFechaActual responseFechaActual = oWsAcuerdo.FechaActual();
+					String fechaActual = responseFechaActual.getStatus() == 1 ? responseFechaActual.getFecha() : "";
+
+					String ImporLetra= CantidadLetras.FormatoNumero(res.getImpNom());
+					
+					String sFecSerie="";
+					try
+					{
+						DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+						Date date;
+						String DateFormatSerie="ddMMyy";
+						date = df.parse(fechaActual + " " + res.getHoraPc());
+						SimpleDateFormat sdfSerie = new SimpleDateFormat(DateFormatSerie);
+						sFecSerie = sdfSerie.format(date);
+					}
+					catch(Exception ex){
+						
 					}
 					
-				}catch(Exception ex)
-				{
+					
+					jsonResultado.put("fecha", fechaActual);//oResCA.getFechaOperacion());
+					jsonResultado.put("hora", res.getHoraPc());
+					jsonResultado.put("nombre", res.getNombreCliente());
+					jsonResultado.put("importe", res.getImpNom());
+					jsonResultado.put("folio", res.getFolio());
+					jsonResultado.put("producto",res.getProducto());
+					jsonResultado.put("importe_letra", "( "+ImporLetra+" )");
+					jsonResultado.put("oficina", res);
+					jsonResultado.put("contrato", res.getAcuerdo());
+					jsonResultado.put("idExterno",res.getIdexterno() );
+					String StrSerial = terminal+ " "+ sFecSerie+ res.getHoraPc().replace(":", "");
+					StrSerial +="  "+res.getCajInt()+" "+res.getSigCont();
+
+					jsonResultado.put("serial", StrSerial);
+				}catch(Exception ex){
 					
 				}
-				jsonResultado.put("idExterno",StrIdExter );
-				String StrSerial = terminal+ " "+ sFecSerie+ StrHoraOper.replace(":", "");
-				StrSerial=StrSerial +="  "+oDiaElect.getRegistroDiarioElectronico().getContrida()+" "+oDiaElect.getRegistroDiarioElectronico().getSgnCtbleDi();
-				//StrSerial=StrSerial +="  C "+oDiaElect.getRegistroDiarioElectronico().getSgnCtbleDi();
-				/*switch(oDiaElect.getRegistroDiarioElectronico().getContrida())
-				{
-					case "C":
-						StrSerial +="  C H";
-						break;
-					case "A":
-						StrSerial +="  C D";
-				}*/
-				jsonResultado.put("serial", StrSerial);
+				
+                
+				
+				
 			}
+
 			else
 			{
 				jsonResultado.put("status", "-1");
-				jsonResultado.put("descripcion", oDiaElect.getDescripcion());
+				jsonResultado.put("descripcion", oCar.getDescripcion());
 			}
 		}
 		catch (Exception e) 
@@ -718,5 +730,139 @@ return jsonResult;
 		jsonResultado.put("ResProcesaPendiente", jResultDetalle);
 		return jsonResultado;
 	}
+	
+	public JSONObject ComprobanteCargoAbonoNOAplica(String terminal,String entidad,String centro,String Empleado)
+	{
+		JSONObject jsonResult = new JSONObject();
+		JSONObject jsonResultado = new JSONObject();
+
+		PasivosAcuerdosServices oWsAcuerdo = new PasivosAcuerdosServices();
+		try
+		{
+			DiarioElectronicoDS oDElect = new DiarioElectronicoDS();
+			ResponseRegistroDiarioElectronico oDiaElect = oDElect.UltimoMovimiento(terminal, entidad,centro);
+			if(oDiaElect.getStatus() ==1)
+			{
+				PasivoTcb pasivoTcb = new PasivoTcb();
+				ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(oDiaElect.getRegistroDiarioElectronico().getNumSecAc(), entidad, terminal);
+				
+				ResponseFechaActual responseFechaActual = oWsAcuerdo.FechaActual();
+				String fechaActual = responseFechaActual.getStatus() == 1 ? responseFechaActual.getFecha() : "";
+				String horaOpr = oDiaElect.getRegistroDiarioElectronico().getHoraPc();//Ae234
+				if(horaOpr.length()<2)
+					horaOpr ="00:00:00";
+				String DATE_FORMAT= "ddMMyyHHmmss";
+				String DateFormatSerie="ddMMyy";
+				DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				String stringDate = "";
+				String sFecSerie="";
+				Date date;
+				try 
+				{
+					date = df.parse(fechaActual + " " + horaOpr);
+					SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+					stringDate = sdf.format(date);
+					
+					SimpleDateFormat sdfSerie = new SimpleDateFormat(DateFormatSerie);
+					sFecSerie = sdfSerie.format(date);	
+				} 
+				catch (ParseException e) 
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				String ImporLetra = CantidadLetras.Convertir(oDiaElect.getRegistroDiarioElectronico().getImpNominal(), true);
+				String contrato = oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
+				
+				String TitularAcuerdo ="";
+				String strOfic="";
+				String strProdDesc="";
+				//pasivoTcb.ConsultaPersonaXIdInterno(entidad,oDiaElect.getRegistroDiarioElectronico().  terminal);
+				ResponsePersona oPerNum = pasivoTcb.ConsultaAcuerdo(entidad, oDiaElect.getRegistroDiarioElectronico().getNumSecAc(), terminal);
+				if(oPerNum.getStatus()==1)
+				{
+					ResponsePersona oPersona = pasivoTcb.ConsultaPersonaXIdInterno(entidad, oPerNum.getIdInternoPe(), terminal);
+					if(oPersona.getStatus()==1)
+					{
+						TitularAcuerdo = oPersona.getNombre()+" "+oPersona.getApPaterno()+" "+oPersona.getApMaterno();
+						strProdDesc =  oPerNum.getProductoAcuerdo();
+					}
+				}
+		
+				/*ResponseDatosEmpleado RspNomEmple = pasivoTcb.ConsultaEmpleado(entidad, oDiaElect.getRegistroDiarioElectronico().getIdInternoEmplEp(), terminal);
+				if(RspNomEmple.getStatus()==1)
+				{
+					NomEmple = RspNomEmple.getNOMBRE();
+				}*/
+				
+				String StrHoraOper =oDiaElect.getRegistroDiarioElectronico().getHoraOprcn();
+				if(StrHoraOper.length()>8)
+					StrHoraOper=StrHoraOper.substring(0, 8);
+				
+				ResponseDatosCentro oDatCent = pasivoTcb.ConsultaCentro(entidad, oDiaElect.getRegistroDiarioElectronico().getCodInternoUo(), terminal);
+				if(oDatCent.getStatus()==1)
+				{
+					strOfic = oDiaElect.getRegistroDiarioElectronico().getCodInternoUo()+" "+oDatCent.getNOMBRE();
+				}
+				
+				String StrImporte =oDiaElect.getRegistroDiarioElectronico().getImpNominal();
+				
+				
+				StrImporte= CantidadLetras.FormatoNumero(StrImporte);
+						
+				jsonResultado.put("fecha", fechaActual);//oResCA.getFechaOperacion());
+				jsonResultado.put("hora", StrHoraOper);
+				jsonResultado.put("nombre", TitularAcuerdo);
+				jsonResultado.put("importe", StrImporte);
+				jsonResultado.put("folio", oDiaElect.getRegistroDiarioElectronico().getNumSec());
+				jsonResultado.put("producto",strProdDesc);
+				jsonResultado.put("importe_letra", "( "+ImporLetra+" )");
+				jsonResultado.put("oficina", strOfic);
+				jsonResultado.put("contrato", contrato);
+				
+				String StrIdExter =oDiaElect.getRegistroDiarioElectronico().getValorDtllTx();
+				try
+				{
+					if(StrIdExter.indexOf( '|' )>0){
+						String[] campos = StrIdExter.split("\\|");
+						StrIdExter =campos[2];	
+					}
+					
+				}catch(Exception ex)
+				{
+					
+				}
+				jsonResultado.put("idExterno",StrIdExter );
+				String StrSerial = terminal+ " "+ sFecSerie+ StrHoraOper.replace(":", "");
+				StrSerial=StrSerial +="  "+oDiaElect.getRegistroDiarioElectronico().getContrida()+" "+oDiaElect.getRegistroDiarioElectronico().getSgnCtbleDi();
+				//StrSerial=StrSerial +="  C "+oDiaElect.getRegistroDiarioElectronico().getSgnCtbleDi();
+				/*switch(oDiaElect.getRegistroDiarioElectronico().getContrida())
+				{
+					case "C":
+						StrSerial +="  C H";
+						break;
+					case "A":
+						StrSerial +="  C D";
+				}*/
+				jsonResultado.put("serial", StrSerial);
+			}
+			else
+			{
+				jsonResultado.put("status", "-1");
+				jsonResultado.put("descripcion", oDiaElect.getDescripcion());
+			}
+		}
+		catch (Exception e) 
+		{
+			jsonResultado.put("status", "-1");
+			jsonResultado.put("descripcion", e.getMessage());
+			log.error("ComprobanteCargoAbono  - " + e.getMessage());
+		}
+		jsonResult.put("RespuestaGeneraComprobate", jsonResultado);
+
+		return jsonResult;
+	}
+
 	/*End E234 */	
 }
