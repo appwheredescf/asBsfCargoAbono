@@ -58,7 +58,14 @@ public class DiarioElectronicoDS
 				StFecConr =StFecConr.replace("/", "-");
 			String StrFecOper =request.getFechaOprcn();
 				StrFecOper =StrFecOper.replace("/", "-");
-			
+			String StrImpNOmX =request.getImpNominalX();
+				try
+				{
+					if(StrImpNOmX.length()>13)
+					StrImpNOmX = StrImpNOmX.substring(0, 12);
+						
+				}catch(Exception ex){}
+				
 			 xml = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"
 					+"<soapenv:Header/>"
 				    +"<soapenv:Body>"
@@ -105,7 +112,7 @@ public class DiarioElectronicoDS
 					+"<dat:idTermOff/>"
 					+"<dat:idEmplOff/>"
 					+"<dat:numSecOff>" + request.getNumSecOff() + "</dat:numSecOff>"
-					+"<dat:impNominalX>" + request.getImpNominalX() + "</dat:impNominalX>"
+					+"<dat:impNominalX>" + StrImpNOmX + "</dat:impNominalX>"
 					+"<dat:claveAnulDi>" + request.getClaveAnulDi() + "</dat:claveAnulDi>"
 					+"<dat:diTextArg1>" + request.getDiTextArg1() + "</dat:diTextArg1>"
 					+"<dat:diTextArg2>" + request.getDiTextArg2() + "</dat:diTextArg2>"

@@ -154,7 +154,7 @@ public class CargoAbono
         					}
         							
         				}catch(Exception ex){
-        					
+        					System.out.println("Error : "+ex.getMessage());
         				}
         				/*End Insert into Table -Intermedia*/
         				
@@ -282,10 +282,10 @@ try
 		switch (tipoOp) 
 		{
 		case "C":
-			responseMov = pasivoTCB.CargoIntervencion(entidad, StrAcuerdo, impNom.replace(".", ","), concepto, terminal,StrClop,StrSubClop);
+			responseMov = pasivoTCB.CargoIntervencion(entidad, StrAcuerdo, impNom, concepto, terminal,StrClop,StrSubClop);
 			break;
 		case "A":
-			responseMov = pasivoTCB.AbonoIntervencion(entidad, StrAcuerdo, impNom.replace(".", ","), concepto, terminal,StrClop,StrSubClop);
+			responseMov = pasivoTCB.AbonoIntervencion(entidad, StrAcuerdo, impNom, concepto, terminal,StrClop,StrSubClop);
 			break;							
 		}
 		if(responseMov.getStatus()==1)
@@ -460,10 +460,13 @@ return jsonResult;
 						
 					}
 					
+					String StrImport=res.getImpNom();
+					StrImport=CantidadLetras.FormatoNumero(StrImport);
+					
 					jsonResultado.put("fecha", fechaActual);//oResCA.getFechaOperacion());
 					jsonResultado.put("hora", res.getHoraPc());
 					jsonResultado.put("nombre", res.getNombreCliente());
-					jsonResultado.put("importe", res.getImpNom());
+					jsonResultado.put("importe", StrImport);
 					jsonResultado.put("folio", res.getFolio());
 					jsonResultado.put("producto",res.getProducto());
 					jsonResultado.put("importe_letra", "( "+res.getImpLetr()+" )");

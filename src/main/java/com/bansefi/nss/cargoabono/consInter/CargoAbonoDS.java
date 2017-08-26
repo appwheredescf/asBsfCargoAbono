@@ -89,9 +89,9 @@ public class CargoAbonoDS {
 		{
 			response.setStatus(-1);
 			response.setDescripcion(e.getMessage());
-			log.error("CargoAbonoDS - InsertaDiario : Exception. " + e.getMessage());
-			log.error("CargoAbonoDS - InsertaDiario : outputString. " + outputString);
-			log.error("CargoAbonoDS - InsertaDiario : input xml. " + xml);
+			log.error("CargoAbonoDS - InsertaMovCargAbon : Exception. " + e.getMessage());
+			log.error("CargoAbonoDS - InsertaMovCargAbon : outputString. " + outputString);
+			log.error("CargoAbonoDS - InsertaMovCargAbon : input xml. " + xml);
 		}
 		return response;
 	}
@@ -232,7 +232,7 @@ public class CargoAbonoDS {
 		}
 		catch(Exception ex)
 		{
-			log.error("CargoAbonoDS -  : SalidaResponse. " + ex.getMessage());
+			log.error("CargoAbonoDS -  : SalidaResponse[1]. " + ex.getMessage()+" vista "+vista+" url:  "+ StrUrl +" action "+ action+" res :"+ StrRep+" outputString: "+outputString);
 		}
 		
 		return salida;

@@ -39,39 +39,24 @@ public class Main {
 
 	public static void main(String[] args) throws Exception 
 	{
-
-		ConsultaSaldo processConsultaSaldo = new ConsultaSaldo();
-		processConsultaSaldo.Comprobante("0166", "0001", "70657515", "12000109", "17:00:01", "LUIS PEREZ MOTA","2343232432","DESA0001");
 		
+		String StrImporte="1000";
+		StrImporte= CantidadLetras.FormatoNumero(StrImporte);
+		System.out.println("Valor cadena "+StrImporte);
 		
-		String StrCad="test";
+		CargoAbono cargoAbono = new CargoAbono();
 		
-		StrCad= String.format("%-10s", StrCad);
-		System.out.println(StrCad);
-		
-		CargoAbono cargoAbono = new CargoAbono();		
-
-String empleado ="DESA0001";//"E1662129";
-		
+		String empleado ="DESA0001";//"E1662129";
 		String ID_INTERNO_PE="16396563";
 		String ID_DOM="2";
 		String FecCn="2015/01/21";
 		String terminal ="12012103";//"12012103";
 		String entidad ="0166";
 		String centro="0121";
-		/**/
 		
-
-		//CargoAbono prosCargA = new CargoAbono();				
-
-		JSONObject oResp= cargoAbono.ComprobanteCargoAbono(terminal,entidad,centro,empleado);
-		
-		
-		
-		//String nombreCliente="Prueba ";
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="1.23";
+		String Importe="2231231242321.21";
 		String TipOper="A";
 		String FecValor="2017-08-21";
 		String Concepto="prueba depura   [1.1]";
@@ -81,15 +66,13 @@ String empleado ="DESA0001";//"E1662129";
 		String nombreClien="EMILIA RAMIREZ MENDOZA";
 		String IdExt="11122";
 		
-		String StrClop="01";
-		String StrSubClop="0001";
+		String StrClop="99";
+		String StrSubClop="0002";
 
 		String sucursal="0121";//"0121";
 		
 		
 		String horaOpr="15:22:00";
-		
-		
 		
 		String acuerdo ="11267234";//"22012512";// ;"259719532";
 		String impNom="100";
@@ -100,8 +83,9 @@ String empleado ="DESA0001";//"E1662129";
 		String tipoIdExterno="Descr";
 		String SrIdMov="11";
 		String SgnCtbleDi="A";
-		String StrHoraOper="100110";
+		String StrHoraOper="10:01:10";
 		String cajaInt="C";
+
 		
 		JSONObject oJResp = cargoAbono.Procesar(entidad, 
 				sucursal, 
@@ -119,6 +103,42 @@ String empleado ="DESA0001";//"E1662129";
 				Producto, 
 				IdExt, 
 				tipoIdExterno);
+		
+		
+		
+		
+		cargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
+				FecValor, Importe, Concepto, FecOper, HrOper, CajaInt, nombreCliente,
+				Producto, IdExt, tipoIdExterno, StrClop, StrSubClop);
+		
+		
+		
+		ConsultaSaldo processConsultaSaldo = new ConsultaSaldo();
+		processConsultaSaldo.Comprobante("0166", "0001", "70657515", "12000109", "17:00:01", "LUIS PEREZ MOTA","2343232432","DESA0001");
+		
+		
+		String StrCad="test";
+		
+		StrCad= String.format("%-10s", StrCad);
+		System.out.println(StrCad);
+		
+				
+
+
+		
+		
+		/**/
+		
+
+		//CargoAbono prosCargA = new CargoAbono();				
+
+		JSONObject oResp= cargoAbono.ComprobanteCargoAbono(terminal,entidad,centro,empleado);
+		
+		
+		
+		//String nombreCliente="Prueba ";
+				
+		
 		
 		
 		EndpointProperties oPro = new EndpointProperties();
@@ -338,9 +358,7 @@ String empleado ="DESA0001";//"E1662129";
 		
 		
 		
-		cargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
-				FecValor, Importe, Concepto, FecOper, HrOper, CajaInt, nombreCliente,
-				Producto, IdExt, tipoIdExterno, StrClop, StrSubClop);
+
 		
 		
 
@@ -372,9 +390,7 @@ String empleado ="DESA0001";//"E1662129";
 		
 		
 		
-		String StrImporte="1000.00";
-		StrImporte= CantidadLetras.FormatoNumero(StrImporte);
-		//System.out.println("Valor cadena "+Cad);
+		
 		
 		
 		
