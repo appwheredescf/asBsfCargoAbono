@@ -65,7 +65,19 @@ public class CargoAbono
 		try
 		{
 			impNom =impNom.replace(",", "");
-			concepto = "C DVI        |" + concepto + " |" + tipoIdExterno + " : " + idexterno+"|";
+			//C DVI        (13)concepto(30) tipoIdExterno(20) idexterno(20)
+			try
+			{
+				concepto= String.format("%-30s", concepto);
+				tipoIdExterno= String.format("%-20s", tipoIdExterno);
+				idexterno= String.format("%-20s", idexterno);	
+			}catch(Exception ex)
+			{
+				
+			}
+			
+			
+			concepto = "C DVI        " + concepto + " " + tipoIdExterno + " : " + idexterno+"";
 			//Registro de Cargo/Abono en 3 pasos
 			//Paso 1
 			DiarioElectronicoDS ProcDia = new DiarioElectronicoDS();
@@ -101,7 +113,6 @@ public class CargoAbono
             			SrIdMov = responseMov.getNUM_SEC();
         				StatusOper =true;
         				
-        				
         				/*Begin Insert into Table -Intermedia*/
         				try
         				{
@@ -124,14 +135,13 @@ public class CargoAbono
         					String Strurl =prop.getUrlEncripta();
         					JSONObject datosEntrada = new JSONObject();
         					
-        					
         					String SgnCtbleDi="H";
         					
         					if(tipoOp.equals("C"))
         						SgnCtbleDi="D";
         					
-        					
-        					datosEntrada.put("text","{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\"}");
+        					String ImpLetra = CantidadLetras.Convertir(impNom,true);
+        					datosEntrada.put("text","{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}");
         					String input =datosEntrada.toString();
         					
         					CDatosSucursales oClip = new CDatosSucursales();
@@ -240,10 +250,22 @@ String SrStatus="-1";
 String SrIdMov="-999";
 String SrDesc="";
 String SrCod="";
+String Clabe="";
 /*Begin E234*/
 try
 {
 	impNom =impNom.replace(",", "");
+	try
+	{
+		concepto= String.format("%-30s", concepto);
+		tipoIdExterno= String.format("%-20s", tipoIdExterno);
+		idexterno= String.format("%-20s", idexterno);	
+	}catch(Exception ex)
+	{
+		
+	}
+	String StrFeOper="";
+	String StrHoraOper="";
 	concepto = "DVI        " + concepto + " " + tipoIdExterno + " " + idexterno;
 		//Registro de Cargo/Abono en 3 pasos
 		//Paso 1
@@ -279,6 +301,56 @@ try
 		{
 			SrIdMov = responseMov.getNUM_SEC();
 			StatusOper =true;
+			
+			/*Begin Insert into Table -Intermedia*/
+			try
+			{
+				StrFeOper = responseMov.getFECHAOPERA();
+				StrHoraOper = responseMov.getHORAOPERACION();
+				
+				PasivoTcb pasivoTcb = new PasivoTcb();
+				ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
+				Clabe=oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
+				ReqInserMovCarAbo oIns= new ReqInserMovCarAbo();
+				oIns.setCajaInt(cajaInt);
+				
+				oIns.setEmpleado(empleado);
+				oIns.setEntidad(entidad);
+				oIns.setFechaOper(StrFeOper);
+				oIns.setFechaVal(responseMov.getFECHAVALOR());
+				oIns.setHoraOper(StrHoraOper);
+				oIns.setSucursal(sucursal);
+				oIns.setTerminal(terminal);
+				oIns.setTipOper(tipoOp);
+				
+				EndpointProperties prop = new EndpointProperties();
+				String Strurl =prop.getUrlEncripta();
+				JSONObject datosEntrada = new JSONObject();
+				
+				String SgnCtbleDi="H";
+				
+				if(tipoOp.equals("C"))
+					SgnCtbleDi="D";
+				
+				String ImpLetra = CantidadLetras.Convertir(impNom,true);
+				datosEntrada.put("text","{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}");
+				String input =datosEntrada.toString();
+				
+				CDatosSucursales oClip = new CDatosSucursales();
+				ResponseService rsp= oClip.EncriptarDescr(input, Strurl);
+				if(rsp.getStatus()==1)
+				{
+					oIns.setDataTrans(rsp.getDescripcion());
+					CargoAbonoDS oDs = new CargoAbonoDS();
+					ResponseService statMov = oDs.InsertaMovCargAbon(oIns);
+				}
+						
+			}catch(Exception ex){
+				
+			}
+			/*End Insert into Table -Intermedia*/
+			
+			
 		}
 		else
 		{
@@ -308,10 +380,13 @@ try
 		
 		if(StatusOper)
 		{
-			
 			jsonResultado.put("idmov", SrIdMov);
 			jsonResultado.put("status", "1");
 			jsonResultado.put("descripcion","Registro dado de alta");
+			jsonResultado.put("FechaOper",StrFeOper);
+			jsonResultado.put("HoraOper",StrHoraOper);
+			jsonResultado.put("Clabe",Clabe);
+
 		}
 		else
 		{
@@ -369,7 +444,7 @@ return jsonResult;
 					ResponseFechaActual responseFechaActual = oWsAcuerdo.FechaActual();
 					String fechaActual = responseFechaActual.getStatus() == 1 ? responseFechaActual.getFecha() : "";
 
-					String ImporLetra= CantidadLetras.FormatoNumero(res.getImpNom());
+					//String ImporLetra= CantidadLetras.Convertir(res.getImpNom(),true);
 					
 					String sFecSerie="";
 					try
@@ -385,27 +460,24 @@ return jsonResult;
 						
 					}
 					
-					
 					jsonResultado.put("fecha", fechaActual);//oResCA.getFechaOperacion());
 					jsonResultado.put("hora", res.getHoraPc());
 					jsonResultado.put("nombre", res.getNombreCliente());
 					jsonResultado.put("importe", res.getImpNom());
 					jsonResultado.put("folio", res.getFolio());
 					jsonResultado.put("producto",res.getProducto());
-					jsonResultado.put("importe_letra", "( "+ImporLetra+" )");
-					jsonResultado.put("oficina", res);
+					jsonResultado.put("importe_letra", "( "+res.getImpLetr()+" )");
+					jsonResultado.put("oficina", "");
 					jsonResultado.put("contrato", res.getAcuerdo());
 					jsonResultado.put("idExterno",res.getIdexterno() );
+					jsonResultado.put("clabe",res.getClabe() );
 					String StrSerial = terminal+ " "+ sFecSerie+ res.getHoraPc().replace(":", "");
 					StrSerial +="  "+res.getCajInt()+" "+res.getSigCont();
 
 					jsonResultado.put("serial", StrSerial);
 				}catch(Exception ex){
 					
-				}
-				
-                
-				
+				}				
 				
 			}
 

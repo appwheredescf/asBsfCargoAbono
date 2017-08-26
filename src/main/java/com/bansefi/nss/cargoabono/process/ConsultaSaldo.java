@@ -55,7 +55,7 @@ public class ConsultaSaldo
 				
 				//SE GENERA FOLIO
 				
-				String DATE_FORMAT= "ddMMyyHHmmss";
+				String DATE_FORMAT= "ddMMyyyyHHmmss";
 				DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				String stringDate = "";
 				Date date;
@@ -83,8 +83,8 @@ public class ConsultaSaldo
 					//String fechaOperacion=responseFechaActual.getFecha();
 					ResponseService responseDiarioElectronico = oRegDiaElec.RegistraImprSaldo(entidad, centro, terminal, empleado,  concepto, acuerdo, numSec);
 					String folio = responseDiarioElectronico.getStatus() == 1 ? numSec : "";
-					folio += " " + terminal;
-					folio += stringDate;
+					folio += " " + stringDate+terminal;
+					
 					
 					//FORMATO DE FECHA CLIENTE
 					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");

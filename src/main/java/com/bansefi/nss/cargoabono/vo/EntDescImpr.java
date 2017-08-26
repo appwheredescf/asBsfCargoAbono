@@ -40,4 +40,6 @@ public class EntDescImpr {
 	@Getter @Setter
 	private String Clabe;
 
+	@Getter @Setter
+	private String ImpLetr;
 }

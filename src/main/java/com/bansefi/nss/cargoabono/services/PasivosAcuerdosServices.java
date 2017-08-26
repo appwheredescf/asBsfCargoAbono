@@ -121,8 +121,12 @@ public class PasivosAcuerdosServices
 					response.setStatus(0);
 					String errores = "";
 					JSONObject jsonErrores = jsonResponse.optJSONObject("errores");
-					errores = jsonErrores != null ? jsonErrores.toString() : jsonResponse.optJSONArray("errores") != null ? jsonResponse.optJSONArray("errores").toString() : ""; 
-					response.setDescripcion(errores);
+					JSONObject jErroNum = jsonResponse.optJSONObject("errores").optJSONObject("error");
+					errores = jsonErrores != null ? jsonErrores.toString() : jsonResponse.optJSONArray("errores") != null ? jsonResponse.optJSONArray("errores").toString() : "";
+					String StrE = jErroNum.get("numero").toString();
+					if(!(StrE.length()>0))
+						StrE=errores;
+					response.setDescripcion(StrE);
 					log.error("ConsultaSaldo Entrada - " + input);
 					log.error("ConsultaSaldo . - " + errores);
 				}	

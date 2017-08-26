@@ -40,6 +40,15 @@ public class Main {
 	public static void main(String[] args) throws Exception 
 	{
 
+		ConsultaSaldo processConsultaSaldo = new ConsultaSaldo();
+		processConsultaSaldo.Comprobante("0166", "0001", "70657515", "12000109", "17:00:01", "LUIS PEREZ MOTA","2343232432","DESA0001");
+		
+		
+		String StrCad="test";
+		
+		StrCad= String.format("%-10s", StrCad);
+		System.out.println(StrCad);
+		
 		CargoAbono cargoAbono = new CargoAbono();		
 
 String empleado ="DESA0001";//"E1662129";
@@ -55,7 +64,7 @@ String empleado ="DESA0001";//"E1662129";
 
 		//CargoAbono prosCargA = new CargoAbono();				
 
-		cargoAbono.ComprobanteCargoAbono(terminal,entidad,centro,empleado);
+		JSONObject oResp= cargoAbono.ComprobanteCargoAbono(terminal,entidad,centro,empleado);
 		
 		
 		
