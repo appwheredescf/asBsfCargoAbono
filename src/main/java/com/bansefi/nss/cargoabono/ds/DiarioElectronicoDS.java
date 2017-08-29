@@ -252,9 +252,12 @@ try
 		requestDiario.setIdEmplAnul("");
 		requestDiario.setFechaPc(fechaHora.getFechaOprcn());
 		requestDiario.setHoraPc(horaOprn);
-		ResponseService responseDia = InsertaDiario(requestDiario);
+		ResponseService responseDia = new  ResponseService();
 		response.setStatus(0);
-		if((responseDia.getStatus()==1)&&(Integer.parseInt( numSec)>0))
+		if(Integer.parseInt( numSec)>0)
+			responseDia = InsertaDiario(requestDiario);
+		
+		if((responseDia.getStatus()==1))
 		{
 			response.setStatus(1);
 			response.setFEC_PC(fechaHora.getFechaOprcn());
