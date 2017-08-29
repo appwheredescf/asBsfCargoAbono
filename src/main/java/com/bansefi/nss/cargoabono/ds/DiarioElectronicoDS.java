@@ -161,6 +161,17 @@ public class DiarioElectronicoDS
 		ResponDiaPend response = new ResponDiaPend();
 try
 {
+	
+	try
+	{
+		ResponNumSec oNumS= ObtieneNumSec(  entidad, centro, terminal);
+		if(oNumS.getStatus()==1)
+		numSec = Integer.toString( oNumS.getNUMSEC());
+	}catch(Exception ex0){
+		
+	}
+	
+	
 	PasivoTcb pasivoTCB = new PasivoTcb();
 	ResponseFechaHoraTCB fechaHora = pasivoTCB.FechaContable(terminal);
 	String horaOprn = "";
@@ -243,7 +254,7 @@ try
 		requestDiario.setHoraPc(horaOprn);
 		ResponseService responseDia = InsertaDiario(requestDiario);
 		response.setStatus(0);
-		if(responseDia.getStatus()==1)
+		if((responseDia.getStatus()==1)&&(Integer.parseInt( numSec)>0))
 		{
 			response.setStatus(1);
 			response.setFEC_PC(fechaHora.getFechaOprcn());
