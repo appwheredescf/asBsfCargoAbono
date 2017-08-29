@@ -167,6 +167,7 @@ try
 		ResponNumSec oNumS= ObtieneNumSec(  entidad, centro, terminal);
 		if(oNumS.getStatus()==1)
 		numSec = Integer.toString( oNumS.getNUMSEC());
+		response.setNUMSEC(numSec);
 	}catch(Exception ex0){
 		
 	}

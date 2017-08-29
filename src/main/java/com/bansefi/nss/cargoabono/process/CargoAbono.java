@@ -110,7 +110,7 @@ public class CargoAbono
             		StrFeOper = responseMov.getFECHAOPERA();
             		if(pResp.getStatus()==1)//1
             		{
-            			SrIdMov = responseMov.getNUM_SEC();
+            			SrIdMov = RespDia.getNUMSEC();
         				StatusOper =true;
         				
         				/*Begin Insert into Table -Intermedia*/

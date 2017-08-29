@@ -50,13 +50,13 @@ public class Main {
 		String ID_INTERNO_PE="16396563";
 		String ID_DOM="2";
 		String FecCn="2015/01/21";
-		String terminal ="12012103";//"12012103";
+		String terminal ="12000111";//"12012103";
 		String entidad ="0166";
-		String centro="0121";
+		String centro="0001";
 		
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="2231231242321.21";
+		String Importe="321.21";
 		String TipOper="A";
 		String FecValor="2017-08-21";
 		String Concepto="prueba depura   [1.1]";
@@ -69,13 +69,13 @@ public class Main {
 		String StrClop="99";
 		String StrSubClop="0002";
 
-		String sucursal="0121";//"0121";
+		String sucursal="0001";//"0121";
 		
 		
 		String horaOpr="15:22:00";
 		
-		String acuerdo ="11267234";//"22012512";// ;"259719532";
-		String impNom="100";
+		String acuerdo ="70657515";//"22012512";// ;"259719532";
+		String impNom="80";
 		String concepto="Prueba";
 		String nombreCliente="EMILIA RAMIREZ MENDOZA";
 		String producto="Produc";
