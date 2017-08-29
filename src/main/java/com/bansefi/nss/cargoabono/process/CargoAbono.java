@@ -299,7 +299,7 @@ try
 		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
 		if(pResp.getStatus()==1)
 		{
-			SrIdMov = responseMov.getNUM_SEC();
+			SrIdMov = RespDia.getNUMSEC(); //responseMov.getNUM_SEC();
 			StatusOper =true;
 			
 			/*Begin Insert into Table -Intermedia*/

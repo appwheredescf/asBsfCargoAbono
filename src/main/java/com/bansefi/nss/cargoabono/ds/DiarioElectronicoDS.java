@@ -59,6 +59,10 @@ public class DiarioElectronicoDS
 			String StrFecOper =request.getFechaOprcn();
 				StrFecOper =StrFecOper.replace("/", "-");
 			String StrImpNOmX =request.getImpNominalX();
+			
+			String StrFecValor =request.getFechaValor();
+				StrFecValor =StrFecValor.replace("/", "-");
+			
 				try
 				{
 					if(StrImpNOmX.length()>13)
@@ -82,7 +86,7 @@ public class DiarioElectronicoDS
 					+"<dat:impNominal>" + request.getImpNominal() + "</dat:impNominal>"
 					+"<dat:codNumrcoMoneda>" + request.getCodNumrcoMoneda() + "</dat:codNumrcoMoneda>"
 					+"<dat:impSdo>" + request.getImpSdo() + "</dat:impSdo>"
-					+"<dat:codNumrcoMoneda1>" + request.getCodErr1() + "</dat:codNumrcoMoneda1>"
+					+"<dat:codNumrcoMoneda1>" + request.getCodNumrcoMoneda1() + "</dat:codNumrcoMoneda1>"
 					+"<dat:codErr1>" + request.getCodErr1() + "</dat:codErr1>"
 					+"<dat:codErr2>" + request.getCodErr2() + "</dat:codErr2>"
 					+"<dat:codErr3>" + request.getCodErr3() + "</dat:codErr3>"
@@ -91,7 +95,7 @@ public class DiarioElectronicoDS
 					+"<dat:modoTx>" + request.getModoTx() + "</dat:modoTx>"
 					+"<dat:situTx>" + request.getSituTx() + "</dat:situTx>"
 					+"<dat:valorDtllTx>" + request.getValorDtllTx() + "</dat:valorDtllTx>"
-					+"<dat:idEmplAut>" + request.getIdInternoEmplEp() + "</dat:idEmplAut>"
+					+"<dat:idEmplAut></dat:idEmplAut>"
 					+"<dat:fechaAnul xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://ws.wso2.org/dataservice\"/>"
 					+"<dat:idTermAnul>" + request.getIdTermAnul() + "</dat:idTermAnul>"
 					+"<dat:idEmplAnul>" + request.getIdEmplAnul() + "</dat:idEmplAnul>"
@@ -104,7 +108,7 @@ public class DiarioElectronicoDS
 					+"<dat:fechaOprcn>" + StrFecOper + "</dat:fechaOprcn>"
 					+"<dat:horaOprcn>" + request.getHoraOprcn() + "</dat:horaOprcn>"
 					+"<dat:fechaCtble>" +StFecConr  + "</dat:fechaCtble>"
-					+"<dat:fechaValor>"+StrFecOper+"</dat:fechaValor>"
+					+"<dat:fechaValor>"+StrFecValor+"</dat:fechaValor>"
 					+"<dat:codClopSist>" + request.getCodClopSist() + "</dat:codClopSist>"
 					+"<dat:tipoSbclop>" + request.getTipoSbclop() + "</dat:tipoSbclop>"
 					+"<dat:numPuesto>" + request.getNumPuesto() + "</dat:numPuesto>"
@@ -226,7 +230,7 @@ try
 		requestDiario.setDiTextArg5("");
 		requestDiario.setFechaCtble(fechaContable);
 		requestDiario.setFechaOprcn(fechaOperacion);
-		requestDiario.setFechaValor(fechaOperacion);
+		requestDiario.setFechaValor("1111-11-11");
 		requestDiario.setHoraOprcn(horaOprn);
 		requestDiario.setIdInternoEmplEp(empleado);
 		requestDiario.setIdInternoTermTn(terminal);
@@ -302,6 +306,17 @@ try
 ResponDiaPend response = new ResponDiaPend();
 try
 {
+	try
+	{
+		ResponNumSec oNumS= ObtieneNumSec(  entidad, centro, terminal);
+		if(oNumS.getStatus()==1)
+		numSec = Integer.toString( oNumS.getNUMSEC());
+		response.setNUMSEC(numSec);
+	}catch(Exception ex0){
+		
+	}
+
+	
 PasivoTcb pasivoTCB = new PasivoTcb();
 ResponseFechaHoraTCB fechaHora = pasivoTCB.FechaContable(terminal);
 String horaOprn = "";
@@ -354,7 +369,7 @@ requestDiario.setDiTextArg4("");
 requestDiario.setDiTextArg5("");
 requestDiario.setFechaCtble(fechaContable);
 requestDiario.setFechaOprcn(fechaOperacion);
-requestDiario.setFechaValor(fechaOperacion);
+requestDiario.setFechaValor("1111-11-11");
 requestDiario.setHoraOprcn(horaOprn);
 requestDiario.setIdInternoEmplEp(empleado);
 requestDiario.setIdInternoTermTn(terminal);
@@ -382,8 +397,13 @@ requestDiario.setIdTermAnul("");
 requestDiario.setIdEmplAnul("");
 requestDiario.setFechaPc(fechaHora.getFechaOprcn());
 requestDiario.setHoraPc(horaOprn);
-ResponseService responseDia = InsertaDiario(requestDiario);
+
+ResponseService responseDia = new  ResponseService();
 response.setStatus(0);
+
+if(Integer.parseInt( numSec)>0)
+	responseDia = InsertaDiario(requestDiario);
+
 if(responseDia.getStatus()==1)
 {
 	response.setStatus(1);

@@ -56,7 +56,7 @@ public class Main {
 		
 		String idExterno="1112";
 		String Producto="CUENTAHORRO";
-		String Importe="321.21";
+		String Importe="32.55";
 		String TipOper="A";
 		String FecValor="2017-08-21";
 		String Concepto="prueba depura   [1.1]";
