@@ -102,7 +102,7 @@ public class CargoAbono
         			//Paso 3
             		RespDia.setTERMINAL(terminal);
             		RespDia.setCOD_RESPUESTA(1);//1
-            		RespDia.setNUMSEC(responseMov.getNUM_SEC());
+            		//---Verificar NumSec  RespDia.setNUMSEC(responseMov.getNUM_SEC());
             		RespDia.setIMP_SDO(impNom);
             		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
             		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
