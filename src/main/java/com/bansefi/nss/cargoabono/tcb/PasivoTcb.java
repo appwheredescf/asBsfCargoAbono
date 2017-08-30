@@ -268,10 +268,12 @@ public class PasivoTcb {
 						Node item2 = RespuetaDiario.item(i);
 						Element eElement2 = (Element) item2;
 						String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
-						mensaje=mensaje.replaceAll("[βΓ³ινσϊοδλφό\\-\\+\\.\\^:,]","");
+						mensaje=mensaje.replaceAll("[βοδλφό\\-\\+\\.\\^:,]","");//ινσϊ
 						mensaje=mensaje.replaceAll("\\u00FA", "ϊ");
 						mensaje=mensaje.replaceAll("\\u00F3", "σ");
-						mensaje=mensaje.replaceAll("\\u20ac", "");
+						mensaje=mensaje.replaceAll("Γ³", "σ");
+						mensaje=mensaje.replaceAll("€¦", " ");
+						//mensaje=mensaje.replaceAll("\\u20ac", "");
 						mensaje=mensaje.replaceAll("\\u00E9", "ι");
 						mensaje=mensaje.replaceAll("\\u00E1", "α");
 						mensaje=mensaje.replaceAll("\\u00ED", "ν");
