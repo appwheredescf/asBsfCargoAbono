@@ -26,11 +26,11 @@ public class Main {
 		String acuerdo ="70654900";//"22012512";// ;"259719532";
 		String nombreCliente="EMILIA RAMIREZ MENDOZA";
 		String tipoIdExterno="Descr";
-		String cajaInt="I";
+		String cajaInt="C";
 		
-		cargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
+		cargoAbono.Procesar(entidad, sucursal, empleado, terminal, acuerdo, TipOper, 
 				FecValor, Importe, Concepto, FecOper, HrOper, cajaInt, nombreCliente,
-				Producto, IdExt, tipoIdExterno, StrClop, StrSubClop);
+				Producto, IdExt, tipoIdExterno);
 
 	}
 

@@ -184,6 +184,11 @@ public class PasivoTcb {
 					Element PSV_APUNTE_V = (Element)doc.getElementsByTagName("PSV_APUNTE_V").item(0);
 					String NUM_SEC = PSV_APUNTE_V.getElementsByTagName("NUM_SEC").item(0).getTextContent();
 					
+					Element PSV_SALDO = (Element)doc.getElementsByTagName("PSV_SDO_DISP_V").item(0);
+					String ImpSald = PSV_SALDO.getElementsByTagName("IMP_SDO").item(0).getTextContent();		
+					
+					response.setImpSaldo(ImpSald);
+					
 					response.setStatus(1);
 					response.setCOD_PLZ_BANCARIA(COD_PLZ_BANCARIA);
 					response.setFECHACONTABLE(FECHA_VALOR);
@@ -434,6 +439,10 @@ public class PasivoTcb {
 					Element PSV_APUNTE_V = (Element)doc.getElementsByTagName("PSV_APUNTE_V").item(0);
 					String NUM_SEC = PSV_APUNTE_V.getElementsByTagName("NUM_SEC").item(0).getTextContent();
 					
+					Element PSV_SALDO = (Element)doc.getElementsByTagName("PSV_SDO_DISP_V").item(0);
+					String ImpSald = PSV_SALDO.getElementsByTagName("IMP_SDO").item(0).getTextContent();
+					
+					response.setImpSaldo(ImpSald);
 					
 					response.setCOD_PLZ_BANCARIA(COD_PLZ_BANCARIA);
 					response.setFECHACONTABLE(FECHA_VALOR);
@@ -621,6 +630,11 @@ public class PasivoTcb {
 					
 					Element PSV_APUNTE_V = (Element)doc.getElementsByTagName("PSV_APUNTE_V").item(0);
 					String NUM_SEC = PSV_APUNTE_V.getElementsByTagName("NUM_SEC").item(0).getTextContent();
+					
+					Element PSV_SALDO = (Element)doc.getElementsByTagName("PSV_SDO_DISP_V").item(0);
+					String ImpSald = PSV_SALDO.getElementsByTagName("IMP_SDO").item(0).getTextContent();
+					
+					response.setImpSaldo(ImpSald);
 					response.setStatus(1);
 					response.setCOD_PLZ_BANCARIA(COD_PLZ_BANCARIA);
 					response.setFECHACONTABLE(FECHA_VALOR);
@@ -809,6 +823,12 @@ public class PasivoTcb {
 					
 					Element PSV_APUNTE_V = (Element)doc.getElementsByTagName("PSV_APUNTE_V").item(0);
 					String NUM_SEC = PSV_APUNTE_V.getElementsByTagName("NUM_SEC").item(0).getTextContent();
+					
+					Element PSV_SALDO = (Element)doc.getElementsByTagName("PSV_SDO_DISP_V").item(0);
+					String ImpSald = PSV_SALDO.getElementsByTagName("IMP_SDO").item(0).getTextContent();
+					
+					
+					
 					response.setStatus(1);
 					response.setCOD_PLZ_BANCARIA(COD_PLZ_BANCARIA);
 					response.setFECHACONTABLE(FECHA_VALOR);
@@ -819,6 +839,7 @@ public class PasivoTcb {
 					response.setRECIBO_BANSEFI_NOMB_50(RECIBO_BANSEFI_NOMB_50);
 					response.setTITULAR_NOMB_50(NOMBRE_TITULAR);
 					response.setNUM_SEC(NUM_SEC);
+					response.setImpSaldo(ImpSald);
 					
 				}
 				else 

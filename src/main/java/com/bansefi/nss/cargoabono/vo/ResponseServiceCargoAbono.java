@@ -12,6 +12,7 @@ public class ResponseServiceCargoAbono extends ResponseService {
 	private String RECIBO_BANSEFI_NOMB_50;
 	private String TEXT_CODE;
 	private String TEXT_ARG1;
+	private String ImpSaldo;
 	
 	public String getFECHACONTABLE() {
 		return FECHACONTABLE;
@@ -78,6 +79,12 @@ public class ResponseServiceCargoAbono extends ResponseService {
 	}
 	public void setTEXT_ARG1(String tEXT_ARG1) {
 		TEXT_ARG1 = tEXT_ARG1;
+	}
+	public String getImpSaldo() {
+		return ImpSaldo;
+	}
+	public void setImpSaldo(String impSaldo) {
+		ImpSaldo = impSaldo;
 	}
 	
 	

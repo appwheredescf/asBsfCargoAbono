@@ -103,7 +103,7 @@ public class CargoAbono
             		RespDia.setTERMINAL(terminal);
             		RespDia.setCOD_RESPUESTA(1);//1
             		//---Verificar NumSec  RespDia.setNUMSEC(responseMov.getNUM_SEC());
-            		RespDia.setIMP_SDO(impNom);
+            		RespDia.setIMP_SDO(responseMov.getImpSaldo());
             		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
             		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
             		StrHoraOper = responseMov.getHORAOPERACION();
@@ -295,7 +295,7 @@ try
 		RespDia.setCOD_RESPUESTA(1);
 		//RespDia.setNUMSEC(responseMov.getNUM_SEC());
 		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
-		RespDia.setIMP_SDO(impNom);
+		RespDia.setIMP_SDO(responseMov.getImpSaldo());
 		
 		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
 		if(pResp.getStatus()==1)
