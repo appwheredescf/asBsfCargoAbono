@@ -293,7 +293,8 @@ try
 		//Paso 3
 		RespDia.setTERMINAL(terminal);
 		RespDia.setCOD_RESPUESTA(1);
-		RespDia.setNUMSEC(responseMov.getNUM_SEC());
+		//RespDia.setNUMSEC(responseMov.getNUM_SEC());
+		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
 		RespDia.setIMP_SDO(impNom);
 		
 		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
