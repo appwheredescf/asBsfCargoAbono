@@ -204,7 +204,8 @@ try
 		DecimalFormat df = new DecimalFormat("#.00");
 		importe = df.format(Double.parseDouble(importe.replace("$", "")));
 		importaSldo = df.format(Double.parseDouble(importaSldo.replace("$", "")));
-		
+		System.out.println("longitud concepto"+concepto.length());
+		System.out.println("Concpeto"+concepto);
 		DiarioElectronicoRequest requestDiario = new DiarioElectronicoRequest();
 		requestDiario.setClaveAnulDi("");
 		requestDiario.setCodClopSist("01");
@@ -304,6 +305,7 @@ try
 			String StrClop,String StrSubClop)
 {
 ResponDiaPend response = new ResponDiaPend();
+
 try
 {
 	try
@@ -333,6 +335,12 @@ if(tipoOp.equals("C"))
 {
 	StrCodTx =oPropTcb.getCARGO_CODTX();
 	SgnCtbleDi="D";
+}else{
+	if(concepto.length()<83){
+		for(int i=concepto.length();i<83;i++){
+			concepto += " ";
+		}
+	}
 }
 
 horaOprn = fechaHora.getHoraOprcn();
@@ -342,7 +350,8 @@ fechaContable =fechaContable.replace("/", "-");
 DecimalFormat df = new DecimalFormat("#.00");
 importe = df.format(Double.parseDouble(importe.replace("$", "")));
 importaSldo = df.format(Double.parseDouble(importaSldo.replace("$", "")));
-
+System.out.println("longitud concepto"+concepto.length());
+System.out.println("Concpeto"+concepto);
 DiarioElectronicoRequest requestDiario = new DiarioElectronicoRequest();
 requestDiario.setClaveAnulDi("");
 requestDiario.setCodClopSist(StrClop);

@@ -264,6 +264,12 @@ try
 	{
 		
 	}
+	if(tipoOp.equals("C")){
+		for (int i=concepto.length();i<90;i++){
+			concepto+=" ";
+		}
+	}
+	//if
 	String StrFeOper="";
 	String StrHoraOper="";
 	concepto = "DVI        " + concepto + " " + tipoIdExterno + " " + idexterno;
