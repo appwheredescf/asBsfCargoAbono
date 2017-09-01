@@ -1,6 +1,8 @@
 
 package com.bansefi.nss.cargoabono.ws;
 
+import java.util.UUID;
+
 import com.bansefi.nss.cargoabono.process.CargoAbono;
 
 
@@ -13,7 +15,7 @@ public class Main {
 		String terminal ="12000105";//"12012103";
 		String entidad ="0166";
 		String Producto="CUENTAHORRO";
-		String Importe="100.00";
+		String Importe="101.00";
 		String TipOper="C";
 		String FecValor="2017-08-21";
 		String Concepto="PRUEBA QA";
@@ -28,7 +30,16 @@ public class Main {
 		String tipoIdExterno="IFE";
 		String cajaInt="I";
 		
-		cargoAbono.ProcesarIntervencion(entidad, 
+		String concepto="Uno ";
+		concepto= String.format("%-90s", concepto);
+		System.out.print("" +concepto);
+		
+		
+		String uniqueID = UUID.randomUUID().toString();
+		System.out.println(" " +uniqueID);
+		String FolioTrans="611b335d-cbc9-3f62-b530-240acc56418b";
+		
+		cargoAbono.Procesar(entidad, 
 				 sucursal,	 empleado, 
 				 terminal,	 acuerdo, 
 				 TipOper,		 FecValor, 
@@ -36,8 +47,8 @@ public class Main {
 				 FecOper, HrOper,
 				 cajaInt,		 nombreCliente, 
 				 Producto,	 IdExt, 
-				 tipoIdExterno, StrClop,
-				 StrSubClop);
+				 tipoIdExterno
+				 ,FolioTrans);
 
 	}
 }

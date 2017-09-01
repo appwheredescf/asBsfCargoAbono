@@ -33,4 +33,7 @@ public class ReqInserMovCarAbo {
 	
 	@Getter @Setter
 	private String DataTrans;
+	
+	@Getter @Setter
+	private String FolioTrans;
 }

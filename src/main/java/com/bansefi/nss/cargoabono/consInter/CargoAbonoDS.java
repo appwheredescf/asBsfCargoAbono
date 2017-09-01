@@ -54,6 +54,7 @@ public class CargoAbonoDS {
 				   +"      <dat:HORAOP>"+request.getHoraOper()+"</dat:HORAOP>"
 				   +"      <dat:CAJAINT>"+request.getCajaInt()+"</dat:CAJAINT>"
 				   +"      <dat:DATATRANS>"+request.getDataTrans()+"</dat:DATATRANS>"
+				   +"      <dat:FOLIOTRANS>"+request.getFolioTrans()+"</dat:FOLIOTRANS>"
 				   +"   </dat:InsertaMovimientoCargoAbono>"
 				   +"</soapenv:Body>"
 				+"</soapenv:Envelope>";

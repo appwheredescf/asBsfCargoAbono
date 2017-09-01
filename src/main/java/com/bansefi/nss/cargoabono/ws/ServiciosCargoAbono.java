@@ -11,7 +11,7 @@ public class ServiciosCargoAbono
 {
 	private static final Logger log = LogManager.getLogger(ServiciosCargoAbono.class);
 	 
-	public String CargoAbono(String entidad,String sucursal, String empleado, String terminal, String acuerdo, String tipoOp, String fechaValor, String impNom, String concepto, String fechaOperacion, String horaOp, String cajaInt, String nombreCliente, String producto, String idexterno, String tipoIdExterno)
+	public String CargoAbono(String entidad,String sucursal, String empleado, String terminal, String acuerdo, String tipoOp, String fechaValor, String impNom, String concepto, String fechaOperacion, String horaOp, String cajaInt, String nombreCliente, String producto, String idexterno, String tipoIdExterno,String folioTrans)
 	{
 		//String result = "{RespuestaCargoAbono:{status:0,descripcion:pruebaReturn,idmov:111}}";
 		JSONObject jsonResult = new JSONObject();
@@ -19,7 +19,7 @@ public class ServiciosCargoAbono
 		{
 			CargoAbono processCargoAbono = new CargoAbono();
 			/* Proceso de Diario Electronico comentado E234 09-06-2017 */
-			jsonResult =processCargoAbono.Procesar(entidad, sucursal, empleado, terminal, acuerdo, tipoOp, fechaValor, impNom, concepto, fechaOperacion, horaOp, cajaInt, nombreCliente, producto, idexterno, tipoIdExterno);
+			jsonResult =processCargoAbono.Procesar(entidad, sucursal, empleado, terminal, acuerdo, tipoOp, fechaValor, impNom, concepto, fechaOperacion, horaOp, cajaInt, nombreCliente, producto, idexterno, tipoIdExterno,folioTrans);
 		}
 		catch(Exception ex)
 		{
@@ -32,7 +32,7 @@ public class ServiciosCargoAbono
 			String terminal, String acuerdo, String tipoOp, String fechaValor, 
 			String impNom, String concepto, String fechaOperacion, String horaOp,
 			String cajaInt, String nombreCliente, String producto, String idexterno, 
-			String tipoIdExterno,String StrClop,String StrSubClop)
+			String tipoIdExterno,String StrClop,String StrSubClop,String folioTrans)
 	{
 		//String result = "{RespuestaCargoAbono:{status:0,descripcion:pruebaReturn,idmov:111}}";
 		JSONObject jsonResult = new JSONObject();
@@ -43,7 +43,7 @@ public class ServiciosCargoAbono
 			jsonResult =processCargoAbono.ProcesarIntervencion(entidad, sucursal, empleado, terminal, 
 					acuerdo, tipoOp, fechaValor, impNom, concepto, 
 					fechaOperacion, horaOp, cajaInt, nombreCliente, producto, 
-					idexterno, tipoIdExterno,StrClop,StrSubClop);
+					idexterno, tipoIdExterno,StrClop,StrSubClop,folioTrans);
 		}
 		catch(Exception ex)
 		{
