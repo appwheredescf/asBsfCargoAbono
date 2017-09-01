@@ -61,6 +61,10 @@ public class CargoAbono
 		String StrFeOper="";
 		String StrHoraOper="";
 		String Clabe="";
+		String conceptoDiario= "";
+		StringBuilder builder = new StringBuilder();
+		String Ordenante = "";
+		conceptoDiario = concepto;
 		/*Begin E234*/
 		try
 		{
@@ -117,13 +121,27 @@ public class CargoAbono
 				{
 					
 				}
-				
-				
+				if(tipoOp.equals("A")){
+					Ordenante = "INGRESO CAJA 010002";
+					builder.append("C DVI").append(Ordenante);
+					for(int i = Ordenante.length();i<178;i++){
+						builder.append(" ");
+					}
+					builder.append(" ").append(tipoIdExterno).append(" ").append(idexterno);
+				}else{
+					
+					builder.append("DVI");
+					for (int i=conceptoDiario.length();i<90;i++){
+						 builder.append(" ");	
+					}
+					builder.append("DVI").append(conceptoDiario);
+				}
+				conceptoDiario = builder.toString();
 				concepto = "C DVI        " + concepto + " " + tipoIdExterno + " : " + idexterno+"";
 				//Registro de Cargo/Abono en 3 pasos
 				//Paso 1
 				DiarioElectronicoDS ProcDia = new DiarioElectronicoDS();
-				ResponDiaPend RespDia= ProcDia.RegistraCargoAbonoPendiente(entidad, sucursal, terminal, empleado, tipoOp, concepto, impNom, "0", acuerdo, "0",fechaOperacion,cajaInt);
+				ResponDiaPend RespDia= ProcDia.RegistraCargoAbonoPendiente(entidad, sucursal, terminal, empleado, tipoOp, conceptoDiario, impNom, "0", acuerdo, "0",fechaOperacion,cajaInt);
 				
 				//Paso 2
 				if(RespDia.getStatus()==1) 
@@ -302,6 +320,11 @@ String SrCod="";
 String Clabe="";
 String StrFeOper="";
 String StrHoraOper="";
+String conceptoDiario= "";
+StringBuilder builder = new StringBuilder();
+String Ordenante = "";
+conceptoDiario = concepto;
+
 /*Begin E234*/
 try
 {
@@ -359,19 +382,30 @@ try
 		{
 			
 		}
-		if(tipoOp.equals("C")){
-			for (int i=concepto.length();i<90;i++){
-				concepto+=" ";
+		
+		if(tipoOp.equals("A")){
+			Ordenante = "ABONOS VARIOS 990002";
+			builder.append("C DVI").append(Ordenante);
+			for(int i = Ordenante.length();i<178;i++){
+				builder.append(" ");
 			}
+			builder.append(" ").append(tipoIdExterno).append(" ").append(idexterno);
+		}else{
+			
+			builder.append("DVI");
+			for (int i=conceptoDiario.length();i<90;i++){
+				 builder.append(" ");	
+			}
+			builder.append("DVI").append(conceptoDiario);
 		}
-		//if
+		conceptoDiario = builder.toString();
 		
 		concepto = "DVI        " + concepto + " " + tipoIdExterno + " " + idexterno;
 			//Registro de Cargo/Abono en 3 pasos
 			//Paso 1
 			DiarioElectronicoDS ProcDia = new DiarioElectronicoDS();
 			ResponDiaPend RespDia= ProcDia.RegistraCargoAbonoPendienteInter(entidad, sucursal, terminal, empleado,
-					tipoOp, concepto, impNom, "0", acuerdo, "0",
+					tipoOp, conceptoDiario, impNom, "0", acuerdo, "0",
 					fechaOperacion,cajaInt,StrClop,StrSubClop);
 			
 			//Paso 2

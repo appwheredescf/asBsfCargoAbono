@@ -335,12 +335,6 @@ if(tipoOp.equals("C"))
 {
 	StrCodTx =oPropTcb.getCARGO_CODTX();
 	SgnCtbleDi="D";
-}else{
-	if(concepto.length()<83){
-		for(int i=concepto.length();i<83;i++){
-			concepto += " ";
-		}
-	}
 }
 
 horaOprn = fechaHora.getHoraOprcn();
