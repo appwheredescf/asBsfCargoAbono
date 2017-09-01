@@ -123,7 +123,7 @@ public class CargoAbono
 				}
 				if(tipoOp.equals("A")){
 					Ordenante = "INGRESO CAJA 010002";
-					builder.append("C DVI").append(Ordenante);
+					builder.append("C DVI      ").append(Ordenante);
 					for(int i = Ordenante.length();i<178;i++){
 						builder.append(" ");
 					}
@@ -385,18 +385,18 @@ try
 		
 		if(tipoOp.equals("A")){
 			Ordenante = "ABONOS VARIOS 990002";
-			builder.append("C DVI").append(Ordenante);
-			for(int i = Ordenante.length();i<178;i++){
+			builder.append("C DVI      ").append(Ordenante);
+			for(int i = builder.length();i<178;i++){
 				builder.append(" ");
 			}
 			builder.append(" ").append(tipoIdExterno).append(" ").append(idexterno);
 		}else{
 			
-			builder.append("DVI");
-			for (int i=conceptoDiario.length();i<90;i++){
+			builder.append("DVI ").append(conceptoDiario);
+			for (int i=builder.length();i<90;i++){
 				 builder.append(" ");	
 			}
-			builder.append("DVI").append(conceptoDiario);
+			
 		}
 		conceptoDiario = builder.toString();
 		
