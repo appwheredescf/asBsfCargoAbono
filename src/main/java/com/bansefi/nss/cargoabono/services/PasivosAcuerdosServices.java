@@ -1,12 +1,29 @@
 package com.bansefi.nss.cargoabono.services;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+
 import com.bansefi.nss.cargoabono.commons.UtilJson;
+import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
+import com.bansefi.nss.cargoabono.properties.DsProperties;
 import com.bansefi.nss.cargoabono.properties.EndpointProperties;
+import com.bansefi.nss.cargoabono.properties.TcbProperties;
 import com.bansefi.nss.cargoabono.vo.ActualizaStatusMovimientoCargoAbono;
 import com.bansefi.nss.cargoabono.vo.EntDataTrans;
 import com.bansefi.nss.cargoabono.vo.EntMovCargoAbono;
@@ -26,11 +43,13 @@ import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_AUDIT_AUX;
 
 
 
+
 public class PasivosAcuerdosServices 
 {
-
+	private DsProperties propDs = new DsProperties();
 	private UtilJson utilJson = UtilJson.getInstance();
 	private static final Logger log = LogManager.getLogger(PasivosAcuerdosServices.class);
+	DiarioElectronicoDS diario= new DiarioElectronicoDS();
 	
 	public  ResponseService ConsultaClabe(String acuerdo, String entidad, String terminal) {
 		EndpointProperties endpointProperties = new EndpointProperties();
@@ -80,7 +99,166 @@ public class PasivosAcuerdosServices
 		return response;
 	}
 	
-	public  ResponseConsultaSaldo ConsultaSaldo(String acuerdo, String entidad, String terminal) 
+	public  ResponseConsultaSaldo ConsultaSaldo(String acuerdo, String entidad, String terminal)
+	{
+		String salida="";
+		TcbProperties pProp = new TcbProperties();
+		ResponseConsultaSaldo response = new ResponseConsultaSaldo();
+		String StrVist="";
+		String StrUrl="";
+		try
+		{
+			StrUrl=pProp.getURL_SALDOS();
+			
+			StrVist="<TR_CONS_SALDOS_VISTA_TRN>"
+            +"<TR_CONS_SALDOS_VISTA_TRN_I>"
+            +"<TR_CONS_SALDOS_VISTA_EVT_Y>"
+             +"<COD_NRBE_EN>"+entidad+"</COD_NRBE_EN>"
+             +"<COD_CENT_UO></COD_CENT_UO>"
+             +"<NUM_SEC_AC>"+acuerdo+"</NUM_SEC_AC>"
+            +"</TR_CONS_SALDOS_VISTA_EVT_Y>"
+            +"<STD_TRN_I_PARM_V>"
+             +"<ID_INTERNO_TERM_TN>"+terminal+"</ID_INTERNO_TERM_TN>"
+             +"<ID_EMPL_AUT></ID_EMPL_AUT>"
+             +"<NUM_SEC></NUM_SEC>"
+             +"<COD_TX>GAC11COU</COD_TX>"
+             +"<COD_TX_DI></COD_TX_DI>"
+            +"</STD_TRN_I_PARM_V>"
+           +"</TR_CONS_SALDOS_VISTA_TRN_I>"
+          +"</TR_CONS_SALDOS_VISTA_TRN>";
+			
+			String soapXml = "<SOAP-ENV:Envelope xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'>"
+					+ "	<SOAP-ENV:Body> " + StrVist+ "	</SOAP-ENV:Body>"
+					+ "</SOAP-ENV:Envelope>"; 
+
+			URL url;
+			java.net.URLConnection conn = null;
+
+			try 
+			{
+				url = new URL(StrUrl);
+				try 
+				{
+					conn = url.openConnection();
+				} 
+				catch (IOException e) 
+				{
+					log.info("ConsultaSaldo -  : View In .- " + StrVist);
+					log.info("ConsultaSaldo -  : URL_CARGO .- " + StrUrl);
+					log.error("ConsultaSaldo - : IOException. " , e);
+				}
+			} 
+			catch (MalformedURLException e1) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e1.getMessage());
+				log.info("CargoIntervencion : View In .- " + StrVist);
+				log.info("CargoIntervencion  : URL_CARGO .- " + StrUrl);
+				log.error("CargoIntervencion : MalformedURLException. " , e1);
+			}
+			
+			conn.setRequestProperty("SOAPAction", StrUrl);
+			conn.setDoOutput(true);
+			//System.out.println(soapXml);
+			//Send the request
+			java.io.OutputStreamWriter wr;
+			try 
+			{
+				wr = new java.io.OutputStreamWriter(conn.getOutputStream());
+				wr.write(soapXml);
+				wr.flush();
+			} 
+			catch (IOException e2) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e2.getMessage());
+				log.info("CargoIntervencion : View In .- " + StrVist);
+				log.error("CargoIntervencion : OutputStreamWriter" , e2);
+			}
+
+			// Read the response
+			java.io.BufferedReader rd = null;
+			try 
+			{
+				rd = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
+			} 
+			catch (IOException e1) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e1.getMessage());
+				log.info("CargoIntervencion : View In .- " + StrVist);
+				log.error("CargoIntervencion : BufferedReader. " , e1);
+			}
+			
+			try
+			{
+				String line = "";
+				while ((line = rd.readLine()) != null) 
+				{ 
+					//LECTURA DE VISTA DE SALIDA
+					salida += line;	
+				}
+				
+				salida = salida.replaceAll("<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">", "");
+				salida = salida.replaceAll("<SOAP-ENV:Body>", "");
+				salida = salida.replaceAll("</SOAP-ENV:Body>", "");
+				salida = salida.replaceAll("</SOAP-ENV:Envelope>", "");
+				salida = salida.trim();
+				
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(new ByteArrayInputStream(salida.getBytes("utf-8")));
+				NodeList TR_IMPUTAC_VTNLLA_PASIVO_TRN_O = doc.getElementsByTagName("TR_CONS_SALDOS_VISTA_TRN_O");
+				//System.out.println(strVista);
+				//System.out.println(salida);
+				String RTRN_CD = "";
+				for(int i = 0 ; i < TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.getLength()  ; i++ )
+				{
+					Node item = TR_IMPUTAC_VTNLLA_PASIVO_TRN_O.item(i);
+					Element eElement = (Element) item;
+					RTRN_CD = eElement.getElementsByTagName("RTRN_CD").item(0).getTextContent();
+				}
+				
+				if(RTRN_CD.equals("1"))
+				{
+					
+					Element PSV_SALDO = (Element)doc.getElementsByTagName("PSV_DISPO_V").item(0);
+					String ImpSald = PSV_SALDO.getElementsByTagName("STD_DEC_15Y2").item(0).getTextContent();		
+					
+					response.setStatus(1);
+					response.setDISPO(ImpSald);
+					
+				}
+				
+				else 
+				{
+					
+					log.info("CargoIntervencion : View In .- " + StrVist);
+					log.info("CargoIntervencion : View Out .- " + salida);
+					String errores = "";
+					NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
+					errores =ObtMensajeTcb(STD_MSJ_PARM_V);
+					response.setDescripcion(errores);
+			//		Thread.sleep(timeSleep);
+				}
+			}
+			catch (Exception e) 
+			{
+				response.setStatus(-1);
+				response.setDescripcion(e.getMessage());
+				//System.out.println(e.getMessage());
+				log.info("CargoIntervencion  : View In .- " + StrVist);
+				log.error("CargoIntervencion : Exception" , e);
+			}
+			
+			
+		}catch(Exception ex){
+			
+		}
+		return response;
+	}
+	
+	public  ResponseConsultaSaldo ConsultaSaldoAnterior(String acuerdo, String entidad, String terminal) 
 	{
 		EndpointProperties endpointProperties = new EndpointProperties();
 		ResponseConsultaSaldo response = new ResponseConsultaSaldo();
@@ -723,7 +901,68 @@ public class PasivosAcuerdosServices
 		}
 		return oResul;
 	}	
-	
+
+	public String ObtMensajeTcb(NodeList STD_MSJ_PARM_V)
+	{
+		String errores="";
+		try
+		{
+			for(int i = 0 ; i < STD_MSJ_PARM_V.getLength()  ; i++ )
+			{
+				
+				Node item = STD_MSJ_PARM_V.item(i);
+				Element eElement = (Element) item;
+				String TEXT_CODE = eElement.getElementsByTagName("TEXT_CODE").item(i).getTextContent();
+				String TEXT_ARG1 = eElement.getElementsByTagName("TEXT_ARG1").item(i).getTextContent();
+				String action="urn:getDescError";
+				String xml= "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:dat=\"http://ws.wso2.org/dataservice\">"+
+				   "<soapenv:Header/>"+
+				   "<soapenv:Body>"+
+				      "<dat:getDescError>"+
+				         "<dat:CodError>"+TEXT_CODE+"</dat:CodError>"+
+				      "</dat:getDescError>"+
+				   "</soapenv:Body>"+
+				"</soapenv:Envelope>";
+				
+				String wsURL=this.propDs.getURL_ERROR_DESC();
+				String outputString=diario.SalidaResponse(xml,wsURL,action,"");
+			
+					try
+					{
+						DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+						DocumentBuilderFactory dbFactor = DocumentBuilderFactory.newInstance();
+						DocumentBuilder dBuild = dbFactory.newDocumentBuilder();
+						DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+						Document document = dBuilder.parse(new ByteArrayInputStream(outputString.getBytes("UTF-8")));
+						
+						NodeList RespuetaDiario = document.getElementsByTagName("ErrorTCB");
+						Node item2 = RespuetaDiario.item(i);
+						Element eElement2 = (Element) item2;
+						String mensaje=eElement2.getElementsByTagName("TextoMensaje").item(0).getTextContent();
+						mensaje=mensaje.replaceAll("[âïäëöü\\-\\+\\.\\^:,]","");//éíóú
+						mensaje=mensaje.replaceAll("\\u00FA", "ú");
+						mensaje=mensaje.replaceAll("\\u00F3", "ó");
+						mensaje=mensaje.replaceAll("Ã³", "ó");
+						mensaje=mensaje.replaceAll("€¦", " ");
+						//mensaje=mensaje.replaceAll("\\u20ac", "");
+						mensaje=mensaje.replaceAll("\\u00E9", "é");
+						mensaje=mensaje.replaceAll("\\u00E1", "á");
+						mensaje=mensaje.replaceAll("\\u00ED", "í");
+						errores += TEXT_CODE + "|" + TEXT_ARG1+":"+mensaje+ ", ";
+						i=STD_MSJ_PARM_V.getLength();
+					}catch(Exception e)
+					{
+						log.error("ObtMensajeTcb : Exception" , e);
+						System.out.println(e.getMessage());
+						errores="La obtencion de errores fallo:"+e.getMessage();
+					}
+				
+			}
+		}catch(Exception ex){
+			errores="";
+		}
+		return errores;
+	}
 	/*End E234 */
 	
 }
