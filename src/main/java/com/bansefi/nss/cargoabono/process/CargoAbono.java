@@ -124,19 +124,22 @@ public class CargoAbono
 				if(tipoOp.equals("A")){
 					Ordenante = "INGRESO CAJA 010002";
 					builder.append("C DVI      ").append(Ordenante);
-					for(int i = Ordenante.length();i<178;i++){
+					for(int i = builder.length();i<178;i++){
 						builder.append(" ");
 					}
-					builder.append(" ").append(tipoIdExterno).append(" ").append(idexterno);
+					builder.append(conceptoDiario). append(" ").append(tipoIdExterno).append(" ").append(idexterno);
 				}else{
 					
-					builder.append("DVI");
-					for (int i=conceptoDiario.length();i<90;i++){
+					builder.append("DVI        ").append(conceptoDiario);
+					for (int i=builder.length();i<90;i++){
 						 builder.append(" ");	
 					}
-					builder.append("DVI").append(conceptoDiario);
+					builder.append(tipoIdExterno).append(" ").append(idexterno);
 				}
+				
 				conceptoDiario = builder.toString();
+				//log.info("longitud cadena diario electronico: "+conceptoDiario.length());
+				//log.info("cadena diario electronico: "+conceptoDiario);
 				concepto = "C DVI        " + concepto + " " + tipoIdExterno + " : " + idexterno+"";
 				//Registro de Cargo/Abono en 3 pasos
 				//Paso 1
@@ -389,14 +392,14 @@ try
 			for(int i = builder.length();i<178;i++){
 				builder.append(" ");
 			}
-			builder.append(" ").append(tipoIdExterno).append(" ").append(idexterno);
+			builder.append(conceptoDiario). append(" ").append(tipoIdExterno).append(" ").append(idexterno);
 		}else{
 			
-			builder.append("DVI ").append(conceptoDiario);
+			builder.append("DVI        ").append(conceptoDiario);
 			for (int i=builder.length();i<90;i++){
 				 builder.append(" ");	
 			}
-			
+			builder.append(tipoIdExterno).append(" ").append(idexterno);
 		}
 		conceptoDiario = builder.toString();
 		
