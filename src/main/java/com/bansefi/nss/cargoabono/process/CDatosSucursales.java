@@ -10,12 +10,16 @@ import java.util.ArrayList;
 import org.json.JSONObject;
 
 import com.bansefi.nss.cargoabono.commons.UtilJson;
+import com.bansefi.nss.cargoabono.consInter.CargoAbonoDS;
 import com.bansefi.nss.cargoabono.vo.EntDescImpr;
 import com.bansefi.nss.cargoabono.vo.ResponseService;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 
 public class CDatosSucursales {
-
+	private static final Logger log = LogManager.getLogger(CDatosSucursales.class);
 	private UtilJson utilJson = UtilJson.getInstance();
 	public ResponseService EncriptarDescr(String input,String Strurl){
 		ResponseService oResult= new ResponseService();
@@ -36,15 +40,20 @@ public class CDatosSucursales {
 				}
 				catch(Exception ex)
 				{
+					log.error("No responde [EncriptarDescr] "+ ex.getMessage());
 					oResult.setStatus(-1);
 					oResult.setDescripcion(ex.getMessage());
 					//log.error("Error [Encriptar]"+ex.getMessage());
 				}
 
 			}
+			else
+			{
+				log.error("No responde [EncriptarDescr] "+Strurl +" input "+ input);
+			}
 		}catch(Exception ex)
 		{
-			
+			log.error("No responde [EncriptarDescr] "+Strurl +" input "+ input+ "Err:  "+ex.getMessage());
 		}
 		return oResult;
 	}
@@ -77,7 +86,7 @@ public class CDatosSucursales {
 				}
 				catch(Exception ex)
 				{
-					//log.error("Error [getSalida]"+ex.getMessage()+"  "+ input +" Url : "+StrUrl);
+					log.error("No responde [getSalida] "+StrUrl +" input "+ input);
 					System.out.println("Error Msg "+ input +" Url : "+StrUrl);
 					StrResp="";		
 				}
@@ -98,6 +107,7 @@ public class CDatosSucursales {
 		catch(Exception ex)
 		{
 			System.out.println("Error Msg "+ ex.getMessage());
+			log.error("No responde [SerealObjImp] "+StrCad );
 		}
 		return res;
 	}

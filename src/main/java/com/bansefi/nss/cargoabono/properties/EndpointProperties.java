@@ -38,8 +38,10 @@ public class EndpointProperties
 	private String estatusDiaElect;
 	private String MsgErrorPaso3;
 	private String UrlConsCargAbo;
-	private String UrlEncripta;
-	private String UrlDesEncripta;
+	private String ENCRIPDESC_KEY;
+	private String ENCRIPDESC_IV;
+	
+	
 	//End AE234
 	
 	private Properties prop = Utils.getProperties("com/bansefi/nss/cargoabono/properties/endpoint.properties");
@@ -78,8 +80,9 @@ public class EndpointProperties
 		this.estatusDiaElect =prop.getProperty("estatusDiaElect");
 		this.setMsgErrorPaso3(prop.getProperty("ErrorMsgPaso3"));
 		this.UrlConsCargAbo=prop.getProperty("URL_CONSMOVCARG");
-		this.UrlEncripta=prop.getProperty("URL_ENCRIPTAR");
-		this.UrlDesEncripta=prop.getProperty("URL_DESENCRIP");
+		this.ENCRIPDESC_KEY = prop.getProperty("ENCRIPDESC_KEY");
+		this.ENCRIPDESC_IV= prop.getProperty("ENCRIPDESC_IV");
+		
 	}
 
 	public String getConsultaClabe() {
@@ -322,21 +325,24 @@ public class EndpointProperties
 		UrlConsCargAbo = urlConsCargAbo;
 	}
 
-	public String getUrlEncripta() {
-		return UrlEncripta;
+	public String getENCRIPDESC_KEY() {
+		return ENCRIPDESC_KEY;
 	}
 
-	public void setUrlEncripta(String urlEncripta) {
-		UrlEncripta = urlEncripta;
+	public void setENCRIPDESC_KEY(String eNCRIPDESC_KEY) {
+		ENCRIPDESC_KEY = eNCRIPDESC_KEY;
 	}
 
-	public String getUrlDesEncripta() {
-		return UrlDesEncripta;
+	public String getENCRIPDESC_IV() {
+		return ENCRIPDESC_IV;
 	}
 
-	public void setUrlDesEncripta(String urlDesEncripta) {
-		UrlDesEncripta = urlDesEncripta;
+	public void setENCRIPDESC_IV(String eNCRIPDESC_IV) {
+		ENCRIPDESC_IV = eNCRIPDESC_IV;
 	}
 
+	
+	
+	
 	
 }

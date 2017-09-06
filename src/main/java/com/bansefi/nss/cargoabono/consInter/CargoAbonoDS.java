@@ -62,7 +62,10 @@ public class CargoAbonoDS {
 			
 			String wsURL = propDs.getUrlConsCargAbo();
 			
+			//log.error("Esto no e un error [wsURL] " +wsURL);
+			//log.error("Esto no e un error [wsURL] " +xml);
 			outputString=SalidaResponse(xml,wsURL,action,"");
+			//log.error("Esto no e un error [outputString] " +outputString);
 			if(outputString.contains("RespuestaAltaCargoAbono"))
 			{
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -81,7 +84,7 @@ public class CargoAbonoDS {
 				response.setCOD_TX(StrIdMov);
 				response.setDescripcion("EXITO");
 			} else {
-			
+				log.error("CargoAbonoDS Out " +outputString);
 				response.setStatus(0);
 				response.setDescripcion(outputString);
 			}

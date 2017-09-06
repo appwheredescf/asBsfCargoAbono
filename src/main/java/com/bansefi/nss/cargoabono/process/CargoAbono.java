@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import com.bansefi.nss.cargoabono.commons.CantidadLetras;
+import com.bansefi.nss.cargoabono.commons.FuncionesEncryption;
 import com.bansefi.nss.cargoabono.commons.UtilJson;
 import com.bansefi.nss.cargoabono.consInter.CargoAbonoDS;
 import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
@@ -85,13 +86,14 @@ public class CargoAbono
 					try
 					{
 						EndpointProperties oPro = new EndpointProperties();
-						String Strurl = oPro.getUrlDesEncripta();
-						ResponseService oRepSer=EncriptaDes(Strurl,oMovC.getDataTrans());
-						if(oRepSer.getStatus()==1)
-						{
+						String StrVi = oPro.getENCRIPDESC_IV();
+						String StrKey=oPro.getENCRIPDESC_KEY();
+						FuncionesEncryption oFunc = new FuncionesEncryption(StrVi,StrKey);
+						String StrDesc = oFunc.decrypt(oMovC.getDataTrans());
+						
 							CDatosSucursales oClip = new CDatosSucursales();
 							EntDescImpr res = new EntDescImpr();
-							res= oClip.SerealObjImp(oRepSer.getDescripcion());
+							res= oClip.SerealObjImp(StrDesc);//oRepSer.getDescripcion());
 							if(res!=null)
 							{
 								SrIdMov = res.getFolio();
@@ -100,7 +102,7 @@ public class CargoAbono
 								Clabe=res.getClabe();
 							}
 							
-						}
+						
 					}catch(Exception ex){
 						
 					}
@@ -195,8 +197,8 @@ public class CargoAbono
 	        					oIns.setTipOper(tipoOp);
 	        					
 	        					EndpointProperties prop = new EndpointProperties();
-	        					String Strurl =prop.getUrlEncripta();
-	        					JSONObject datosEntrada = new JSONObject();
+	        					
+	        					
 	        					
 	        					String SgnCtbleDi="H";
 	        					
@@ -204,18 +206,25 @@ public class CargoAbono
 	        						SgnCtbleDi="D";
 	        					
 	        					String ImpLetra = CantidadLetras.Convertir(impNom,true);
-	        					datosEntrada.put("text","{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}");
-	        					String input =datosEntrada.toString();
+	        					String StrCadEncrip = "{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}";
+	        					EndpointProperties oProp = new EndpointProperties();
+	        					String StrIv = oProp.getENCRIPDESC_IV();
+	        					String StrKey= oProp.getENCRIPDESC_KEY();
+	        					FuncionesEncryption oFunc = new FuncionesEncryption(StrIv,StrKey);
+	        					String CadEncrip = oFunc.encrypt(StrCadEncrip);
+	        					//datosEntrada.put("text",);
 	        					
-	        					CDatosSucursales oClip = new CDatosSucursales();
-	        					ResponseService rsp= oClip.EncriptarDescr(input, Strurl);
-	        					if(rsp.getStatus()==1)
-	        					{
-	        						oIns.setDataTrans(rsp.getDescripcion());
+	        					//String input =datosEntrada.toString();
+	        					
+	        					//CDatosSucursales oClip = new CDatosSucursales();
+	        					//ResponseService rsp= oClip.EncriptarDescr(input, Strurl);
+	        					//if(rsp.getStatus()==1)
+	        					//{
+	        						oIns.setDataTrans(CadEncrip);//rsp.getDescripcion());
 	        						oIns.setFolioTrans(folioTrans);
 	        						CargoAbonoDS oDsMov = new CargoAbonoDS();
 	        						ResponseService statMov = oDsMov.InsertaMovCargAbon(oIns);
-	        					}
+	        					//}
 	        							
 	        				}catch(Exception ex){
 	        					System.out.println("Error : "+ex.getMessage());
@@ -349,13 +358,18 @@ try
 			try
 			{
 				EndpointProperties oPro = new EndpointProperties();
-				String Strurl = oPro.getUrlDesEncripta();
-				ResponseService oRepSer=EncriptaDes(Strurl,oMovC.getDataTrans());
-				if(oRepSer.getStatus()==1)
-				{
+				String EncripIv = oPro.getENCRIPDESC_IV();
+				String EncripKey=oPro.getENCRIPDESC_KEY();
+				FuncionesEncryption oFunc = new FuncionesEncryption(EncripIv,EncripKey);
+				String CadEncrip = oFunc.decrypt(oMovC.getDataTrans());
+				
+				//String Strurl = oPro.getUrlDesEncripta();
+				//ResponseService oRepSer=EncriptaDes(Strurl,oMovC.getDataTrans());
+				//if(oRepSer.getStatus()==1)
+				//{
 					CDatosSucursales oClip = new CDatosSucursales();
 					EntDescImpr res = new EntDescImpr();
-					res= oClip.SerealObjImp(oRepSer.getDescripcion());
+					res= oClip.SerealObjImp(CadEncrip);
 					if(res!=null)
 					{
 						SrIdMov = res.getFolio();
@@ -364,7 +378,7 @@ try
 						Clabe=res.getClabe();
 					}
 					
-				}
+				//}
 			}catch(Exception ex){
 				
 			}
@@ -462,7 +476,12 @@ try
 					oIns.setTipOper(tipoOp);
 					
 					EndpointProperties prop = new EndpointProperties();
-					String Strurl =prop.getUrlEncripta();
+					//String Strurl =prop.getUrlEncripta();
+					String EncripIv = prop.getENCRIPDESC_IV();
+					String EncripKey=prop.getENCRIPDESC_KEY();
+					
+					FuncionesEncryption oFunc = new FuncionesEncryption(EncripIv,EncripKey);
+					
 					JSONObject datosEntrada = new JSONObject();
 					
 					String SgnCtbleDi="H";
@@ -471,18 +490,21 @@ try
 						SgnCtbleDi="D";
 					
 					String ImpLetra = CantidadLetras.Convertir(impNom,true);
-					datosEntrada.put("text","{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}");
-					String input =datosEntrada.toString();
+					String StrCadEncrip="{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}";
+					//datosEntrada.put("text","{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}");
+					//String input =datosEntrada.toString();
 					
-					CDatosSucursales oClip = new CDatosSucursales();
-					ResponseService rsp= oClip.EncriptarDescr(input, Strurl);
-					if(rsp.getStatus()==1)
-					{
+					String CadDesc = oFunc.encrypt(StrCadEncrip);
+					
+					//CDatosSucursales oClip = new CDatosSucursales();
+					//ResponseService rsp= oClip.EncriptarDescr(input, Strurl);
+					//if(rsp.getStatus()==1)
+					//{
 						oIns.setFolioTrans(folioTrans);
-						oIns.setDataTrans(rsp.getDescripcion());
+						oIns.setDataTrans(CadDesc);//rsp.getDescripcion());
 						CargoAbonoDS oDsMov = new CargoAbonoDS();
 						ResponseService statMov = oDsMov.InsertaMovCargAbon(oIns);
-					}
+					//}
 							
 				}catch(Exception ex){
 					
@@ -574,17 +596,25 @@ return jsonResult;
 			{
 				try
 				{
+					//EndpointProperties oPro = new EndpointProperties();
+					//JSONObject datosEntrada = new JSONObject();
+					 //String Strurl = oPro.getUrlDesEncripta();
+					//datosEntrada.put("text",oCar.getDataTrans());
+					//String input =datosEntrada.toString();
 					EndpointProperties oPro = new EndpointProperties();
-					JSONObject datosEntrada = new JSONObject();
-					 String Strurl = oPro.getUrlDesEncripta();
-					datosEntrada.put("text",oCar.getDataTrans());
-					String input =datosEntrada.toString();
+					String EncripIv = oPro.getENCRIPDESC_IV();
+					String EncripKey=oPro.getENCRIPDESC_KEY();
+					
+					FuncionesEncryption oFunc = new FuncionesEncryption(EncripIv,EncripKey);
+					
+					String StrCadDesc =oFunc.decrypt(oCar.getDataTrans());
+					
 					CDatosSucursales oClip = new CDatosSucursales();
-					ResponseService oRep= oClip.EncriptarDescr(input, Strurl);
+					//ResponseService oRep= oClip.EncriptarDescr(input, Strurl);
 					EntDescImpr res = new EntDescImpr();
 					
-					if(oRep.getStatus()==1)
-						res= oClip.SerealObjImp(oRep.getDescripcion());	
+					//if(oRep.getStatus()==1)
+						res= oClip.SerealObjImp(StrCadDesc);//oRep.getDescripcion());	
 					
 					PasivosAcuerdosServices oWsAcuerdo = new PasivosAcuerdosServices();
 					ResponseFechaActual responseFechaActual = oWsAcuerdo.FechaActual();
@@ -618,7 +648,7 @@ return jsonResult;
 					jsonResultado.put("importe_letra", "( "+res.getImpLetr()+" )");
 					jsonResultado.put("oficina", "");
 					jsonResultado.put("contrato", res.getAcuerdo());
-					jsonResultado.put("idExterno",res.getIdexterno() );
+					jsonResultado.put("idExterno", res.getTipoIdExterno().trim()+" : " +res.getIdexterno().trim());
 					jsonResultado.put("clabe",res.getClabe() );
 					String StrSerial = terminal+ " "+ sFecSerie+ res.getHoraPc().replace(":", "");
 					StrSerial +="  "+res.getCajInt()+" "+res.getSigCont();
