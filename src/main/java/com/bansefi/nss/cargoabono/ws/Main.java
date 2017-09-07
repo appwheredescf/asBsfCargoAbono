@@ -1,7 +1,13 @@
 
 package com.bansefi.nss.cargoabono.ws;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.UUID;
+
+import org.json.JSONObject;
 
 import com.bansefi.nss.cargoabono.commons.FuncionesEncryption;
 import com.bansefi.nss.cargoabono.process.CargoAbono;
@@ -14,6 +20,34 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 
+		
+		String time1 = "16:00:00";
+		String time2 = "19:00:00";
+
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+		Date date1 = format.parse(time1);
+		Date date2 = format.parse(time2);
+		long difference = date2.getTime() - date1.getTime();
+		System.out.println("Dif "+difference+"  "+(difference/6000)/60);
+		
+		
+		
+		String entidad ="0166";
+		String terminal ="12012103";//"12012103";
+		String centro="0121";
+		CargoAbono cargoAbono = new CargoAbono();
+		cargoAbono.ProcesaPendientes(entidad, terminal, centro);
+		
+		
+		Calendar calendario = new GregorianCalendar();
+		int hora, minutos, segundos;
+		hora =calendario.get(Calendar.HOUR_OF_DAY);
+		minutos = calendario.get(Calendar.MINUTE);
+		segundos = calendario.get(Calendar.SECOND);
+		System.out.println(hora + ":" + minutos + ":" + segundos);
+		
+		
+		
 		EndpointProperties oPro = new EndpointProperties();
 		String StrVi = oPro.getENCRIPDESC_IV();
 		String StrKey=oPro.getENCRIPDESC_KEY();
@@ -24,28 +58,28 @@ public class Main {
 		String CadDesc =  oFunc.decrypt(StrCadEncrip);
 		
 		
-		String entidad ="0166";
-		String terminal ="12012103";//"12012103";
+		
+		
 		String HrOper="10:07:00";
 		String nombreCliente="EMILIA RAMIREZ MENDOZA";
 		String acuerdo ="70654900";//"22012512";// ;"259719532";
 		String sucursal="0121";//"0121";
 		String empleado ="E1662129";//"E1662129";
 		String idExterno="51";
-		String centro="0121";
+		
 		ServiciosCargoAbono oc = new ServiciosCargoAbono();
-		oc.GeneraComprobate(terminal,entidad,centro,empleado);
+		String StResult =oc.GeneraComprobate(terminal,entidad,centro,empleado);
 		
 		ConsultaSaldo csald = new ConsultaSaldo();
 		csald.Comprobante(entidad, sucursal, acuerdo, terminal, HrOper, nombreCliente, idExterno, empleado);
 		
 		
-		CargoAbono cargoAbono = new CargoAbono();
+		
 		
 		
 		
 		String Producto="CUENTAHORRO";
-		String Importe="13.00";
+		String Importe="17.00";
 		String TipOper="A";
 		String FecValor="2017-08-21";
 		String Concepto="PRUEBA QA";
@@ -67,7 +101,7 @@ public class Main {
 		
 		String uniqueID = UUID.randomUUID().toString();
 		System.out.println(" " +uniqueID);
-		String FolioTrans="b3887404-3c12-ae10-c477-7152f61e61c1";
+		String FolioTrans="b3887404-3c12-ae10-c477-7152f61e6189";
 
 		String ImpLetra="";
 		String Clabe="";
@@ -77,7 +111,10 @@ public class Main {
 		String producto="";
 		String idexterno="";
 		//String StrCadEncrip = "{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+Importe+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}";
-		
+
+		//JSONObject jsonResultado = new JSONObject();
+		//jsonResultado= cargoAbono.ConsultaPendienteDiario(entidad, terminal, centro);
+		//
 		
 		cargoAbono.Procesar(entidad, 
 				 sucursal,	 empleado, 

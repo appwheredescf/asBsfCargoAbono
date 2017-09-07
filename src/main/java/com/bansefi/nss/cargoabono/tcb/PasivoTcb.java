@@ -1026,7 +1026,7 @@ public class PasivoTcb {
 			String soapXml = "<SOAP-ENV:Envelope xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'>"
 					+ "	<SOAP-ENV:Body> " + strVista + "	</SOAP-ENV:Body>"
 					+ "</SOAP-ENV:Envelope>"; 
-//System.out.println(soapXml);
+System.out.println(soapXml);
 			URL url;
 			java.net.URLConnection conn = null;
 			try {

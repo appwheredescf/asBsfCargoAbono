@@ -4,7 +4,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -76,7 +79,7 @@ public class CargoAbono
 			request.setEntidad(entidad);
 			request.setSucursal(sucursal);
 			request.setTerminal(terminal);
-			request.setIdEmpleado(empleado);
+			request.setIdEmpleado("1");
 			
 			RespConsMovCarAbon oMovC = oDs.ConsultMovCargAbon(request);
 			if(oMovC.getStatus()==1)
@@ -151,17 +154,26 @@ public class CargoAbono
 				//Paso 2
 				if(RespDia.getStatus()==1) 
 				{
+					
+					
+					ResponseService StaSql = InsertSql( acuerdo, entidad, terminal, "0", empleado, StrFeOper, "01-01-1999", StrHoraOper,
+           				 sucursal, tipoOp, impNom, concepto, nombreCliente, producto ,
+           				 idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans,null);
+					
+					Clabe =StaSql.getTXT_ARG1();
 					String StrAcuerdo ="0000000000".substring(acuerdo.length()) + acuerdo;
 					ResponseServiceCargoAbono responseMov =  new ResponseServiceCargoAbono();
 	            	switch (tipoOp) 
 	            	{
 						case "C":
 							responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom, concepto, terminal);
-							break;
+							break; 
 						case "A":
 							responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom, concepto, terminal);
+							//return jsonResult.put("RespuestaCargoAbono", ""); //No va
 							break;							
 					}
+	            	 
 	            	if(responseMov.getStatus()==1)
 	            	{
 	        			//Paso 3
@@ -173,70 +185,26 @@ public class CargoAbono
 	            		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
 	            		StrHoraOper = responseMov.getHORAOPERACION();
 	            		StrFeOper = responseMov.getFECHAOPERA();
+	            		
+	            		
 	            		if(pResp.getStatus()==1)//1
 	            		{
+	            			
+	            			ResponseService StaSqlOK = InsertSql( acuerdo, entidad, terminal, "1", empleado, StrFeOper, "01-01-1999", StrHoraOper,
+	                  				 sucursal, tipoOp, impNom, concepto, nombreCliente, producto ,
+	                  				 idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans,StaSql.getDescripcion());
+	            			
+	            			if(StaSqlOK.getTXT_ARG1()!=null)
+	            				if(StaSqlOK.getTXT_ARG1().length()>0)
+	            					Clabe = StaSqlOK.getTXT_ARG1();
 	            			SrIdMov = RespDia.getNUMSEC();
-	        				StatusOper =true;
-	        				
-	        				/*Begin Insert into Table -Intermedia*/
-	        				try
-	        				{
-	        					PasivoTcb pasivoTcb = new PasivoTcb();
-	        					ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
-	        					Clabe=oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
-	        					ReqInserMovCarAbo oIns= new ReqInserMovCarAbo();
-	        					oIns.setCajaInt(cajaInt);
-	        					
-	        					oIns.setEmpleado(empleado);
-	        					oIns.setEntidad(entidad);
-	        					oIns.setFechaOper(StrFeOper);
-	        					oIns.setFechaVal(responseMov.getFECHAVALOR());
-	        					oIns.setHoraOper(StrHoraOper);
-	        					oIns.setSucursal(sucursal);
-	        					oIns.setTerminal(terminal);
-	        					oIns.setTipOper(tipoOp);
-	        					
-	        					EndpointProperties prop = new EndpointProperties();
-	        					
-	        					
-	        					
-	        					String SgnCtbleDi="H";
-	        					
-	        					if(tipoOp.equals("C"))
-	        						SgnCtbleDi="D";
-	        					
-	        					String ImpLetra = CantidadLetras.Convertir(impNom,true);
-	        					String StrCadEncrip = "{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}";
-	        					EndpointProperties oProp = new EndpointProperties();
-	        					String StrIv = oProp.getENCRIPDESC_IV();
-	        					String StrKey= oProp.getENCRIPDESC_KEY();
-	        					FuncionesEncryption oFunc = new FuncionesEncryption(StrIv,StrKey);
-	        					String CadEncrip = oFunc.encrypt(StrCadEncrip);
-	        					//datosEntrada.put("text",);
-	        					
-	        					//String input =datosEntrada.toString();
-	        					
-	        					//CDatosSucursales oClip = new CDatosSucursales();
-	        					//ResponseService rsp= oClip.EncriptarDescr(input, Strurl);
-	        					//if(rsp.getStatus()==1)
-	        					//{
-	        						oIns.setDataTrans(CadEncrip);//rsp.getDescripcion());
-	        						oIns.setFolioTrans(folioTrans);
-	        						CargoAbonoDS oDsMov = new CargoAbonoDS();
-	        						ResponseService statMov = oDsMov.InsertaMovCargAbon(oIns);
-	        					//}
-	        							
-	        				}catch(Exception ex){
-	        					System.out.println("Error : "+ex.getMessage());
-	        				}
-	        				/*End Insert into Table -Intermedia*/
-	        				
+	        				StatusOper =true;	        
 	            		}
 	            		else
 	            		{
-	            			if(responseMov.getHORAOPERACION()!=null)
-	            				if(responseMov.getHORAOPERACION().length()>0)
-	            					RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
+	            			//if(responseMov.getHORAOPERACION()!=null)
+	            			//	if(responseMov.getHORAOPERACION().length()>0)
+	            			//		RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
 	            			EndpointProperties prop = new EndpointProperties();
 	            			SrDesc=prop.getMsgErrorPaso3();
 	        				//SrDesc="El movimiento se registro en tcb, no se actualizo movimiento en diario, favor de conctactar a sistemas";
@@ -250,6 +218,25 @@ public class CargoAbono
 	            	}
 	            	else
 	            	{
+	            		try{
+	            			
+	            			Calendar calendario = new GregorianCalendar();
+	            			int hora, minutos, segundos;
+	            			hora =calendario.get(Calendar.HOUR_OF_DAY);
+	            			minutos = calendario.get(Calendar.MINUTE);
+	            			segundos = calendario.get(Calendar.SECOND);
+	            			String HrAc =hora + ":" + minutos + ":" + segundos;
+	            			
+	            			
+		            		RespDia.setTERMINAL(terminal);
+		            		RespDia.setCOD_RESPUESTA(0);//1
+		            		RespDia.setIMP_SDO("0");
+		            		RespDia.setHORA_OPERACION(HrAc);
+		            		ResponseService pResp= ProcDia.ActualizaRegistro(RespDia);
+	            		}
+	            		catch(Exception ex){
+	            			
+	            		}
 	            		SrIdMov= "-999";
 	            		SrStatus= "0";
 	            		SrDesc=responseMov.getDescripcion();
@@ -310,6 +297,79 @@ public class CargoAbono
 	}
 	/*Begin E234 */
 
+	public ResponseService InsertSql(String acuerdo,String entidad,String terminal,String cajaInt,String empleado,String StrFeOper,String FecValor,String StrHoraOper,
+			String sucursal,String tipoOp,String impNom,String concepto,String nombreCliente,String producto ,
+			String idexterno,String tipoIdExterno,String SrIdMov,String folioTrans,String dataTrans)
+	{
+		ResponseService oResp = new ResponseService();
+		/*Begin Insert into Table -Intermedia*/
+		try
+		{
+			String StrResul=null;
+			String Clabe="";
+			ReqInserMovCarAbo oIns= new ReqInserMovCarAbo();
+			if(dataTrans == null)
+			{
+				PasivoTcb pasivoTcb = new PasivoTcb();
+				ResponseConsultaClabe oConsClab= pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
+				Clabe=oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
+							
+				
+				
+				String SgnCtbleDi="H";
+				
+				if(tipoOp.equals("C"))
+					SgnCtbleDi="D";
+				
+				String ImpLetra = CantidadLetras.Convertir(impNom,true);
+				String StrCadEncrip = "{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\"1\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}";
+				EndpointProperties oProp = new EndpointProperties();
+				String StrIv = oProp.getENCRIPDESC_IV();
+				String StrKey= oProp.getENCRIPDESC_KEY();
+				FuncionesEncryption oFunc = new FuncionesEncryption(StrIv,StrKey);
+				String CadEncrip = oFunc.encrypt(StrCadEncrip);
+				
+					oIns.setDataTrans(CadEncrip);
+					StrResul =CadEncrip;
+			}
+			else
+			{
+				oIns.setDataTrans(dataTrans);
+				StrResul =dataTrans;
+			}
+			oIns.setCajaInt(cajaInt);
+			
+			oIns.setEmpleado(empleado);
+			oIns.setEntidad(entidad);
+			oIns.setFechaOper(StrFeOper);
+			oIns.setFechaVal(FecValor);
+			oIns.setHoraOper(StrHoraOper);
+			oIns.setSucursal(sucursal);
+			oIns.setTerminal(terminal);
+			oIns.setTipOper(tipoOp);
+		
+				oIns.setFolioTrans(folioTrans);
+				CargoAbonoDS oDsMov = new CargoAbonoDS();
+				ResponseService statMov = oDsMov.InsertaMovCargAbon(oIns);
+				if(statMov.getStatus()==1){
+					oResp.setStatus(1);
+					oResp.setDescripcion(StrResul);
+					oResp.setTXT_ARG1(Clabe);
+				}
+					
+			//}
+					
+		}catch(Exception ex){
+			System.out.println("Error : "+ex.getMessage());
+			oResp.setStatus(-1);
+			oResp.setDescripcion(null);
+		}
+		
+		/*End Insert into Table -Intermedia*/
+		return oResp;
+	}
+	
+	
 	public JSONObject ProcesarIntervencion( String entidad, 
 			String sucursal,	String empleado, 
 			String terminal,	String acuerdo, 
@@ -588,7 +648,7 @@ return jsonResult;
 			ResqConsMovCarAbon request = new ResqConsMovCarAbon();
 			request.setEntidad(entidad);
 			request.setTerminal(terminal);
-			request.setIdEmpleado(Empleado);
+			request.setIdEmpleado("1");//Empleado
 			request.setSucursal(centro);
 			
 			RespConsMovCarAbon oCar = oCons.ConsultMovCargAbon(request);
@@ -628,7 +688,7 @@ return jsonResult;
 						DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 						Date date;
 						String DateFormatSerie="ddMMyy";
-						date = df.parse(fechaActual + " " + res.getHoraPc());
+						date = df.parse(fechaActual + " " + oCar.getHoraOper()); 
 						SimpleDateFormat sdfSerie = new SimpleDateFormat(DateFormatSerie);
 						sFecSerie = sdfSerie.format(date);
 					}
@@ -640,7 +700,7 @@ return jsonResult;
 					StrImport=CantidadLetras.FormatoNumero(StrImport);
 					
 					jsonResultado.put("fecha", fechaActual);//oResCA.getFechaOperacion());
-					jsonResultado.put("hora", res.getHoraPc());
+					jsonResultado.put("hora", oCar.getHoraOper());
 					jsonResultado.put("nombre", res.getNombreCliente());
 					jsonResultado.put("importe", StrImport);
 					jsonResultado.put("folio", res.getFolio());
@@ -651,7 +711,7 @@ return jsonResult;
 					jsonResultado.put("idExterno", res.getTipoIdExterno().trim()+" : " +res.getIdexterno().trim());
 					jsonResultado.put("clabe",res.getClabe() );
 					String StrSerial = terminal+ " "+ sFecSerie+ res.getHoraPc().replace(":", "");
-					StrSerial +="  "+res.getCajInt()+" "+res.getSigCont();
+					StrSerial +="  C "+res.getSigCont();
 
 					jsonResultado.put("serial", StrSerial);
 				}catch(Exception ex){
@@ -858,7 +918,8 @@ return jsonResult;
 				//Si encontro movimiento 
 				if(oResMovPas.getStatus()==1)
 				{
-					
+					int IndCon=0;
+					ResponDiaPend RespDia = new ResponDiaPend();
 					for(int ind=0;ind<oResMovPas.getApuntes().size();ind++)
 					{
 						String acuerdoPas = oResMovPas.getApuntes().get(ind).getAfApnteE().getNUM_SEC_AC();
@@ -870,29 +931,32 @@ return jsonResult;
 						String StrNumSec  = oResMovPas.getApuntes().get(ind).getAfApnteE().getNUM_SEC();
 						String horaPas    = oResMovPas.getApuntes().get(ind).getAfAuditAux().getHORA_OPRCN();
 						String horaDia    = oDiElecDet.getHoraPc();
+						String SrCodTxPas =oResMovPas.getApuntes().get(ind).getAfApnteE().getSGN();
+						String SrCodTxDia =oDiElecDet.getSgnCtbleDi();
 						
-						String[] ArryhoraPas = horaPas.split(":");
-						String[] ArryhoraDia = horaDia.split(":");
+
+
 						fechaDia =fechaDia.substring(0,10);
 						fechaDia=fechaDia.replace("-", "/");
-						if(acuerdoPas.equals(acuerdoDia))
+
+						if(importPas.equals(importDia)&& fechaPas.equals(fechaDia) && SrCodTxPas.equals(SrCodTxDia) && acuerdoPas.equals(acuerdoDia))
 						{
-							if(importPas.equals(importDia))
-							{
-								if(fechaPas.equals(fechaDia))
-								{
 									
-									if(ArryhoraPas[0].equals(ArryhoraDia[0]))
-									{
-										int minPas = Integer.parseInt(ArryhoraPas[1])+10;
-										int minDia = Integer.parseInt(ArryhoraDia[1]);
+										String time1 = horaDia;//"16:00:00";
+										String time2 = horaPas;
+
+										SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+										Date date1 = format.parse(time1);
+										Date date2 = format.parse(time2);
+										long difference = date2.getTime() - date1.getTime();
+										difference = (difference/1000)/60;										
 										
 										String StrHrOper = oDiElecDet.getHoraOprcn(); 
 										String StrFecPc = oDiElecDet.getFechaPc();
 										String StrHrPc = oDiElecDet.getHoraPc();
-										ResponDiaPend RespDia = new ResponDiaPend();
 										
-										if(minDia < minPas )
+										
+										if(difference < 5 )
 										{											
 											
 											
@@ -907,6 +971,34 @@ return jsonResult;
 						            		ResponseService pResp= ds.ActualizaRegistro(RespDia);
 						            		if(pResp.getStatus()==1)
 						            		{
+						            			IndCon++;
+						            			
+						            			/*Actualiza SQL Begin*/
+						            			try
+						            			{
+						            				ResqConsMovCarAbon request = new ResqConsMovCarAbon();
+						            				request.setEntidad(entidad);
+						            				request.setTerminal(terminal);
+						            				request.setIdEmpleado("0");
+						            				request.setSucursal(centro);
+						            				CargoAbonoDS oCons = new CargoAbonoDS();
+
+						            				RespConsMovCarAbon oCar = oCons.ConsultMovCargAbon(request);
+						            				if(oCar.getStatus()==1)
+						            				{
+
+						            					ResponseService statIn=InsertSql("",entidad,terminal,"1",oCar.getEmpleado(),
+						            							fechaPas,oCar.getFechValor(),horaPas,oCar.getSucursal(),oCar.getTipOper(),
+						            							oDiElecDet.getImpNominal(),"","","",
+						            							"","","",oCar.getFolioTrans(),oCar.getDataTrans());
+						            				}
+						            			}
+						            			catch(Exception ex){
+						            				
+						            			}						            			
+						            			
+						            			/*Actualiza SQL End*/
+						            			
 						            			bProce=true;
 						            			jResultDetalle.put("status", "1");
 						            			jResultDetalle.put("descripcion", "Movimiento pendiente actualizado");
@@ -921,45 +1013,24 @@ return jsonResult;
 						            		}		
 						            		break;
 										}
-										else
-										{
-											RespDia.setNUMSEC(StrNumSec);
-											RespDia.setHORA_OPERACION(StrHrOper);
-											RespDia.setCOD_RESPUESTA(0);
-											RespDia.setIMP_SDO(importDia);
-											RespDia.setTERMINAL(terminal);
-											RespDia.setFEC_PC(StrFecPc);
-											RespDia.setHORA_PC(StrHrPc);
-						            		
-						            		ResponseService pResp= ds.ActualizaRegistro(RespDia);
-						            		if(pResp.getStatus()==1)
-						            		{
-						            			bProce=true;
-						            			jResultDetalle.put("status", "1");
-						            			jResultDetalle.put("descripcion", "Movimiento pendiente actualizado");
-						            			jResultDetalle.put("idMov",StrNumSec);
-						            		}
-						            		else
-						            		{
-						            			bProce=true;
-						            			jResultDetalle.put("status", "-1");
-						            			jResultDetalle.put("descripcion", "Movimiento pendiente actualizado");
-						            			jResultDetalle.put("idMov",StrNumSec);
-						            		}		
-										}
-										/*
-										if(ArryhoraPas[1].equals(ArryhoraDia[1]))
-										{
-											
-										}*/
-									}
-									
-								}
+										
 							}
-						}	
+						
+					}//end for
+					
+					if(IndCon==0)
+					{
+						RespDia.setNUMSEC(oDiElecDet.getNumSec());
+						RespDia.setHORA_OPERACION(oDiElecDet.getHoraOprcn());
+						RespDia.setCOD_RESPUESTA(0);
+						RespDia.setIMP_SDO("0");
+						RespDia.setTERMINAL(terminal);
+						RespDia.setFEC_PC(oDiElecDet.getFechaPc());
+						RespDia.setHORA_PC(oDiElecDet.getHoraPc());
+	            		
+	            		ResponseService pResp= ds.ActualizaRegistro(RespDia);
+	            		bProce =false;
 					}
-					
-					
 					
 					
 				}
