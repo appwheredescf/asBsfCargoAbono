@@ -711,7 +711,7 @@ return jsonResult;
 					jsonResultado.put("idExterno", res.getTipoIdExterno().trim()+" : " +res.getIdexterno().trim());
 					jsonResultado.put("clabe",res.getClabe() );
 					String StrSerial = terminal+ " "+ sFecSerie+ res.getHoraPc().replace(":", "");
-					StrSerial +="  C "+res.getSigCont();
+					StrSerial +="  "+oCar.getCajaInt()+" "+res.getSigCont();
 
 					jsonResultado.put("serial", StrSerial);
 				}catch(Exception ex){
