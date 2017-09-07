@@ -877,7 +877,7 @@ return response;
 		
 			String wsURL = propDs.getURL_DIARIO_ELECTRONICO();
 			outputString= SalidaResponse(xml,wsURL,action,"ConsultaUltimoMovimientoPendiente");
-			log.info("DiarioElectronicoDS - ConsultaUltimoMovimientoPendiente : In. [outputString] " + outputString);
+			
 			
 			if(outputString.contains("ConsultaUltimoMovimientoPendienteResp"))
 			{
@@ -956,15 +956,16 @@ return response;
 			{
 				response.setStatus(0);
 				response.setDescripcion(outputString);
+				log.info("DiarioElectronicoDS [ObtieneUltimoMovPendiente] - outputString :  " + outputString);
 			}
 		} 
 		catch (Exception e) 
 		{
 			response.setStatus(-1);
 			response.setDescripcion(e.getMessage());
-			log.info("DiarioElectronicoDS - ActualizaRegistro : In. " + xml);
-			log.info("DiarioElectronicoDS - ActualizaRegistro : Out. " + outputString);
-			log.error("DiarioElectronicoDS - ActualizaRegistro : Exception. " + e.getMessage());
+			log.info("DiarioElectronicoDS - ObtieneUltimoMovPendiente : In. " + xml);
+			log.info("DiarioElectronicoDS - ObtieneUltimoMovPendiente : Out. " + outputString);
+			log.error("DiarioElectronicoDS - ObtieneUltimoMovPendiente : Exception. " + e.getMessage());
 			
 		}
 		return response;
