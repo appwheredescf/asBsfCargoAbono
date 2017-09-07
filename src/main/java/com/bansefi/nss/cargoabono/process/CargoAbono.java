@@ -156,9 +156,9 @@ public class CargoAbono
 				{
 					
 					
-					ResponseService StaSql = InsertSql( acuerdo, entidad, terminal, "0", empleado, StrFeOper, "01-01-1999", StrHoraOper,
+					ResponseService StaSql = InsertSql( acuerdo, entidad, terminal, cajaInt, empleado, StrFeOper, "01-01-1999", StrHoraOper,
            				 sucursal, tipoOp, impNom, concepto, nombreCliente, producto ,
-           				 idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans,null);
+           				 idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans,null,"0");
 					
 					Clabe =StaSql.getTXT_ARG1();
 					String StrAcuerdo ="0000000000".substring(acuerdo.length()) + acuerdo;
@@ -167,11 +167,12 @@ public class CargoAbono
 	            	{
 						case "C":
 							responseMov = pasivoTCB.Cargo(entidad, StrAcuerdo, impNom, concepto, terminal);
-							break; 
+							return jsonResult.put("RespuestaCargoAbono", ""); //No va
+							//break; 
 						case "A":
 							responseMov = pasivoTCB.Abono(entidad, StrAcuerdo, impNom, concepto, terminal);
-							//return jsonResult.put("RespuestaCargoAbono", ""); //No va
-							break;							
+							return jsonResult.put("RespuestaCargoAbono", ""); //No va
+							//break;							
 					}
 	            	 
 	            	if(responseMov.getStatus()==1)
@@ -190,9 +191,9 @@ public class CargoAbono
 	            		if(pResp.getStatus()==1)//1
 	            		{
 	            			
-	            			ResponseService StaSqlOK = InsertSql( acuerdo, entidad, terminal, "1", empleado, StrFeOper, "01-01-1999", StrHoraOper,
+	            			ResponseService StaSqlOK = InsertSql( acuerdo, entidad, terminal, cajaInt, empleado, StrFeOper, "01-01-1999", StrHoraOper,
 	                  				 sucursal, tipoOp, impNom, concepto, nombreCliente, producto ,
-	                  				 idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans,StaSql.getDescripcion());
+	                  				 idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans,StaSql.getDescripcion(),"1");
 	            			
 	            			if(StaSqlOK.getTXT_ARG1()!=null)
 	            				if(StaSqlOK.getTXT_ARG1().length()>0)
@@ -299,7 +300,7 @@ public class CargoAbono
 
 	public ResponseService InsertSql(String acuerdo,String entidad,String terminal,String cajaInt,String empleado,String StrFeOper,String FecValor,String StrHoraOper,
 			String sucursal,String tipoOp,String impNom,String concepto,String nombreCliente,String producto ,
-			String idexterno,String tipoIdExterno,String SrIdMov,String folioTrans,String dataTrans)
+			String idexterno,String tipoIdExterno,String SrIdMov,String folioTrans,String dataTrans,String StatProc)
 	{
 		ResponseService oResp = new ResponseService();
 		/*Begin Insert into Table -Intermedia*/
@@ -315,14 +316,13 @@ public class CargoAbono
 				Clabe=oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
 							
 				
-				
 				String SgnCtbleDi="H";
 				
 				if(tipoOp.equals("C"))
 					SgnCtbleDi="D";
 				
 				String ImpLetra = CantidadLetras.Convertir(impNom,true);
-				String StrCadEncrip = "{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\"1\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}";
+				String StrCadEncrip = "{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+impNom+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}";
 				EndpointProperties oProp = new EndpointProperties();
 				String StrIv = oProp.getENCRIPDESC_IV();
 				String StrKey= oProp.getENCRIPDESC_KEY();
@@ -337,7 +337,7 @@ public class CargoAbono
 				oIns.setDataTrans(dataTrans);
 				StrResul =dataTrans;
 			}
-			oIns.setCajaInt(cajaInt);
+			oIns.setCajaInt(StatProc);// status proceso
 			
 			oIns.setEmpleado(empleado);
 			oIns.setEntidad(entidad);
@@ -987,10 +987,10 @@ return jsonResult;
 						            				if(oCar.getStatus()==1)
 						            				{
 
-						            					ResponseService statIn=InsertSql("",entidad,terminal,"1",oCar.getEmpleado(),
+						            					ResponseService statIn=InsertSql("",entidad,terminal,"",oCar.getEmpleado(),
 						            							fechaPas,oCar.getFechValor(),horaPas,oCar.getSucursal(),oCar.getTipOper(),
 						            							oDiElecDet.getImpNominal(),"","","",
-						            							"","","",oCar.getFolioTrans(),oCar.getDataTrans());
+						            							"","","",oCar.getFolioTrans(),oCar.getDataTrans(),"1");
 						            				}
 						            			}
 						            			catch(Exception ex){

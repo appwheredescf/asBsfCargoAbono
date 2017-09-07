@@ -854,6 +854,7 @@ return response;
 
 	public ResponseServiceObject ObtieneUltimoMovPendiente(String entidad,String terminal,String centro)
 	{
+		
 		ResponseServiceObject response = new ResponseServiceObject();
 		String action = "ConsultaUltimoMovimientoPendiente";
 		String xml = "";
@@ -873,9 +874,10 @@ return response;
 			Bvista.append("</soapenv:Envelope>");
 			  
 			xml =Bvista.toString();
-			
+		
 			String wsURL = propDs.getURL_DIARIO_ELECTRONICO();
 			outputString= SalidaResponse(xml,wsURL,action,"ConsultaUltimoMovimientoPendiente");
+			log.info("DiarioElectronicoDS - ConsultaUltimoMovimientoPendiente : In. [outputString] " + outputString);
 			
 			if(outputString.contains("ConsultaUltimoMovimientoPendienteResp"))
 			{
