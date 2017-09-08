@@ -129,7 +129,7 @@ public class CargoAbono
 				if(tipoOp.equals("A")){
 					Ordenante = "INGRESO CAJA 010002";
 					builder.append("C DVI      ").append(Ordenante);
-					for(int i = builder.length();i<178;i++){
+					for(int i = builder.length();i<190;i++){
 						builder.append(" ");
 					}
 					builder.append(conceptoDiario). append(" ").append(tipoIdExterno).append(" ").append(idexterno);
@@ -152,7 +152,7 @@ public class CargoAbono
 				ResponDiaPend RespDia= ProcDia.RegistraCargoAbonoPendiente(entidad, sucursal, terminal, empleado, tipoOp, conceptoDiario, impNom, "0", acuerdo, "0",fechaOperacion,cajaInt);
 				
 				//Paso 2
-				if(RespDia.getStatus()==1) 
+				if(RespDia.getStatus()==1)//1
 				{
 					
 					
@@ -463,10 +463,10 @@ try
 		if(tipoOp.equals("A")){
 			Ordenante = "ABONOS VARIOS 990002";
 			builder.append("C DVI      ").append(Ordenante);
-			for(int i = builder.length();i<178;i++){
+			for(int i = builder.length();i<190;i++){
 				builder.append(" ");
 			}
-			builder.append(conceptoDiario). append(" ").append(tipoIdExterno).append(" ").append(idexterno);
+			builder.append(conceptoDiario).append(" ").append(tipoIdExterno).append(" ").append(idexterno);
 		}else{
 			
 			builder.append("DVI        ").append(conceptoDiario);
