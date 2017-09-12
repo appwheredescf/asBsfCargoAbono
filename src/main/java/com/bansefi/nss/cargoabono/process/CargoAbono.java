@@ -3,18 +3,17 @@ package com.bansefi.nss.cargoabono.process;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import com.bansefi.nss.cargoabono.commons.CantidadLetras;
 import com.bansefi.nss.cargoabono.commons.FuncionesEncryption;
-import com.bansefi.nss.cargoabono.commons.UtilJson;
 import com.bansefi.nss.cargoabono.consInter.CargoAbonoDS;
 import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
 import com.bansefi.nss.cargoabono.properties.EndpointProperties;
@@ -42,8 +41,7 @@ import com.bansefi.nss.cargoabono.vo.ResqConsMovCarAbon;
 public class CargoAbono 
 {
 	private static final Logger log = LogManager.getLogger(CargoAbono.class);
-	private UtilJson utilJson = UtilJson.getInstance();
-	
+
 	
 	public JSONObject Procesar( String entidad, 
 								String sucursal,	String empleado, 
@@ -66,7 +64,6 @@ public class CargoAbono
 		String StrHoraOper="";
 		String Clabe="";
 		String conceptoDiario= "";
-		StringBuilder builder = new StringBuilder();
 		String Ordenante = "";
 		conceptoDiario = concepto;
 		/*Begin E234*/
@@ -116,36 +113,24 @@ public class CargoAbono
 			if(!bSatDup)
 			{
 				impNom =impNom.replace(",", "");
-				//C DVI        (13)concepto(30) tipoIdExterno(20) idexterno(20)
-				try
-				{
-					concepto= String.format("%-30s", concepto);
-					tipoIdExterno= String.format("%-20s", tipoIdExterno);
-					idexterno= String.format("%-20s", idexterno);	
-				}catch(Exception ex)
-				{
-					
-				}
-				if(tipoOp.equals("A")){
-					Ordenante = "INGRESO CAJA 010002";
-					builder.append("C DVI      ").append(Ordenante);
-					for(int i = builder.length();i<190;i++){
-						builder.append(" ");
-					}
-					builder.append(conceptoDiario). append(" ").append(tipoIdExterno).append(" ").append(idexterno);
-				}else{
-					
-					builder.append("DVI        ").append(conceptoDiario);
-					for (int i=builder.length();i<90;i++){
-						 builder.append(" ");	
-					}
-					builder.append(tipoIdExterno).append(" ").append(idexterno);
-				}
+				//Agrega espacios en la cadena
+				concepto= StringUtils.rightPad(concepto, 30, " ");
+				tipoIdExterno= StringUtils.rightPad(tipoIdExterno, 20, " ");
+				idexterno =StringUtils.rightPad(idexterno, 20, " ");
 				
-				conceptoDiario = builder.toString();
-				//log.info("longitud cadena diario electronico: "+conceptoDiario.length());
-				//log.info("cadena diario electronico: "+conceptoDiario);
-				concepto = "C DVI        " + concepto + " " + tipoIdExterno + " : " + idexterno+"";
+				//Formatea Concepto de acuerdo el tipo operación
+				if(tipoOp.equals("A")){
+					Ordenante = "C DVI      INGRESO CAJA 010002";
+					Ordenante = StringUtils.rightPad(Ordenante, 190, " ");
+				}else{		
+					Ordenante = "DVI        ";
+					Ordenante = StringUtils.rightPad(Ordenante, 90, " ");				
+				}
+				conceptoDiario = Ordenante + tipoIdExterno + " " + idexterno;
+				
+				//Formatea Concepto Apunte
+				concepto = "C DVI        " + concepto + " " + tipoIdExterno + " : " + idexterno;
+				
 				//Registro de Cargo/Abono en 3 pasos
 				//Paso 1
 				DiarioElectronicoDS ProcDia = new DiarioElectronicoDS();
