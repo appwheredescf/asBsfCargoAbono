@@ -79,7 +79,7 @@ public class CargoAbono
 			request.setIdEmpleado("1");
 			
 			RespConsMovCarAbon oMovC = oDs.ConsultMovCargAbon(request);
-			if(oMovC.getStatus()==1)
+			if(oMovC.getStatus()==1){
 				if(folioTrans.equals(oMovC.getFolioTrans()))
 				{
 					bSatDup=true;
@@ -107,7 +107,7 @@ public class CargoAbono
 						
 					}
 				}
-					
+			}	
 			/*End Veficar en el SQL que no se repita transaccion*/
 			
 			if(!bSatDup)
@@ -249,8 +249,9 @@ public class CargoAbono
 			else
 			{
 				/*Ya existe movimiento*/
-				StatusOper=true;
-				
+				StatusOper=false;
+				SrIdMov="-991";
+				SrDesc="Intento de duplicidad";
 			}
 			
 			if(StatusOper)
