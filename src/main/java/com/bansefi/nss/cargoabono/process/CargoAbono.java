@@ -658,7 +658,7 @@ public class CargoAbono
 					jsonResultado.put("idExterno", res.getTipoIdExterno().trim()+" : " +res.getIdexterno().trim());
 					jsonResultado.put("clabe",res.getClabe() );
 					String StrSerial = terminal+ " "+ sFecSerie+ res.getHoraPc().replace(":", "");
-					StrSerial +="  "+oCar.getCajaInt()+" "+res.getSigCont();
+					StrSerial +="  "+res.getCajInt()+" "+res.getSigCont();
 
 					jsonResultado.put("serial", StrSerial);
 				}catch(Exception ex){
