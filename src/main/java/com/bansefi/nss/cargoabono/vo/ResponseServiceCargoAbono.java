@@ -1,5 +1,12 @@
 package com.bansefi.nss.cargoabono.vo;
 
+import java.util.ArrayList;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 public class ResponseServiceCargoAbono extends ResponseService {
 	private String FECHACONTABLE;
 	private String FECHAOPERA;
@@ -13,7 +20,6 @@ public class ResponseServiceCargoAbono extends ResponseService {
 	private String TEXT_CODE;
 	private String TEXT_ARG1;
 	private String ImpSaldo;
-	
 	public String getFECHACONTABLE() {
 		return FECHACONTABLE;
 	}
@@ -68,11 +74,11 @@ public class ResponseServiceCargoAbono extends ResponseService {
 	public void setRECIBO_BANSEFI_NOMB_50(String rECIBO_BANSEFI_NOMB_50) {
 		RECIBO_BANSEFI_NOMB_50 = rECIBO_BANSEFI_NOMB_50;
 	}
-	public String getCOD_TX() {
+	public String getTEXT_CODE() {
 		return TEXT_CODE;
 	}
-	public void setCOD_TX(String cOD_TX) {
-		TEXT_CODE = cOD_TX;
+	public void setTEXT_CODE(String tEXT_CODE) {
+		TEXT_CODE = tEXT_CODE;
 	}
 	public String getTEXT_ARG1() {
 		return TEXT_ARG1;
@@ -86,6 +92,22 @@ public class ResponseServiceCargoAbono extends ResponseService {
 	public void setImpSaldo(String impSaldo) {
 		ImpSaldo = impSaldo;
 	}
-	
-	
+	public ResponseServiceCargoAbono(int status, String descripcion, String tEXT_CODE, String tXT_ARG1,
+			ArrayList<String> errores, String fECHACONTABLE, String fECHAOPERA, String hORAOPERACION, String nUM_SEC,
+			String fECHAVALOR, String tITULAR_NOMB_50, String nOMB_PDV, String cOD_PLZ_BANCARIA,
+			String rECIBO_BANSEFI_NOMB_50, String tEXT_CODE2, String tEXT_ARG1, String impSaldo) {
+		FECHACONTABLE = fECHACONTABLE;
+		FECHAOPERA = fECHAOPERA;
+		HORAOPERACION = hORAOPERACION;
+		NUM_SEC = nUM_SEC;
+		FECHAVALOR = fECHAVALOR;
+		TITULAR_NOMB_50 = tITULAR_NOMB_50;
+		NOMB_PDV = nOMB_PDV;
+		COD_PLZ_BANCARIA = cOD_PLZ_BANCARIA;
+		RECIBO_BANSEFI_NOMB_50 = rECIBO_BANSEFI_NOMB_50;
+		TEXT_CODE = tEXT_CODE2;
+		TEXT_ARG1 = tEXT_ARG1;
+		ImpSaldo = impSaldo;
+	}	
+	public ResponseServiceCargoAbono(){}
 }

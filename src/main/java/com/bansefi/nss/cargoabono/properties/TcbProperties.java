@@ -32,8 +32,10 @@ public class TcbProperties
 	private String ABONO_CLOP;
 	private String ABONO_SUBCLOP;
 	private String FLAT_REPLACE;
-
-	
+	//Se agregan nuevas variables para consumo de las reglas de la U
+	private String SALDO_UANAL;
+	private String CARGO_UANAL;
+	private String ABONO_UANAL;
 	
 	private Properties prop = Utils.getProperties("com/bansefi/nss/cargoabono/properties/tcb.properties");
 	public TcbProperties()
@@ -62,9 +64,21 @@ public class TcbProperties
 		this.URL_CONS_NOMBRE=prop.getProperty("URL_CONS_NOMBRE");
 		this.URL_CONS_ACUERDO=prop.getProperty("URL_CONS_ACUERDO");
 		this.FLAT_REPLACE= prop.getProperty("FLAT_REPLACE");
+		//Prueba de consulta de saldos con reglas de la UANAL
+		this.SALDO_UANAL= prop.getProperty("URL_SALDOS_UANAL");
+		this.CARGO_UANAL= prop.getProperty("URL_CARGO_CAJA_INTER");
+		this.ABONO_UANAL= prop.getProperty("URL_ABONO_CAJA_INTER");
 	}
-
-	
+	//Prueba de consulta de saldos con reglas de la UANAL
+	public String getSALDO_UANAL(){
+		return SALDO_UANAL;
+	}
+	public String getCARGO_UANAL(){
+		return CARGO_UANAL;
+	}
+	public String getABONO_UANAL(){
+		return ABONO_UANAL;
+	}
 	
 	public String getURL_SALDOS() {
 		return URL_SALDOS;

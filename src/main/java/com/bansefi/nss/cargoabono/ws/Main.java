@@ -13,6 +13,11 @@ import com.bansefi.nss.cargoabono.commons.FuncionesEncryption;
 import com.bansefi.nss.cargoabono.process.CargoAbono;
 import com.bansefi.nss.cargoabono.process.ConsultaSaldo;
 import com.bansefi.nss.cargoabono.properties.EndpointProperties;
+import com.bansefi.nss.cargoabono.services.PasivosAcuerdosServices;
+import com.bansefi.nss.cargoabono.tcb.PasivoTcb;
+import com.bansefi.nss.cargoabono.vo.RequestConsultaSaldo;
+import com.bansefi.nss.cargoabono.vo.ResponseConsultaSaldo;
+import com.bansefi.nss.cargoabono.vo.ResponseServiceCargoAbono;
 
 
 public class Main {
@@ -33,10 +38,10 @@ public class Main {
 		
 		
 		String entidad ="0166";
-		String terminal ="12012103";//"12012103";
-		String centro="0121";
+		String terminal ="12000116";//"12012103";
+		String centro="0001";
 		CargoAbono cargoAbono = new CargoAbono();
-		cargoAbono.ProcesaPendientes(entidad, terminal, centro);
+		//cargoAbono.ProcesaPendientes(entidad, terminal, centro);
 		
 		
 		Calendar calendario = new GregorianCalendar();
@@ -55,39 +60,34 @@ public class Main {
 		FuncionesEncryption oFunc = new FuncionesEncryption(StrVi,StrKey);
 		//String CadEncrip = oFunc.encrypt(StrCadEncrip);
 		String StrCadEncrip="GkrXIfANPCXxEbylpmwLIG7/qXWl9Ct3zsUVLK27IKw7ZBMe7hTs5RXWEoGetmskKVHXblkbYgSXlfC2lpM3CkfiNmaGR1pPt7wdiQNjrMLDK92coe1SwS5a9BmAdnwJT/YforyIJJvYcbjG0yOqEjUOaY69rmZU+yJ2WpG1psAilnl5h91BtDjlbV+LEkAMNtDohS9n1n5ENNVh3o4WTcRGKVrwwwqWvd6/Qw4Uag5sZyIBt+nkFM/p5RYb4DFlzT9dH1OjqKCGlh3UPVyNq3exTcocwU5frX+dR4IknOCxKBQ3BxMG9f9szNhCcTQZrmhmrghIqqBnNVcvTAAOdLIgAE8mJFrF4cOidi2FnGsJnqDD1VXFUQJZrrLo6CPlmDk8uZyn4cGJUrjQ3pGSifDFIpTjojoHnYu76ZDJeYESXFkeYglwfTMEm539CVsZmdZifnz/18l/yrV1JcLHyrfaXbcoiJumRJ7YW/LnFZ5OZHDaFj51CW33471487tlAAF9pfOyBAJ8gHW6ycFGZdAYX1iBZ5BjR0lFu7rmEKw=";
-		String CadDesc =  oFunc.decrypt(StrCadEncrip);
+		//String CadDesc =  oFunc.decrypt(StrCadEncrip);
 		
 		
 		
 		
-		String HrOper="10:07:00";
-		String nombreCliente="EMILIA RAMIREZ MENDOZA";
-		String acuerdo ="70654900";//"22012512";// ;"259719532";
-		String sucursal="0121";//"0121";
-		String empleado ="E1662129";//"E1662129";
+		String HrOper="11:04:00";
+		String nombreCliente="ALEJANDRO ZAMUDIO FAUSTINOS LPQ";
+		String acuerdo ="0061701322";//"22012512";// ;"259719532";
+		String sucursal="0001";//"0121";
+		String empleado ="DESA0002";//"E1662129";
 		String idExterno="51";
 		
 		ServiciosCargoAbono oc = new ServiciosCargoAbono();
-		String StResult =oc.GeneraComprobate(terminal,entidad,centro,empleado);
-		
-		ConsultaSaldo csald = new ConsultaSaldo();
-		csald.Comprobante(entidad, sucursal, acuerdo, terminal, HrOper, nombreCliente, idExterno, empleado);
-		
-		
-		
-		
+		//String StResult =oc.GeneraComprobate(terminal,entidad,centro,empleado);
+
+		System.out.println(oc.GeneraComprobateSaldo("E1660384", "Bansef13", entidad, sucursal, "12000122", empleado, acuerdo, "14:16:00", nombreCliente, idExterno));
 		
 		
 		String Producto="CUENTAHORRO";
 		String Importe="17.00";
 		String TipOper="A";
-		String FecValor="2017-08-21";
+		String FecValor="2017-12-01";
 		String Concepto="PRUEBA QA";
-		String FecOper="2017-08-30";
+		String FecOper="2017-12-01";
 		
 		String IdExt="51";
 		String StrClop="99";
-		String StrSubClop="0001";
+		String StrSubClop="0002";
 		
 		
 		
@@ -101,7 +101,7 @@ public class Main {
 		
 		String uniqueID = UUID.randomUUID().toString();
 		System.out.println(" " +uniqueID);
-		String FolioTrans="b3887404-3c12-ae10-c477-7152f61e6189";
+		String FolioTrans="b3887404-3c12-ae10-c477-7152f61e618c";
 
 		String ImpLetra="";
 		String Clabe="";
@@ -112,20 +112,22 @@ public class Main {
 		String idexterno="";
 		//String StrCadEncrip = "{\"acuerdo\":\""+acuerdo+"\",\"impNom\":\""+Importe+"\",\"concepto\":\""+concepto+"\",\"nombreCliente\":\""+nombreCliente+"\",\"producto\":\""+producto+"\",\"idexterno\":\""+idexterno+"\",\"tipoIdExterno\":\""+tipoIdExterno+"\",\"folio\":\""+SrIdMov+"\",\"SigCont\":\""+SgnCtbleDi+"\",\"HoraPc\":\""+StrHoraOper+"\",\"CajInt\":\""+cajaInt+"\",\"Clabe\":\""+Clabe+"\",\"ImpLetr\":\""+ImpLetra+"\"}";
 
-		//JSONObject jsonResultado = new JSONObject();
-		//jsonResultado= cargoAbono.ConsultaPendienteDiario(entidad, terminal, centro);
-		//
 		
-		cargoAbono.Procesar(entidad, 
+		/*response = cargoAbono.Procesar("DESA0002","JOAMO009", entidad, 
 				 sucursal,	 empleado, 
 				 terminal,	 acuerdo, 
-				 TipOper,		 FecValor, 
+				 "C",		 FecValor, 
 				 Importe,		 Concepto, 
 				 FecOper, HrOper,
 				 cajaInt,		 nombreCliente, 
 				 Producto,	 IdExt, 
 				 tipoIdExterno
-				 ,FolioTrans);
-
+				 ,FolioTrans);*/
+		//String resp = oc.CargoAbono("E1660384", "Bansef13", entidad, sucursal, empleado, "12000122", acuerdo, "C", FecValor, "1.00", "Prueba abono caja", FecOper, HrOper, "C", nombreCliente, producto, idexterno, tipoIdExterno, FolioTrans);
+		//System.out.println(resp);
+		
+		//String resp1 = oc.CargoAbonoIntervencion("E1660384", "Bansef13", entidad, sucursal, empleado, "12000122", acuerdo, "C", FecValor, "1.00", "Prueba abono intervencion", FecOper, HrOper, "I", nombreCliente, producto, idexterno, tipoIdExterno, StrClop, StrSubClop, FolioTrans);
+		//System.out.println("Cargo Intervencion -->" + resp1);
+		
 	}
 }

@@ -11,6 +11,7 @@ import com.bansefi.nss.cargoabono.commons.CantidadLetras;
 import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
 import com.bansefi.nss.cargoabono.services.PasivosAcuerdosServices;
 import com.bansefi.nss.cargoabono.tcb.PasivoTcb;
+import com.bansefi.nss.cargoabono.vo.RequestConsultaSaldo;
 import com.bansefi.nss.cargoabono.vo.ResponNumSec;
 import com.bansefi.nss.cargoabono.vo.ResponseConsultaClabe;
 import com.bansefi.nss.cargoabono.vo.ResponseConsultaSaldo;
@@ -18,50 +19,51 @@ import com.bansefi.nss.cargoabono.vo.ResponseFechaActual;
 import com.bansefi.nss.cargoabono.vo.ResponseService;
 import com.ibm.db2.jcc.am.oo;
 
+public class ConsultaSaldo {
+	// Metodo para consulta de saldos
 
-public class ConsultaSaldo 
-{
-	public JSONObject Comprobante(String entidad, String centro, String acuerdo, 
-			String terminal, String horaOpr, String nombreCliente , String idExterno, 
-			String empleado)
-	{
+	public JSONObject Comprobante(String usuario, String password, String entidad, String centro, String acuerdo,
+			String terminal, String horaOpr, String nombreCliente, String idExterno, String empleado) {
 		JSONObject jsonResult = new JSONObject();
 		JSONObject jsonResultado = new JSONObject();
-
-		try
-		{
-			//PasivoTcb oPasiv = new PasivoTcb();
-			//oPasiv.UltimasTransacciones(COD_NRBE_EN, NUM_SEC_AC, FECHA_CNTBL)
-			
-
-			PasivosAcuerdosServices oWsAcuerdo = new PasivosAcuerdosServices(); 
-			//OBTIENE LA CUENTA CLABE
-			
+		try {
+			// Instancian de clases para poder invocar los servicios *Inyeccion
+			// de dependencias
+			PasivosAcuerdosServices oWsAcuerdo = new PasivosAcuerdosServices();
 			PasivoTcb pasivoTcb = new PasivoTcb();
+
+			// Se obtiene la cuenta clave invocando al servicio ConsultaClave
 			ResponseConsultaClabe oConsClab = pasivoTcb.ConsultaClabe(acuerdo, entidad, terminal);
-			String contrato = oConsClab.getCOD_NRBE_CLABE_V()+oConsClab.getCOD_PLZ_BANCARIA()+oConsClab.getNUM_SEC_AC_CLABE_V()+" "+oConsClab.getCOD_DIG_CR_CLABE_V();
-			
-			//CONSULTA EL SALDO
-			ResponseConsultaSaldo responseSaldo = oWsAcuerdo.ConsultaSaldo(acuerdo, entidad, terminal);
-			if(responseSaldo.getStatus() == 1)
-			{
-				//OBTIENE EL HORARIO DEL SERVIDOR FALTA HACER LA CONVERCION POR SUCURSAL
+			String contrato = oConsClab.getCOD_NRBE_CLABE_V() + oConsClab.getCOD_PLZ_BANCARIA()
+					+ oConsClab.getNUM_SEC_AC_CLABE_V() + " " + oConsClab.getCOD_DIG_CR_CLABE_V();
+
+			// Se realiza consulta de saldo
+			RequestConsultaSaldo request = new RequestConsultaSaldo();
+			request.setUsuario((usuario.equals(null)) ? "" : usuario);
+			request.setPassword((password.equals(null)) ? "" : password);
+			request.setEntidad((entidad.equals(null)) ? "" : entidad);
+			request.setAcuerdo((acuerdo.equals(null)) ? "" : acuerdo);
+			request.setTerminal((terminal.equals(null)) ? "" : terminal);
+
+			ResponseConsultaSaldo responseSaldo = oWsAcuerdo.ConsultaSaldo(request);
+			if (responseSaldo.getStatus() == 1) {
+				// OBTIENE EL HORARIO DEL SERVIDOR FALTA HACER LA CONVERCION POR
+				// SUCURSAL
 				ResponseFechaActual responseFechaActual = oWsAcuerdo.FechaActual();
 				String fechaActual = responseFechaActual.getStatus() == 1 ? responseFechaActual.getFecha() : "";
 				String importe = responseSaldo.getDISPO();
-				importe = String.format ("%.2f", Double.parseDouble(importe));
+				importe = String.format("%.2f", Double.parseDouble(importe));
 				String importeLetras = CantidadLetras.Convertir(importe, true);
-				String datosCentro = "";//oCen.getStatus() == 1 ? centro + " "  + oCen.getNOMBRE() :  "";
-				
-				//SE GENERA FOLIO
-				
-				String DATE_FORMAT= "ddMMyyyyHHmmss";
+				String datosCentro = "";// oCen.getStatus() == 1 ? centro + " "
+										// + oCen.getNOMBRE() : "";
+				// SE GENERA FOLIO
+				String DATE_FORMAT = "ddMMyyyyHHmmss";
 				DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				String stringDate = "";
 				Date date;
 				try {
-					if(horaOpr.length()<2)
-						horaOpr ="00:00:00";
+					if (horaOpr.length() < 2)
+						horaOpr = "00:00:00";
 					date = df.parse(fechaActual + " " + horaOpr);
 					SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 					stringDate = sdf.format(date);
@@ -69,30 +71,28 @@ public class ConsultaSaldo
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				DiarioElectronicoDS oRegDiaElec = new DiarioElectronicoDS();
-				
+
 				ResponNumSec oNumSec = new ResponNumSec();
-				
-				oNumSec = oRegDiaElec.ObtieneNumSec(entidad, centro, terminal);				
-				if(oNumSec.getStatus()==1)
-				{
-					//REGISTRA OPERACION DIARIO ELECTRONICO
-					String concepto="Impresion de Saldo";
-					String numSec=Integer.toString( oNumSec.getNUMSEC() );
-					//String fechaOperacion=responseFechaActual.getFecha();
-					ResponseService responseDiarioElectronico = oRegDiaElec.RegistraImprSaldo(entidad, centro, terminal, empleado,  concepto, acuerdo, numSec);
+
+				oNumSec = oRegDiaElec.ObtieneNumSec(entidad, centro, terminal);
+				if (oNumSec.getStatus() == 1) {
+					// REGISTRA OPERACION DIARIO ELECTRONICO
+					String concepto = "Impresion de Saldo";
+					String numSec = Integer.toString(oNumSec.getNUMSEC());
+					// String fechaOperacion=responseFechaActual.getFecha();
+					ResponseService responseDiarioElectronico = oRegDiaElec.RegistraImprSaldo(entidad, centro, terminal,
+							empleado, concepto, acuerdo, numSec);
 					String folio = responseDiarioElectronico.getStatus() == 1 ? numSec : "";
-					folio += " " + stringDate+terminal;
-					
-					
-					//FORMATO DE FECHA CLIENTE
+					folio += " " + stringDate + terminal;
+					// FORMATO DE FECHA CLIENTE
 					SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 					date = df.parse(fechaActual + " 12:00:00");
 					String fechaCliente = sdf.format(date);
-					
-					importe=CantidadLetras.FormatoNumero(importe);
-					
+
+					importe = CantidadLetras.FormatoNumero(importe);
+
 					jsonResultado.put("fecha", fechaCliente);
 					jsonResultado.put("hora", horaOpr);
 					jsonResultado.put("nombre", nombreCliente);
@@ -103,34 +103,25 @@ public class ConsultaSaldo
 					jsonResultado.put("acuerdo", acuerdo);
 					jsonResultado.put("cotitulares", "");
 					jsonResultado.put("folio", folio);
-					jsonResultado.put("importe_letra", "( " +importeLetras +" )");
+					jsonResultado.put("importe_letra", "( " + importeLetras + " )");
 					jsonResultado.put("oficina", datosCentro);
 					jsonResultado.put("contrato", contrato);
-					
 					jsonResultado.put("status", "1");
 					jsonResultado.put("descripcion", "");
-
-				}
-				else
-				{
+					System.out.println("imp_sdo" + importe);
+				} else {
 					jsonResultado.put("status", "0");
 					jsonResultado.put("descripcion", responseSaldo.getDescripcion());
 				}
-			}
-			else 
-			{
+			} else {
 				jsonResultado.put("status", "0");
-				jsonResultado.put("descripcion", responseSaldo.getDescripcion());				
+				jsonResultado.put("descripcion", responseSaldo.getDescripcion());
 			}
-		} 
-		catch (Exception e) 
-		{
+		} catch (Exception e) {
 			jsonResultado.put("status", "-1");
 			jsonResultado.put("descripcion", e.getMessage());
 		}
 		jsonResult.put("RespuestaGeneraComprobateSaldo", jsonResultado);
-
 		return jsonResult;
 	}
-	
 }
