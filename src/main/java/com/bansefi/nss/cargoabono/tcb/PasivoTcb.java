@@ -147,7 +147,8 @@ public class PasivoTcb {
 					nodos.add("ResponseBansefi");
 					nodos.add("OTR_IMPUTAC_VTNLLA_PASIVO");
 					String mensajeError = "";
-					if(resGral.getCODIGO().trim().equals("TCB08543")){
+					if(resGral.getCODIGO().trim().equals("TCB08543") || resGral.getCODIGO().trim().equals("TCB08516")
+							|| resGral.getCODIGO().trim().equals("TCB08427")){
 						CatalogoErrorCA CatErrorCA = new CatalogoErrorCA();
 						CatErrorCA = (CatalogoErrorCA) this.util.jsonToObject(CatErrorCA, jsonRes, nodos);
 						response.setDescripcion(resGral.getMENSAJE().trim());
@@ -436,7 +437,8 @@ public class PasivoTcb {
 					nodos.add("ResponseBansefi");
 					nodos.add("OTR_IMPUT_VTNLLA_PASIVO_2");
 					String mensajeError = "";
-					if(resGral.getCODIGO().trim().equals("TCB08543")){
+					if(resGral.getCODIGO().trim().equals("TCB08543")  || resGral.getCODIGO().trim().equals("TCB08516")
+							|| resGral.getCODIGO().trim().equals("TCB08427")){
 						CatalogoErrorCA CatErrorCA = new CatalogoErrorCA();
 						CatErrorCA = (CatalogoErrorCA) this.util.jsonToObject(CatErrorCA, jsonRes, nodos);
 						response.setDescripcion(resGral.getMENSAJE().trim());

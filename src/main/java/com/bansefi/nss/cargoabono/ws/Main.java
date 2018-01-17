@@ -38,7 +38,7 @@ public class Main {
 		
 		
 		String entidad ="0166";
-		String terminal ="12000116";//"12012103";
+		String terminal ="12000122";//"12012103";
 		String centro="0001";
 		CargoAbono cargoAbono = new CargoAbono();
 		//cargoAbono.ProcesaPendientes(entidad, terminal, centro);
@@ -66,7 +66,7 @@ public class Main {
 		
 		
 		String HrOper="11:04:00";
-		String nombreCliente="ALEJANDRO ZAMUDIO FAUSTINOS LPQ";
+		String nombreCliente="JOSE HERNANDEZ";
 		String acuerdo ="0061701322";//"22012512";// ;"259719532";
 		String sucursal="0001";//"0121";
 		String empleado ="DESA0002";//"E1662129";
@@ -75,7 +75,7 @@ public class Main {
 		ServiciosCargoAbono oc = new ServiciosCargoAbono();
 		//String StResult =oc.GeneraComprobate(terminal,entidad,centro,empleado);
 
-		System.out.println(oc.GeneraComprobateSaldo("E1660384", "Bansef13", entidad, sucursal, "12000122", empleado, acuerdo, "14:16:00", nombreCliente, idExterno));
+		//System.out.println(oc.GeneraComprobateSaldo("E1660384", "Bansef13", entidad, sucursal, "12000122", empleado, acuerdo, "14:16:00", nombreCliente, idExterno));
 		
 		
 		String Producto="CUENTAHORRO";
@@ -101,7 +101,7 @@ public class Main {
 		
 		String uniqueID = UUID.randomUUID().toString();
 		System.out.println(" " +uniqueID);
-		String FolioTrans="b3887404-3c12-ae10-c477-7152f61e618c";
+		String FolioTrans="b3887404-3c12-ae10-c477-7152f61e618f";
 
 		String ImpLetra="";
 		String Clabe="";
@@ -123,11 +123,10 @@ public class Main {
 				 Producto,	 IdExt, 
 				 tipoIdExterno
 				 ,FolioTrans);*/
-		//String resp = oc.CargoAbono("E1660384", "Bansef13", entidad, sucursal, empleado, "12000122", acuerdo, "C", FecValor, "1.00", "Prueba abono caja", FecOper, HrOper, "C", nombreCliente, producto, idexterno, tipoIdExterno, FolioTrans);
+		//String resp = oc.CargoAbono("E1660384", "Bansef14", entidad, sucursal, empleado, "12000122", acuerdo, "A", FecValor, "1.00", "Prueba abono caja", FecOper, HrOper, "C", nombreCliente, producto, idexterno, tipoIdExterno, FolioTrans);
 		//System.out.println(resp);
 		
-		//String resp1 = oc.CargoAbonoIntervencion("E1660384", "Bansef13", entidad, sucursal, empleado, "12000122", acuerdo, "C", FecValor, "1.00", "Prueba abono intervencion", FecOper, HrOper, "I", nombreCliente, producto, idexterno, tipoIdExterno, StrClop, StrSubClop, FolioTrans);
+		//String resp1 = oc.CargoAbonoIntervencion("E1660384", "Bansef14", "0166", "0001", "E1660384", "12000122", "0061701322", "C", "2018-01-17", "1.00", "Prueba abono intervencion", "2018-01-17", "13:49:23", "I", "JOSE HERNANDEZ", "CUENTAHORRO", "DVI        ", "DVI        ", "01", "0002", "06f2f9e3-f41d-dc40-54f7-bfaaa0d8b25dg");
 		//System.out.println("Cargo Intervencion -->" + resp1);
-		
 	}
 }
