@@ -12,7 +12,7 @@ public class CantidadLetras {
     private static final String[] DECENAS = {"diez ", "once ", "doce ", "trece ", "catorce ", "quince ", "dieciseis ",
         "diecisiete ", "dieciocho ", "diecinueve", "veinte ", "treinta ", "cuarenta ",
         "cincuenta ", "sesenta ", "setenta ", "ochenta ", "noventa "};
-    private static final String[] CENTENAS = {"", "ciento ", "doscientos ", "trecientos ", "cuatrocientos ", "quinientos ", "seiscientos ",
+    private static final String[] CENTENAS = {"", "ciento ", "doscientos ", "trescientos ", "cuatrocientos ", "quinientos ", "seiscientos ",
         "setecientos ", "ochocientos ", "novecientos "};
 
    public CantidadLetras() {
@@ -60,21 +60,29 @@ public class CantidadLetras {
             numero = numero + ",00";
         }
         //se valida formato de entrada -> 0,00 y 999 999 999,00
-        if (Pattern.matches("\\d{1,9},\\d{1,2}", numero)) {
+        if (Pattern.matches("\\d{1,12},\\d{1,2}", numero)) {
             //se divide el numero 0000000,00 -> entero y decimal
             String Num[] = numero.split(",");            
             //de da formato al numero decimal
             parte_decimal = Num[1] + "/100 M.N.";
             //se convierte el numero a literal
-            if (Integer.parseInt(Num[0]) == 0) {//si el valor es cero
+            if (Long.parseLong(Num[0]) == 0) {//si el valor es cero
                 literal = "cero ";
-            } else if (Integer.parseInt(Num[0]) > 999999) {//si es millon
+            } else if(Long.parseLong(Num[0]) > 999999999){
+            	if(Num[0].substring(0, Num[0].length() -9).length() == 1){
+            		literal =getUnidades(Num[0].substring(0, Num[0].length() -9)) + "MIL " + getMillones(Num[0].substring(Num[0].length() -9));
+            	}else if(Num[0].substring(0, Num[0].length() -9).length() == 2){
+            		literal =getDecenas(Num[0].substring(0, Num[0].length() -9)) + "MIL " + getMillones(Num[0].substring(Num[0].length() -9));
+            	}else if(Num[0].substring(0, Num[0].length() -9).length() == 3){
+            		literal =getCentenas(Num[0].substring(0, Num[0].length() -9)) + "MIL " + getMillones(Num[0].substring(Num[0].length() -9));
+            	}
+            } else if (Long.parseLong(Num[0]) > 999999) {//si es millon
                 literal = getMillones(Num[0]);
-            } else if (Integer.parseInt(Num[0]) > 999) {//si es miles
+            } else if (Long.parseLong(Num[0]) > 999) {//si es miles
                 literal = getMiles(Num[0]);
-            } else if (Integer.parseInt(Num[0]) > 99) {//si es centena
+            } else if (Long.parseLong(Num[0]) > 99) {//si es centena
                 literal = getCentenas(Num[0]);
-            } else if (Integer.parseInt(Num[0]) > 9) {//si es decena
+            } else if (Long.parseLong(Num[0]) > 9) {//si es decena
                 literal = getDecenas(Num[0]);
             } else {//sino unidades -> 9
                 literal = getUnidades(Num[0]);
@@ -167,20 +175,20 @@ public class CantidadLetras {
 
     }
 
-    private static String getMillones(String numero) { //000 000 000        
+    private static String getMillones(String numero) { //000 000 000
         //se obtiene los miles
         String miles = numero.substring(numero.length() - 6);
         //se obtiene los millones
         String millon = numero.substring(0, numero.length() - 6);
         String n = "";
         if(millon.length() == 1 && millon.equals("1")){
-        	if(numero.equals("1000000"))
+        	if(numero.equals("1000000")){
         		n = getCentenas(millon) + "millon de ";
-        	else
+        	}else{
         		n = getCentenas(millon) + "millon ";
+        	}
         }else{
-        	switch(numero)
-        	{
+        	switch(numero){
         		case "2000000":
         		case "3000000":
         		case "4000000":
@@ -193,7 +201,8 @@ public class CantidadLetras {
         			n = getUnidades(millon) + "millones de ";
         			break;
         		default:
-        			n = getUnidades(millon) + "millones ";
+        			n = direcciona(millon) + "millones ";
+        			//n = getUnidades(millon) + "millones ";
         			break;
         	}
             
@@ -204,6 +213,61 @@ public class CantidadLetras {
     public static boolean isNumeric(String str)
     {
     	return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    }
+    
+    public static String direcciona(String millones){
+    	String response = "";
+    	int letNum = Integer.parseInt(millones);
+    	String numLet = Integer.toString(letNum); 
+    	int tamanio = numLet.length(); 
+    	switch(tamanio){
+    	case 1:
+    		response = getUnidades(millones);
+    		break;
+    	case 2:
+    		response = getDecenas(millones);
+    		break;
+    	case 3:
+    		response = getCentenas(millones);
+    		break;
+    	case 4:
+    		response = getMiles(millones);
+    		break;
+    	}
+    	return response;
+    }
+    
+    private static String getMilesMillones(String numero) {// 999 999
+        //obtiene las centenas
+        String c = numero.substring(numero.length() - 3);
+        //obtiene los miles
+        String m = numero.substring(0, numero.length() - 3);
+        String n="";
+        //se comprueba que miles tenga valor entero
+        if (Integer.parseInt(m) > 0) {
+        	Integer numLen =m.length();  
+        	if(numLen >=2)
+        	{
+        		Integer nNum =Integer.parseInt(m);// m.substring(m.length()-2));
+        		if (nNum==1){
+        			m =Integer.toString(  Integer.parseInt(m) -1); 
+        		}
+        		n = getCentenas(m);
+        		return n + "mil " + getCentenas(c);
+        	}
+        	else
+        	{
+        		n = getCentenas(m);    
+                if (Integer.parseInt(m)==1) 
+                return  "mil " + getCentenas(c);
+                else
+                return n + "mil " + getCentenas(c);	
+        	}
+            
+        } else {
+            return "" + getCentenas(c);
+        }
+
     }
 
 }

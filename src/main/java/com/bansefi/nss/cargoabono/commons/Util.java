@@ -6,11 +6,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import com.bansefi.nss.cargoabono.vo.Errores;
 import com.google.gson.Gson;
 
@@ -105,9 +103,6 @@ public final class Util<T> {
 	 */
 	public String formatoHora(String request) {
 		String response = "";
-		// Se Formatea hora operacion ya que el servicio lo regresa solo con 6
-		// dijitos sin los puntos y para actualizarlo nececita los 2 puntos
-		// pendiente verificar si esto afecta o no
 		if (request.length() > 0 && request.length() < 7) {
 			String hora, minuto, segundo;
 			hora = request.substring(0, 2);
@@ -117,4 +112,73 @@ public final class Util<T> {
 		}
 		return response;
 	}
+	
+	/*
+	 *Metodo para identificar tipo operacion contra intervencion 
+	 */
+	public String concInterv(String request){
+		String response = "";
+		switch(request){
+			case "990002": response = "ABONOS VARIOS " + request;
+			break;
+			case "030005": response = "DOC. NO COMPENSADO. " + request;
+			break;
+			case "990001": response = "ADEUDOS VARIOS " + request;
+			break;
+			case "030001": response = "PAGO CHEQUE " + request;
+			break;
+			case "220054": response = "RECIBOS VARIOS " + request;
+			break;
+		}
+		return response;
+	}
+	
+	/*
+	 *Metodo para realizar recorrimiento de bits con formaro dd/mm/aaaa 
+	 */
+	public static char[] getCharArrayfromFechaLocal(String fechaTCB){
+        String [] lista=fechaTCB.split("/");
+        int y=Integer.parseInt(lista[2]);
+        int m=Integer.parseInt(lista[1]);
+        int d=Integer.parseInt(lista[0]);
+        int value=YMD2int(y,m,d);
+        char[] listaChar=new char[4];
+        listaChar[0] = ((char)(value >> 24 & 0xFF));
+        listaChar[1] = ((char)(value >> 16 & 0xFF));
+        listaChar[2] = ((char)(value >> 8 & 0xFF));
+        listaChar[3] = ((char)(value >> 0 & 0xFF));
+        return listaChar;
+    }
+	
+	public static char[] getCharArrayfromHora(String hora){
+        String [] lista=hora.split(":");
+        int hour=Integer.parseInt(lista[0]);
+        int min=Integer.parseInt(lista[1]);
+        int sec=Integer.parseInt(lista[2]);
+        int ms=0;
+        int value=HMSM2int(hour,min,sec,ms);
+        char[] listaChar=new char[4];
+
+        listaChar[0] = ((char)(value >> 24 & 0xFF));
+        listaChar[1] = ((char)(value >> 16 & 0xFF));
+        listaChar[2] = ((char)(value >> 8 & 0xFF));
+        listaChar[3] = ((char)(value >> 0 & 0xFF));
+        return listaChar;
+    }
+	
+	public static  int YMD2int(int y, int m, int d){
+        if (m < 3){
+            y += 399;
+            m += 9;
+        }else{
+            y += 400;
+            m -= 3;
+        }
+        return y * 365 + y / 4 - y / 100 + y / 400 + (153 * m + 2) / 5 + d - 146037;
+    }
+	
+	static final int HMSM2int(int hour, int min, int sec, int ms)
+    {
+        return hour * 3600000 + min * 60000 + sec * 1000 + ms;
+    }
 }

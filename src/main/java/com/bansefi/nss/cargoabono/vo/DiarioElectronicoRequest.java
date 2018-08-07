@@ -52,6 +52,7 @@ public class DiarioElectronicoRequest {
 	private String diTextArg5;
 	private String fechaPc;
 	private String horaPc;
+	private String horaPcFinal;
 	
 	public String getIdInternoTermTn() {
 		return idInternoTermTn;
@@ -358,5 +359,11 @@ public class DiarioElectronicoRequest {
 	}
 	public void setHoraPc(String horaPc) {
 		this.horaPc = horaPc;
+	}
+	public String getHoraPcFinal() {
+		return horaPcFinal;
+	}
+	public void setHoraPcFinal(String horaPcFinal) {
+		this.horaPcFinal = horaPcFinal;
 	}
 }
