@@ -115,7 +115,7 @@ public class CargoAbono {
                     b = b + a[0];
                 }
                 if (tipoOp.equals("A")) {
-                    Ordenante = "DVI        INGRESO CAJA 010002";
+                    Ordenante = "DVI        " + concepto.toUpperCase();
                     Ordenante = StringUtils.rightPad(Ordenante, 81, " ");
                     Ordenante = Ordenante + "000";
                     Ordenante = StringUtils.rightPad(Ordenante, 170, " ");
