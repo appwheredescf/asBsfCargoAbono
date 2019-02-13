@@ -45,8 +45,7 @@ public class DiarioElectronicoDS {
             String StrFecOper = request.getFechaOprcn();
             StrFecOper = StrFecOper.replace("/", "-");
             String StrImpNOmX = request.getImpNominalX();
-            String StrFecValor = request.getFechaValor();
-            StrFecValor = StrFecValor.replace("/", "-");
+            String StrFecValor = "1111-11-11";
             try {
                 if (StrImpNOmX.length() > 13)
                     StrImpNOmX = StrImpNOmX.substring(0, 12);
@@ -186,7 +185,7 @@ public class DiarioElectronicoDS {
                 requestDiario.setDiTextArg5("");
                 requestDiario.setFechaCtble(fechaContable);
                 requestDiario.setFechaOprcn(fechaOperacion.substring(0, 4) + "-" + fechaOperacion.substring(4, 6) + "-" + fechaOperacion.substring(6));
-                requestDiario.setFechaValor(fechaValor);
+                requestDiario.setFechaValor("1111-11-11");
                 requestDiario.setHoraOprcn(horaOperacion);
                 requestDiario.setIdInternoEmplEp(empleado);
                 requestDiario.setIdInternoTermTn(terminal);
@@ -303,7 +302,7 @@ public class DiarioElectronicoDS {
                 requestDiario.setDiTextArg5("");
                 requestDiario.setFechaCtble(fechaContable);
                 requestDiario.setFechaOprcn(fechaOperacion);
-                requestDiario.setFechaValor(fechaValor);
+                requestDiario.setFechaValor("1111-11-11");
                 requestDiario.setHoraOprcn(horaOprn);
                 requestDiario.setIdInternoEmplEp(empleado);
                 requestDiario.setIdInternoTermTn(terminal);
@@ -590,7 +589,7 @@ public class DiarioElectronicoDS {
             requestDiario.setDiTextArg5("");
             requestDiario.setFechaCtble(fechaContable);
             requestDiario.setFechaOprcn(FecOperacion);
-            requestDiario.setFechaValor(fechaContable);
+            requestDiario.setFechaValor("1111-11-11");
             requestDiario.setHoraOprcn(horaOprn);
             requestDiario.setIdInternoEmplEp(empleado);
             requestDiario.setIdInternoTermTn(terminal);
