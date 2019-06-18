@@ -29,8 +29,7 @@ import com.bansefi.nss.cargoabono.tcb.PasivoTcb;
 
 public class DiarioElectronicoDS {
     private DsProperties propDs = new DsProperties();
-    private static final Logger log = LogManager.getLogger(PasivosAcuerdosServices.class);
-
+    Util util = new Util();
     private ResponseService InsertaDiario(DiarioElectronicoRequest request) {
         ResponseService response = new ResponseService();
         Util util = new Util();
@@ -119,9 +118,9 @@ public class DiarioElectronicoDS {
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.error("DiarioElectronicoDS - InsertaDiario : Exception. " + e.getMessage());
-            log.error("DiarioElectronicoDS - InsertaDiario : outputString. " + outputString);
-            log.error("DiarioElectronicoDS - InsertaDiario : input xml. " + xml);
+            System.out.println("DiarioElectronicoDS - InsertaDiario : Exception. " + e.getMessage());
+            System.out.println("DiarioElectronicoDS - InsertaDiario : outputString. " + outputString);
+            System.out.println("DiarioElectronicoDS - InsertaDiario : input xml. " + xml);
         }
         return response;
     }
@@ -174,7 +173,7 @@ public class DiarioElectronicoDS {
                 requestDiario.setCodNrbeEnFsc(entidad);
                 requestDiario.setCodNumrcoMoneda("MXN");
                 requestDiario.setCodNumrcoMoneda1("MXN");
-                requestDiario.setCodRespuesta("1");
+                requestDiario.setCodRespuesta("0");
                 requestDiario.setCodTx(StrCodTx);
                 requestDiario.setCodTxDi("");
                 requestDiario.setContrida(cajaInt);
@@ -184,7 +183,7 @@ public class DiarioElectronicoDS {
                 requestDiario.setDiTextArg4("");
                 requestDiario.setDiTextArg5("");
                 requestDiario.setFechaCtble(fechaContable);
-                requestDiario.setFechaOprcn(fechaOperacion.substring(0, 4) + "-" + fechaOperacion.substring(4, 6) + "-" + fechaOperacion.substring(6));
+                requestDiario.setFechaOprcn(fechaHora.getFechaOprcn().replaceAll("/", "-"));
                 requestDiario.setFechaValor("1111-11-11");
                 requestDiario.setHoraOprcn(horaOperacion);
                 requestDiario.setIdInternoEmplEp(empleado);
@@ -201,11 +200,11 @@ public class DiarioElectronicoDS {
                 requestDiario.setNumPuesto(StrPuesto);
                 requestDiario.setNumSec(numSec);
                 requestDiario.setNumSecAc(numSecAc);
-                requestDiario.setNumSecAnul(null);
-                requestDiario.setNumSecOff(null);
+                requestDiario.setNumSecAnul("0");
+                requestDiario.setNumSecOff("0");
                 requestDiario.setIdEmplAnul("");
-                requestDiario.setFechaAnul(null);
-                requestDiario.setFechaOff(null);
+                requestDiario.setFechaAnul("1111-11-11");
+                requestDiario.setFechaOff("1111-11-11");
                 requestDiario.setIdTermOff("");
                 requestDiario.setIdEmplOff("");
                 requestDiario.setIdEmplAut("");
@@ -218,6 +217,7 @@ public class DiarioElectronicoDS {
                 requestDiario.setFechaPc(fechaHora.getFechaOprcn().replaceAll("/", "-"));
                 requestDiario.setHoraPc(horaOprn);
                 requestDiario.setHoraPcFinal(fechaHora.getHoraOprcn());
+                System.out.println(util.objectToJson(requestDiario));
                 ResponseService responseDia = new ResponseService();
                 response.setStatus(0);
                 if (Integer.parseInt(numSec) > 0) {
@@ -239,7 +239,7 @@ public class DiarioElectronicoDS {
         } catch (Exception ex) {
             response.setCOD_RESPUESTA(-1);
             response.setDescripcion(ex.getMessage());
-            log.error("DiarioElectronicoDS - RegistraCargoAbonoPendiente : Exception. " + ex.getMessage());
+            System.out.println("DiarioElectronicoDS - RegistraCargoAbonoPendiente : Exception. " + ex.getMessage());
         }
         return response;
     }
@@ -291,7 +291,7 @@ public class DiarioElectronicoDS {
                 requestDiario.setCodNrbeEnFsc(entidad);
                 requestDiario.setCodNumrcoMoneda("MXN");
                 requestDiario.setCodNumrcoMoneda1("MXN");
-                requestDiario.setCodRespuesta("1");
+                requestDiario.setCodRespuesta("0");
                 requestDiario.setCodTx(StrCodTx);
                 requestDiario.setCodTxDi("");
                 requestDiario.setContrida(cajaInt);
@@ -319,11 +319,11 @@ public class DiarioElectronicoDS {
                 requestDiario.setNumPuesto(StrPuesto);
                 requestDiario.setNumSec(numSec);
                 requestDiario.setNumSecAc(numSecAc);
-                requestDiario.setNumSecAnul(null);
-                requestDiario.setNumSecOff(null);
+                requestDiario.setNumSecAnul("0");
+                requestDiario.setNumSecOff("0");
                 requestDiario.setIdEmplAnul("");
-                requestDiario.setFechaAnul(null);
-                requestDiario.setFechaOff(null);
+                requestDiario.setFechaAnul("1111-11-11");
+                requestDiario.setFechaOff("1111-11-11");
                 requestDiario.setIdTermOff("");
                 requestDiario.setIdEmplOff("");
                 requestDiario.setIdEmplAut("");
@@ -354,7 +354,7 @@ public class DiarioElectronicoDS {
         } catch (Exception ex) {
             response.setCOD_RESPUESTA(-1);
             response.setDescripcion(ex.getMessage());
-            log.error("DiarioElectronicoDS - RegistraCargoAbonoPendiente : Exception. " + ex.getMessage());
+            System.out.println("DiarioElectronicoDS - RegistraCargoAbonoPendiente : Exception. " + ex.getMessage());
         }
 
         return response;
@@ -375,7 +375,7 @@ public class DiarioElectronicoDS {
             String wsURL = propDs.getURL_DIARIO_ELECTRONICO();
 
             outputString = SalidaResponse(xml, wsURL, action, "ConsultaUltimoMovimientoResp");
-            log.error("DiarioElectronicoDS - UltimoMovimiento . " + xml);
+            System.out.println("DiarioElectronicoDS - UltimoMovimiento . " + xml);
             if (outputString.contains("RespuetaDiario")) {
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -450,15 +450,15 @@ public class DiarioElectronicoDS {
             } else {
                 response.setStatus(0);
                 response.setDescripcion("Datos incorrectos");
-                log.error("DiarioElectronicoDS - UltimoMovimiento : Error. " + outputString);
+                System.out.println("DiarioElectronicoDS - UltimoMovimiento : Error. " + outputString);
             }
 
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.info("DiarioElectronicoDS - UltimoMovimiento : In. " + xml);
-            log.info("DiarioElectronicoDS - UltimoMovimiento : Out. " + outputString);
-            log.error("DiarioElectronicoDS - UltimoMovimiento : Exception. " + e.getMessage());
+            System.out.println("DiarioElectronicoDS - UltimoMovimiento : In. " + xml);
+            System.out.println("DiarioElectronicoDS - UltimoMovimiento : Out. " + outputString);
+            System.out.println("DiarioElectronicoDS - UltimoMovimiento : Exception. " + e.getMessage());
         }
         return response;
     }
@@ -496,15 +496,15 @@ public class DiarioElectronicoDS {
             } else {
                 response.setStatus(0);
                 response.setDescripcion("Datos incorrectos");
-                log.error("DiarioElectronicoDS - ObtieneMovimiento : Error. " + outputString);
+                System.out.println("DiarioElectronicoDS - ObtieneMovimiento : Error. " + outputString);
             }
 
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.info("DiarioElectronicoDS - ObtieneMovimiento : In. " + xml);
-            log.info("DiarioElectronicoDS - ObtieneMovimiento : Out. " + outputString);
-            log.error("DiarioElectronicoDS - ObtieneMovimiento : Exception. " + e.getMessage());
+            System.out.println("DiarioElectronicoDS - ObtieneMovimiento : In. " + xml);
+            System.out.println("DiarioElectronicoDS - ObtieneMovimiento : Out. " + outputString);
+            System.out.println("DiarioElectronicoDS - ObtieneMovimiento : Exception. " + e.getMessage());
         }
         return response;
     }
@@ -540,9 +540,9 @@ public class DiarioElectronicoDS {
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.info("DiarioElectronicoDS - ActualizaRegistro : In. " + xml);
-            log.info("DiarioElectronicoDS - ActualizaRegistro : Out. " + outputString);
-            log.error("DiarioElectronicoDS - ActualizaRegistro : Exception. " + e.getMessage());
+            System.out.println("DiarioElectronicoDS - ActualizaRegistro : In. " + xml);
+            System.out.println("DiarioElectronicoDS - ActualizaRegistro : Out. " + outputString);
+            System.out.println("DiarioElectronicoDS - ActualizaRegistro : Exception. " + e.getMessage());
 
         }
         return response;
@@ -651,9 +651,9 @@ public class DiarioElectronicoDS {
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.info("DiarioElectronicoDS - ActualizaRegistro : In. " + xml);
-            log.info("DiarioElectronicoDS - ActualizaRegistro : Out. " + outputString);
-            log.error("DiarioElectronicoDS - ActualizaRegistro : Exception. " + e.getMessage());
+            System.out.println("DiarioElectronicoDS - ActualizaRegistro : In. " + xml);
+            System.out.println("DiarioElectronicoDS - ActualizaRegistro : Out. " + outputString);
+            System.out.println("DiarioElectronicoDS - ActualizaRegistro : Exception. " + e.getMessage());
         }
         return response;
     }
@@ -701,9 +701,9 @@ public class DiarioElectronicoDS {
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.info("DiarioElectronicoDS - ActualizaRegistro : In. " + xml);
-            log.info("DiarioElectronicoDS - ActualizaRegistro : Out. " + outputString);
-            log.error("DiarioElectronicoDS - ActualizaRegistro : Exception. " + e.getMessage());
+            System.out.println("DiarioElectronicoDS - ActualizaRegistro : In. " + xml);
+            System.out.println("DiarioElectronicoDS - ActualizaRegistro : Out. " + outputString);
+            System.out.println("DiarioElectronicoDS - ActualizaRegistro : Exception. " + e.getMessage());
 
         }
         return response;
@@ -813,14 +813,14 @@ public class DiarioElectronicoDS {
             } else {
                 response.setStatus(0);
                 response.setDescripcion(outputString);
-                log.info("DiarioElectronicoDS [ObtieneUltimoMovPendiente] - outputString :  " + outputString);
+                System.out.println("DiarioElectronicoDS [ObtieneUltimoMovPendiente] - outputString :  " + outputString);
             }
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.info("DiarioElectronicoDS - ObtieneUltimoMovPendiente : In. " + xml);
-            log.info("DiarioElectronicoDS - ObtieneUltimoMovPendiente : Out. " + outputString);
-            log.error("DiarioElectronicoDS - ObtieneUltimoMovPendiente : Exception. " + e.getMessage());
+            System.out.println("DiarioElectronicoDS - ObtieneUltimoMovPendiente : In. " + xml);
+            System.out.println("DiarioElectronicoDS - ObtieneUltimoMovPendiente : Out. " + outputString);
+            System.out.println("DiarioElectronicoDS - ObtieneUltimoMovPendiente : Exception. " + e.getMessage());
 
         }
         return response;
@@ -869,7 +869,7 @@ public class DiarioElectronicoDS {
             outputString = outputString.trim();
             salida = outputString;
         } catch (Exception ex) {
-            log.error("PasivoTcb - Cargo : SalidaResponse. " + ex.getMessage());
+            System.out.println("PasivoTcb - Cargo : SalidaResponse. " + ex.getMessage());
         }
         return salida;
     }

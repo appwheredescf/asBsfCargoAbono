@@ -142,34 +142,32 @@ public class CargoAbono {
                 ResponDiaPend RespDia = null;
                 String StrAcuerdo = "0000000000".substring(acuerdo.length()) + acuerdo;
                 ResponseServiceCargoAbono responseMov = new ResponseServiceCargoAbono();
-                switch (tipoOp) {
-                    case "C":
-                        responseMov = pasivoTCB.Cargo(usuario, password, entidad, StrAcuerdo, impNom, concepto, terminal);
-                        break;
-                    case "A":
-                        responseMov = pasivoTCB.Abono(usuario, password, entidad, StrAcuerdo, impNom, concepto, terminal);
-                        break;
-                }
-                if (responseMov.getStatus() == 1) {
-                    RespDia = ProcDia.RegistraCargoAbonoPendiente(entidad, sucursal, terminal, empleado, tipoOp,
-                            conceptoDiario, impNom, "0", acuerdo, "0", responseMov.getFECHAOPERA(), cajaInt, responseMov.getHORAOPERACION(), fechaValor);
-                    if (RespDia.getStatus() == 1) {
-                        ResponseService StaSql = InsertSql(acuerdo, entidad, terminal, cajaInt, empleado, StrFeOper,
-                                "01-01-1999", StrHoraOper, sucursal, tipoOp, impNom, concepto, nombreCliente, producto,
-                                idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans, null, "0");
-                        Clabe = StaSql.getTXT_ARG1();
+                RespDia = ProcDia.RegistraCargoAbonoPendiente(entidad, sucursal, terminal,
+                        empleado,tipoOp, conceptoDiario, impNom, "0", acuerdo, "0",
+                        fechaOperacion, cajaInt,horaOp,fechaValor);
+                if (RespDia.getStatus() == 1){
+                    ResponseService StaSql = InsertSql(acuerdo, entidad, terminal, cajaInt, empleado, StrFeOper,
+                            "01-01-1999", StrHoraOper, sucursal, tipoOp, impNom, concepto, nombreCliente,
+                             producto,	idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans, null,
+                            "0");
+                    Clabe = StaSql.getTXT_ARG1();
+
+                    switch (tipoOp) {
+                        case "C":
+                            responseMov = pasivoTCB.Cargo(usuario, password, entidad, StrAcuerdo, impNom, concepto, terminal);
+                            break;
+                        case "A":
+                            responseMov = pasivoTCB.Abono(usuario, password, entidad, StrAcuerdo, impNom, concepto, terminal);
+                            break;
+                    }
+                    if (responseMov.getStatus() == 1) {
                         RespDia.setTERMINAL(terminal);
                         RespDia.setCOD_RESPUESTA(1);
-                        // ---Verificar NumSec
-                        // RespDia.setNUMSEC(responseMov.getNUM_SEC());
                         RespDia.setIMP_SDO(responseMov.getImpSaldo());
-                        RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
                         ResponseService pResp = ProcDia.ActualizaRegistro(RespDia);
                         StrHoraOper = responseMov.getHORAOPERACION();
                         StrFeOper = responseMov.getFECHAOPERA();
-
                         if (pResp.getStatus() == 1) {
-
                             ResponseService StaSqlOK = InsertSql(acuerdo, entidad, terminal, cajaInt, empleado,
                                     StrFeOper, "01-01-1999", StrHoraOper, sucursal, tipoOp, impNom, concepto,
                                     nombreCliente, producto, idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans,
@@ -180,42 +178,38 @@ public class CargoAbono {
                                     Clabe = StaSqlOK.getTXT_ARG1();
                             SrIdMov = RespDia.getNUMSEC();
                             StatusOper = true;
-                        } else {
+                        }else{
                             EndpointProperties prop = new EndpointProperties();
-                            SrDesc = prop.getMsgErrorPaso3();
                             SrStatus = "0";
+                            SrDesc = prop.getMsgErrorPaso3();
                         }
-                    } else {
-                        RespDia.setCOD_RESPUESTA(0);
-                        RespDia.setTERMINAL(terminal);
-                        RespDia.setIMP_SDO(impNom);
-                        RespDia.setNUMSEC("0");
-                        ResponseService pResp = ProcDia.ActualizaRegistro(RespDia);
-                        SrIdMov = "-998";
+
+                    }else {
+                        try {
+
+                            Calendar calendario = new GregorianCalendar();
+                            int hora, minutos, segundos;
+                            hora = calendario.get(Calendar.HOUR_OF_DAY);
+                            minutos = calendario.get(Calendar.MINUTE);
+                            segundos = calendario.get(Calendar.SECOND);
+                            String HrAc = hora + ":" + minutos + ":" + segundos;
+
+                            RespDia.setCOD_RESPUESTA(0);// 1
+                            RespDia.setTERMINAL(terminal);
+                            RespDia.setIMP_SDO("0");
+                            RespDia.setHORA_OPERACION(HrAc);
+                            ResponseService pResp = ProcDia.ActualizaRegistro(RespDia);
+                        } catch (Exception ex) {
+
+                        }
+                        SrIdMov = "-999";
                         SrStatus = "0";
-                        SrDesc = "No registra cargo-abono";
+                        SrDesc = responseMov.getDescripcion();
                     }
-                } else {
-                    try {
-
-                        Calendar calendario = new GregorianCalendar();
-                        int hora, minutos, segundos;
-                        hora = calendario.get(Calendar.HOUR_OF_DAY);
-                        minutos = calendario.get(Calendar.MINUTE);
-                        segundos = calendario.get(Calendar.SECOND);
-                        String HrAc = hora + ":" + minutos + ":" + segundos;
-
-                        RespDia.setTERMINAL(terminal);
-                        RespDia.setCOD_RESPUESTA(0);// 1
-                        RespDia.setIMP_SDO("0");
-                        RespDia.setHORA_OPERACION(HrAc);
-                        ResponseService pResp = ProcDia.ActualizaRegistro(RespDia);
-                    } catch (Exception ex) {
-
-                    }
-                    SrIdMov = "-999";
-                    SrStatus = "0";
-                    SrDesc = responseMov.getDescripcion();
+                }else{
+                    StatusOper = false;
+                    SrIdMov = "-998";
+                    SrDesc = "Fallo en registro de diario electronico";
                 }
             } else {
                 /* Ya existe movimiento */
@@ -417,38 +411,34 @@ public class CargoAbono {
                 ResponDiaPend RespDia = null;
                 String StrAcuerdo = "0000000000".substring(acuerdo.length()) + acuerdo;
                 ResponseServiceCargoAbono responseMov = new ResponseServiceCargoAbono();
-                switch (tipoOp) {
-                    case "C":
-                        responseMov = pasivoTCB.CargoIntervencion(usuario, password, entidad, StrAcuerdo, impNom, concepto,
-                                terminal, StrClop, StrSubClop);
-                        break;
-                    case "A":
-                        responseMov = pasivoTCB.AbonoIntervencion(usuario, password, entidad, StrAcuerdo, impNom, concepto,
-                                terminal, StrClop, StrSubClop);
-                        break;
-                }
-                if (responseMov.getStatus() == 1) {
-                    RespDia = ProcDia.RegistraCargoAbonoPendienteInter(entidad, sucursal, terminal, empleado, tipoOp,
-                            conceptoDiario, impNom, "0", acuerdo, "0", fechaOperacion, cajaInt, StrClop, StrSubClop, fechaValor);
-                    // Paso 2
-                    if (RespDia.getStatus() == 1) {
-                        ResponseService StaSql = InsertSql(acuerdo, entidad, terminal, cajaInt, empleado, StrFeOper,
-                                "01-01-1999", StrHoraOper, sucursal, tipoOp, impNom, concepto, nombreCliente, producto,
-                                idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans, null, "0");
-                        Clabe = StaSql.getTXT_ARG1();
-                        // Paso 3
+                RespDia = ProcDia.RegistraCargoAbonoPendiente(entidad, sucursal, terminal,
+                        empleado,tipoOp, conceptoDiario, impNom, "0", acuerdo, "0",
+                        fechaOperacion, cajaInt,horaOp,fechaValor);
+                if (RespDia.getStatus() == 1){
+                    ResponseService StaSql = InsertSql(acuerdo, entidad, terminal, cajaInt, empleado, StrFeOper,
+                            "01-01-1999", StrHoraOper, sucursal, tipoOp, impNom, concepto, nombreCliente,
+                            producto,	idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans, null,
+                            "0");
+                    Clabe = StaSql.getTXT_ARG1();
+
+                    switch (tipoOp) {
+                        case "C":
+                            responseMov = pasivoTCB.CargoIntervencion(usuario, password, entidad, StrAcuerdo, impNom, concepto,
+                                    terminal, StrClop, StrSubClop);
+                            break;
+                        case "A":
+                            responseMov = pasivoTCB.AbonoIntervencion(usuario, password, entidad, StrAcuerdo, impNom, concepto,
+                                    terminal, StrClop, StrSubClop);
+                            break;
+                    }
+                    if (responseMov.getStatus() == 1) {
+                        RespDia.setCOD_RESPUESTA(1);
                         RespDia.setTERMINAL(terminal);
-                        RespDia.setCOD_RESPUESTA(1);// 1
-                        // ---Verificar NumSec
-                        // RespDia.setNUMSEC(responseMov.getNUM_SEC());
                         RespDia.setIMP_SDO(responseMov.getImpSaldo());
-                        RespDia.setHORA_OPERACION(responseMov.getHORAOPERACION());
                         ResponseService pResp = ProcDia.ActualizaRegistro(RespDia);
                         StrHoraOper = responseMov.getHORAOPERACION();
                         StrFeOper = responseMov.getFECHAOPERA();
-
-                        if (pResp.getStatus() == 1)// 1
-                        {
+                        if (pResp.getStatus() == 1) {
                             ResponseService StaSqlOK = InsertSql(acuerdo, entidad, terminal, cajaInt, empleado,
                                     StrFeOper, "01-01-1999", StrHoraOper, sucursal, tipoOp, impNom, concepto,
                                     nombreCliente, producto, idexterno, tipoIdExterno, RespDia.getNUMSEC(), folioTrans,
@@ -459,41 +449,38 @@ public class CargoAbono {
                                     Clabe = StaSqlOK.getTXT_ARG1();
                             SrIdMov = RespDia.getNUMSEC();
                             StatusOper = true;
-                        } else {
+                        }else{
                             EndpointProperties prop = new EndpointProperties();
                             SrDesc = prop.getMsgErrorPaso3();
                             SrStatus = "0";
                         }
-                    } else {
-                        RespDia.setCOD_RESPUESTA(0);
-                        RespDia.setTERMINAL(terminal);
-                        RespDia.setIMP_SDO(impNom);
-                        RespDia.setNUMSEC("0");
-                        ResponseService pResp = ProcDia.ActualizaRegistro(RespDia);
-                        SrIdMov = "-998";
+
+                    }else {
+                        try {
+
+                            Calendar calendario = new GregorianCalendar();
+                            int hora, minutos, segundos;
+                            minutos = calendario.get(Calendar.MINUTE);
+                            hora = calendario.get(Calendar.HOUR_OF_DAY);
+                            segundos = calendario.get(Calendar.SECOND);
+                            String HrAc = hora + ":" + minutos + ":" + segundos;
+
+                            RespDia.setCOD_RESPUESTA(0);// 1
+                            RespDia.setTERMINAL(terminal);
+                            RespDia.setIMP_SDO("0");
+                            RespDia.setHORA_OPERACION(HrAc);
+                            ResponseService pResp = ProcDia.ActualizaRegistro(RespDia);
+                        } catch (Exception ex) {
+
+                        }
+                        SrIdMov = "-999";
                         SrStatus = "0";
-                        SrDesc = "No registra cargo-abono";
+                        SrDesc = responseMov.getDescripcion();
                     }
-                } else {
-                    try {
-
-                        Calendar calendario = new GregorianCalendar();
-                        int hora, minutos, segundos;
-                        hora = calendario.get(Calendar.HOUR_OF_DAY);
-                        minutos = calendario.get(Calendar.MINUTE);
-                        segundos = calendario.get(Calendar.SECOND);
-                        String HrAc = hora + ":" + minutos + ":" + segundos;
-                        RespDia.setTERMINAL(terminal);
-                        RespDia.setCOD_RESPUESTA(0);// 1
-                        RespDia.setIMP_SDO("0");
-                        RespDia.setHORA_OPERACION(HrAc);
-                        ResponseService pResp = ProcDia.ActualizaRegistro(RespDia);
-                    } catch (Exception ex) {
-
-                    }
-                    SrIdMov = "-999";
-                    SrStatus = "0";
-                    SrDesc = responseMov.getDescripcion();
+                }else{
+                    StatusOper = false;
+                    SrIdMov = "-998";
+                    SrDesc = "Fallo en registro de diario electronico";
                 }
             } else {
                 StatusOper = true;

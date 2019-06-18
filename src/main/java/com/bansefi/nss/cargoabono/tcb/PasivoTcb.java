@@ -1,59 +1,38 @@
 
 package com.bansefi.nss.cargoabono.tcb;
 
+import com.bansefi.nss.cargoabono.commons.Util;
+import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
+import com.bansefi.nss.cargoabono.properties.DsProperties;
+import com.bansefi.nss.cargoabono.properties.TcbProperties;
+import com.bansefi.nss.cargoabono.vo.*;
+import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_APNTE_AUDIT_V;
+import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_APNTE_E;
+import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_AUDIT_AUX;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import com.bansefi.nss.cargoabono.commons.Util;
-import com.bansefi.nss.cargoabono.ds.DiarioElectronicoDS;
-import com.bansefi.nss.cargoabono.properties.DsProperties;
-import com.bansefi.nss.cargoabono.properties.TcbProperties;
-import com.bansefi.nss.cargoabono.services.PasivosAcuerdosServices;
-import com.bansefi.nss.cargoabono.vo.CatalogoApuntesCargo;
-import com.bansefi.nss.cargoabono.vo.CatalogoErrorCA;
-import com.bansefi.nss.cargoabono.vo.CodigoRetorno;
-import com.bansefi.nss.cargoabono.vo.DatosReciboCargo;
-import com.bansefi.nss.cargoabono.vo.RegistroTransaccion;
-import com.bansefi.nss.cargoabono.vo.ReqCargoAbonoIntervencion;
-import com.bansefi.nss.cargoabono.vo.RequestCargoAbono;
-import com.bansefi.nss.cargoabono.vo.ResGeneral;
-import com.bansefi.nss.cargoabono.vo.ResponseConsultaClabe;
-import com.bansefi.nss.cargoabono.vo.ResponseDatosCentro;
-import com.bansefi.nss.cargoabono.vo.ResponseDatosEmpleado;
-import com.bansefi.nss.cargoabono.vo.ResponseFechaHoraTCB;
-import com.bansefi.nss.cargoabono.vo.ResponsePersona;
-import com.bansefi.nss.cargoabono.vo.ResponseServiceCargoAbono;
-import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion;
-import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_APNTE_AUDIT_V;
-import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_APNTE_E;
-import com.bansefi.nss.cargoabono.vo.ResponseUltimaTransaccion.AF_AUDIT_AUX;
-import com.bansefi.nss.cargoabono.vo.SaldoAutorizado;
-import com.bansefi.nss.cargoabono.vo.TitularCargo;
 
 public class PasivoTcb {
-    private static final Logger log = LogManager.getLogger(PasivosAcuerdosServices.class);
     private DsProperties propDs = new DsProperties();
     DiarioElectronicoDS diario = new DiarioElectronicoDS();
     private long timeSleep = 0;
-    @SuppressWarnings("rawtypes")
     Util util = new Util();
     ResGeneral resGral = new ResGeneral();
     CodigoRetorno codigoRetorno = new CodigoRetorno();
 
     // Metodo que consume los servicios de Argo Intervencion de la UANAL
 
-    @SuppressWarnings("unchecked")
+    
     public ResponseServiceCargoAbono CargoIntervencion(String usuario, String password, String entidad, String acuerdo,
                                                        String impNom, String concepto, String terminal, String Clop, String SubClop) {
         ResponseServiceCargoAbono response = new ResponseServiceCargoAbono();
@@ -191,7 +170,7 @@ public class PasivoTcb {
                     mensaje = mensaje.replaceAll("[??????\\-\\+\\.\\^:,]", "");// ????
                     mensaje = mensaje.replaceAll("\\u00FA", "?");
                     mensaje = mensaje.replaceAll("\\u00F3", "?");
-                    mensaje = mensaje.replaceAll("ó", "?");
+                    mensaje = mensaje.replaceAll("ï¿½", "?");
                     mensaje = mensaje.replaceAll("\\??", " ");
                     // mensaje=mensaje.replaceAll("\\u20ac", "");
                     mensaje = mensaje.replaceAll("\\u00E9", "?");
@@ -200,7 +179,6 @@ public class PasivoTcb {
                     errores += TEXT_CODE + "|" + TEXT_ARG1 + ":" + mensaje + ", ";
                     i = STD_MSJ_PARM_V.getLength();
                 } catch (Exception e) {
-                    log.error("ObtMensajeTcb : Exception", e);
                     System.out.println(e.getMessage());
                     errores = "La obtencion de errores fallo:" + e.getMessage();
                 }
@@ -213,8 +191,6 @@ public class PasivoTcb {
     }
 
     // Metodo que consume los servicios de Cargo Caja de la UANAL
-
-    @SuppressWarnings("unchecked")
     public ResponseServiceCargoAbono Cargo(String usuario, String password, String entidad, String acuerdo,
                                            String importe, String concepto, String terminal) {
         ResponseServiceCargoAbono response = new ResponseServiceCargoAbono();
@@ -323,8 +299,6 @@ public class PasivoTcb {
     }
 
     // Metodo que consume los servicios de Abono Intervencion de la UANAL
-
-    @SuppressWarnings("unchecked")
     public ResponseServiceCargoAbono AbonoIntervencion(String usuario, String password, String entidad, String acuerdo,
                                                        String impNom, String concepto, String terminal, String Clop, String SubClop) {
         ResponseServiceCargoAbono response = new ResponseServiceCargoAbono();
@@ -431,7 +405,7 @@ public class PasivoTcb {
 
     // Metodo que consume los servicios de Abono Caja de la UANAL
 
-    @SuppressWarnings("unchecked")
+    
     public ResponseServiceCargoAbono Abono(String usuario, String password, String entidad, String acuerdo,
                                            String impNom, String concepto, String terminal) {
         ResponseServiceCargoAbono response = new ResponseServiceCargoAbono();
@@ -558,16 +532,16 @@ public class PasivoTcb {
                 } catch (IOException e) {
                     response.setStatus(-1);
                     response.setDescripcion(e.getMessage());
-                    log.info("PasivoTcb - FechaContable : View In .- " + strVista);
-                    log.info("PasivoTcb - FechaContable : URL_FECHA_CTBLE .- " + prop.getURL_FECHA_CTBLE());
-                    log.error("PasivoTcb - FechaContable : openConnection. ", e);
+                    System.out.println("PasivoTcb - FechaContable : View In .- " + strVista);
+                    System.out.println("PasivoTcb - FechaContable : URL_FECHA_CTBLE .- " + prop.getURL_FECHA_CTBLE());
+                    System.out.println("PasivoTcb - FechaContable : openConnection. "+ e);
                 }
             } catch (MalformedURLException e1) {
                 response.setStatus(-1);
                 response.setDescripcion(e1.getMessage());
-                log.info("PasivoTcb - FechaContable : View In .- " + strVista);
-                log.info("PasivoTcb - FechaContable : URL_FECHA_CTBLE .- " + prop.getURL_FECHA_CTBLE());
-                log.error("PasivoTcb - FechaContable : MalformedURLException. ", e1);
+                System.out.println("PasivoTcb - FechaContable : View In .- " + strVista);
+                System.out.println("PasivoTcb - FechaContable : URL_FECHA_CTBLE .- " + prop.getURL_FECHA_CTBLE());
+                System.out.println("PasivoTcb - FechaContable : MalformedURLException. "+e1);
             }
             conn.setRequestProperty("SOAPAction", prop.getURL_CARGO());
             conn.setDoOutput(true);
@@ -580,8 +554,8 @@ public class PasivoTcb {
             } catch (IOException e2) {
                 response.setStatus(-1);
                 response.setDescripcion(e2.getMessage());
-                log.info("PasivoTcb - FechaContable : View In .- " + strVista);
-                log.error("PasivoTcb - FechaContable : OutputStreamWriter. ", e2);
+                System.out.println("PasivoTcb - FechaContable : View In .- " + strVista);
+                System.out.println("PasivoTcb - FechaContable : OutputStreamWriter. "+ e2);
             }
 
             // Read the response
@@ -591,8 +565,8 @@ public class PasivoTcb {
             } catch (IOException e1) {
                 response.setStatus(-1);
                 response.setDescripcion(e1.getMessage());
-                log.info("PasivoTcb - FechaContable : View In .- " + strVista);
-                log.error("PasivoTcb - FechaContable : BufferedReader. ", e1);
+                System.out.println("PasivoTcb - FechaContable : View In .- " + strVista);
+                System.out.println("PasivoTcb - FechaContable : BufferedReader. "+ e1);
             }
             try {
                 String line = "";
@@ -635,8 +609,8 @@ public class PasivoTcb {
                 } else {
                     response.setStatus(0);
 
-                    log.info("PasivoTcb - FechaContable : View In .- " + strVista);
-                    log.info("PasivoTcb - FechaContable : View Out .- " + salida);
+                    System.out.println("PasivoTcb - FechaContable : View In .- " + strVista);
+                    System.out.println("PasivoTcb - FechaContable : View Out .- " + salida);
                     String errores = "";
                     NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_MSJ_PARM_V");
                     errores = ObtieneMensajeError(STD_MSJ_PARM_V);
@@ -647,14 +621,14 @@ public class PasivoTcb {
                 response.setStatus(-1);
                 response.setDescripcion(e.getMessage());
                 System.out.println(e.getMessage());
-                log.info("PasivoTcb - FechaContable : View In .- " + strVista);
-                log.info("PasivoTcb - FechaContable : View Out .- " + salida);
-                log.error("PasivoTcb - FechaContable : Exception Read Out. ", e);
+                System.out.println("PasivoTcb - FechaContable : View In .- " + strVista);
+                System.out.println("PasivoTcb - FechaContable : View Out .- " + salida);
+                System.out.println("PasivoTcb - FechaContable : Exception Read Out. "+ e);
             }
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.error("PasivoTcb - FechaContable : Exception. ", e);
+            System.out.println("PasivoTcb - FechaContable : Exception. "+ e);
         }
         return response;
     }
@@ -677,16 +651,16 @@ public class PasivoTcb {
                 } catch (IOException e) {
                     response.setStatus(-1);
                     response.setDescripcion(e.getMessage());
-                    log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
-                    log.info("PasivoTcb - UltimasTransacciones : URL_FECHA_CTBLE .- " + prop.getURL_CONS_ULT_TRANS());
-                    log.error("PasivoTcb - UltimasTransacciones : openConnection. " + e.getMessage());
+                    System.out.println("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
+                    System.out.println("PasivoTcb - UltimasTransacciones : URL_FECHA_CTBLE .- " + prop.getURL_CONS_ULT_TRANS());
+                    System.out.println("PasivoTcb - UltimasTransacciones : openConnection. " + e.getMessage());
                 }
             } catch (MalformedURLException e1) {
                 response.setStatus(-1);
                 response.setDescripcion(e1.getMessage());
-                log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
-                log.info("PasivoTcb - UltimasTransacciones : URL_CONS_ULT_TRANS .- " + prop.getURL_CONS_ULT_TRANS());
-                log.error("PasivoTcb - UltimasTransacciones : MalformedURLException. ", e1);
+                System.out.println("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
+                System.out.println("PasivoTcb - UltimasTransacciones : URL_CONS_ULT_TRANS .- " + prop.getURL_CONS_ULT_TRANS());
+                System.out.println("PasivoTcb - UltimasTransacciones : MalformedURLException. "+ e1);
             }
             conn.setRequestProperty("SOAPAction", prop.getURL_CARGO());
             conn.setDoOutput(true);
@@ -699,8 +673,8 @@ public class PasivoTcb {
             } catch (IOException e2) {
                 response.setStatus(-1);
                 response.setDescripcion(e2.getMessage());
-                log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
-                log.error("PasivoTcb - UltimasTransacciones : OutputStreamWriter. ", e2);
+                System.out.println("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
+                System.out.println("PasivoTcb - UltimasTransacciones : OutputStreamWriter. "+ e2);
             }
 
             // Read the response
@@ -710,8 +684,8 @@ public class PasivoTcb {
             } catch (IOException e1) {
                 response.setStatus(-1);
                 response.setDescripcion(e1.getMessage());
-                log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
-                log.error("PasivoTcb - UltimasTransacciones : BufferedReader. ", e1);
+                System.out.println("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
+                System.out.println("PasivoTcb - UltimasTransacciones : BufferedReader. "+ e1);
             }
 
             try {
@@ -828,8 +802,8 @@ public class PasivoTcb {
                 } else {
                     response.setStatus(0);
 
-                    log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
-                    log.info("PasivoTcb - UltimasTransacciones : View Out .- " + salida);
+                    System.out.println("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
+                    System.out.println("PasivoTcb - UltimasTransacciones : View Out .- " + salida);
                     String errores = "";
                     NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_MSJ_PARM_V");
                     errores = ObtieneMensajeError(STD_MSJ_PARM_V);
@@ -840,14 +814,14 @@ public class PasivoTcb {
                 response.setStatus(-1);
                 response.setDescripcion(e.getMessage());
                 System.out.println(e.getMessage());
-                log.info("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
-                log.info("PasivoTcb - UltimasTransacciones : View Out .- " + salida);
-                log.error("PasivoTcb - UltimasTransacciones : Exception Read Out. ", e);
+                System.out.println("PasivoTcb - UltimasTransacciones : View In .- " + strVista);
+                System.out.println("PasivoTcb - UltimasTransacciones : View Out .- " + salida);
+                System.out.println("PasivoTcb - UltimasTransacciones : Exception Read Out. "+ e);
             }
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.error("PasivoTcb - UltimasTransacciones : Exception. " + e.getMessage());
+            System.out.println("PasivoTcb - UltimasTransacciones : Exception. " + e.getMessage());
         }
         return response;
     }
@@ -870,16 +844,16 @@ public class PasivoTcb {
                 } catch (IOException e) {
                     response.setStatus(-1);
                     response.setDescripcion(e.getMessage());
-                    log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
-                    log.info("PasivoTcb - ConsultaClabe : URL_CLABE .- " + prop.getURL_CLABE());
-                    log.error("PasivoTcb - ConsultaClabe : openConnection. ", e);
+                    System.out.println("PasivoTcb - ConsultaClabe : View In .- " + strVista);
+                    System.out.println("PasivoTcb - ConsultaClabe : URL_CLABE .- " + prop.getURL_CLABE());
+                    System.out.println("PasivoTcb - ConsultaClabe : openConnection. "+ e);
                 }
             } catch (MalformedURLException e1) {
                 response.setStatus(-1);
                 response.setDescripcion(e1.getMessage());
-                log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
-                log.info("PasivoTcb - ConsultaClabe : URL_CLABE .- " + prop.getURL_CLABE());
-                log.error("PasivoTcb - ConsultaClabe : MalformedURLException. ", e1);
+                System.out.println("PasivoTcb - ConsultaClabe : View In .- " + strVista);
+                System.out.println("PasivoTcb - ConsultaClabe : URL_CLABE .- " + prop.getURL_CLABE());
+                System.out.println("PasivoTcb - ConsultaClabe : MalformedURLException. "+ e1);
             }
             conn.setRequestProperty("SOAPAction", prop.getURL_CLABE());
             conn.setDoOutput(true);
@@ -893,8 +867,8 @@ public class PasivoTcb {
             } catch (IOException e2) {
                 response.setStatus(-1);
                 response.setDescripcion(e2.getMessage());
-                log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
-                log.error("PasivoTcb - ConsultaClabe : OutputStreamWriter. ", e2);
+                System.out.println("PasivoTcb - ConsultaClabe : View In .- " + strVista);
+                System.out.println("PasivoTcb - ConsultaClabe : OutputStreamWriter. "+ e2);
             }
 
             // Read the response
@@ -904,8 +878,8 @@ public class PasivoTcb {
             } catch (IOException e1) {
                 response.setStatus(-1);
                 response.setDescripcion(e1.getMessage());
-                log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
-                log.error("PasivoTcb - ConsultaClabe : BufferedReader. " + e1.getMessage());
+                System.out.println("PasivoTcb - ConsultaClabe : View In .- " + strVista);
+                System.out.println("PasivoTcb - ConsultaClabe : BufferedReader. " + e1.getMessage());
             }
 
             try {
@@ -957,8 +931,8 @@ public class PasivoTcb {
                 } else {
                     response.setStatus(0);
 
-                    log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
-                    log.info("PasivoTcb - ConsultaClabe : View Out .- " + salida);
+                    System.out.println("PasivoTcb - ConsultaClabe : View In .- " + strVista);
+                    System.out.println("PasivoTcb - ConsultaClabe : View Out .- " + salida);
                     String errores = "";
                     NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
                     errores = ObtieneMensajeError(STD_MSJ_PARM_V);
@@ -969,14 +943,14 @@ public class PasivoTcb {
                 response.setStatus(-1);
                 response.setDescripcion(e.getMessage());
                 System.out.println(e.getMessage());
-                log.info("PasivoTcb - ConsultaClabe : View In .- " + strVista);
-                log.info("PasivoTcb - ConsultaClabe : View Out .- " + salida);
-                log.error("PasivoTcb - ConsultaClabe : Exception Read Out. ", e);
+                System.out.println("PasivoTcb - ConsultaClabe : View In .- " + strVista);
+                System.out.println("PasivoTcb - ConsultaClabe : View Out .- " + salida);
+                System.out.println("PasivoTcb - ConsultaClabe : Exception Read Out. "+ e);
             }
         } catch (Exception e) {
             response.setStatus(-1);
             response.setDescripcion(e.getMessage());
-            log.error("PasivoTcb - ConsultaClabe : Exception. ", e);
+            System.out.println("PasivoTcb - ConsultaClabe : Exception. "+ e);
         }
         return response;
     }
@@ -2214,8 +2188,8 @@ public class PasivoTcb {
                 oResponEmp.setStatus(1);
             } else {
                 oResponEmp.setStatus(-1);
-                log.info("PasivoTcb - respServConsultaEmpleado : View In .- " + vista);
-                log.info("PasivoTcb - respServConsultaEmpleado : View Out .- " + salida);
+                System.out.println("PasivoTcb - respServConsultaEmpleado : View In .- " + vista);
+                System.out.println("PasivoTcb - respServConsultaEmpleado : View Out .- " + salida);
                 String errores = "";
                 NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
                 errores = ObtieneMensajeError(STD_MSJ_PARM_V);
@@ -2226,8 +2200,8 @@ public class PasivoTcb {
             oResponEmp.setStatus(-1);
             oResponEmp.setDescripcion(e.getMessage());
             System.out.println(e.getMessage());
-            log.info("PasivoTcb - respServConsultaEmpleado : View In .- " + vista);
-            log.error("PasivoTcb - respServConsultaEmpleado : Exception Read Out. ", e);
+            System.out.println("PasivoTcb - respServConsultaEmpleado : View In .- " + vista);
+            System.out.println("PasivoTcb - respServConsultaEmpleado : Exception Read Out. "+ e);
         }
         /* End */
 
@@ -2296,7 +2270,7 @@ public class PasivoTcb {
                 oResp.setNUMEROEXT(sNumExt);
                 oResp.setNUMEROINT(sNumInt);
             } else {
-                log.info("PasivoTcb - respSerDomicilio : View In .- " + vista);
+                System.out.println("PasivoTcb - respSerDomicilio : View In .- " + vista);
                 String errores = "";
                 NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
                 errores = ObtieneMensajeError(STD_MSJ_PARM_V);
@@ -2307,7 +2281,7 @@ public class PasivoTcb {
         } catch (Exception ex) {
             oResp.setStatus(-1);
             oResp.setDescripcion(ex.getMessage());
-            log.error("PasivoTcb - ObtenDomicilio : Exception Read Out. ", ex);
+            System.out.println("PasivoTcb - ObtenDomicilio : Exception Read Out. "+ ex);
         }
         return oResp;
     }
@@ -2352,8 +2326,8 @@ public class PasivoTcb {
 
             } else {
                 oEnSucDet.setStatus(-1);
-                log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-                log.info("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
+                System.out.println("PasivoTcb - respServConsultaCentro : View In .- " + vista);
+                System.out.println("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
                 String errores = "";
                 NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
                 errores = ObtieneMensajeError(STD_MSJ_PARM_V);
@@ -2364,8 +2338,8 @@ public class PasivoTcb {
             oEnSucDet.setStatus(-1);
             oEnSucDet.setDescripcion(e.getMessage());
             System.out.println(e.getMessage());
-            log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-            log.error("PasivoTcb - respServConsultaCentro : Exception Read Out. ", e);
+            System.out.println("PasivoTcb - respServConsultaCentro : View In .- " + vista);
+            System.out.println("PasivoTcb - respServConsultaCentro : Exception Read Out. "+ e);
         }
         /* End */
         return oEnSucDet;
@@ -2412,8 +2386,8 @@ public class PasivoTcb {
                 oEnSucDet.setIdInternoPe(IdInternoPe);
             } else {
                 oEnSucDet.setStatus(-1);
-                log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-                log.info("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
+                System.out.println("PasivoTcb - respServConsultaCentro : View In .- " + vista);
+                System.out.println("PasivoTcb - respServConsultaCentro : View Out .- " + salida);
                 String errores = "";
                 NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
                 errores = ObtieneMensajeError(STD_MSJ_PARM_V);
@@ -2424,8 +2398,8 @@ public class PasivoTcb {
             oEnSucDet.setStatus(-1);
             oEnSucDet.setDescripcion(e.getMessage());
             System.out.println(e.getMessage());
-            log.info("PasivoTcb - respServConsultaCentro : View In .- " + vista);
-            log.error("PasivoTcb - respServConsultaCentro : Exception Read Out. ", e);
+            System.out.println("PasivoTcb - respServConsultaCentro : View In .- " + vista);
+            System.out.println("PasivoTcb - respServConsultaCentro : Exception Read Out. "+ e);
         }
         /* End */
         return oEnSucDet;
@@ -2469,8 +2443,8 @@ public class PasivoTcb {
                 oEnSucDet.setProductoAcuerdo(StrProdc);
             } else {
                 oEnSucDet.setStatus(-1);
-                log.info("PasivoTcb - ConsultaAcuerdo : View In .- " + vista);
-                log.info("PasivoTcb - ConsultaAcuerdo : View Out .- " + salida);
+                System.out.println("PasivoTcb - ConsultaAcuerdo : View In .- " + vista);
+                System.out.println("PasivoTcb - ConsultaAcuerdo : View Out .- " + salida);
                 String errores = "";
                 NodeList STD_MSJ_PARM_V = doc.getElementsByTagName("STD_TRN_MSJ_PARM_V");
                 errores = ObtieneMensajeError(STD_MSJ_PARM_V);
@@ -2481,8 +2455,8 @@ public class PasivoTcb {
             oEnSucDet.setStatus(-1);
             oEnSucDet.setDescripcion(e.getMessage());
             System.out.println(e.getMessage());
-            log.info("PasivoTcb - ConsultaAcuerdo : View In .- " + vista);
-            log.error("PasivoTcb - ConsultaAcuerdo : Exception Read Out. ", e);
+            System.out.println("PasivoTcb - ConsultaAcuerdo : View In .- " + vista);
+            System.out.println("PasivoTcb - ConsultaAcuerdo : Exception Read Out. "+ e);
         }
         /* End */
         return oEnSucDet;
@@ -2499,7 +2473,7 @@ public class PasivoTcb {
                 StrReturn += TEXT_CODE + "|" + TEXT_ARG1 + ", ";
             }
         } catch (Exception ex) {
-            log.info("PasivoTcb - ObtieneMensajeError : " + ex.getMessage());
+            System.out.println("PasivoTcb - ObtieneMensajeError : " + ex.getMessage());
         }
         return StrReturn;
     }
@@ -2516,14 +2490,14 @@ public class PasivoTcb {
                 try {
                     conn = url.openConnection();
                 } catch (IOException e) {
-                    log.info("PasivoTcb - SalidaResponse : View In .- " + vista);
-                    log.info("PasivoTcb - SalidaResponse : URL .- " + StrUrl);
-                    log.error("PasivoTcb - SalidaResponse : IOException. ", e);
+                    System.out.println("PasivoTcb - SalidaResponse : View In .- " + vista);
+                    System.out.println("PasivoTcb - SalidaResponse : URL .- " + StrUrl);
+                    System.out.println("PasivoTcb - SalidaResponse : IOException. "+ e);
                 }
             } catch (MalformedURLException e1) {
-                log.info("PasivoTcb - SalidaResponse : View In .- " + vista);
-                log.info("PasivoTcb - SalidaResponse : URL .- " + StrUrl);
-                log.error("PasivoTcb - SalidaResponse : MalformedURLException. ", e1);
+                System.out.println("PasivoTcb - SalidaResponse : View In .- " + vista);
+                System.out.println("PasivoTcb - SalidaResponse : URL .- " + StrUrl);
+                System.out.println("PasivoTcb - SalidaResponse : MalformedURLException. "+ e1);
             }
             conn.setRequestProperty("SOAPAction", StrUrl);
             conn.setDoOutput(true);
@@ -2534,8 +2508,8 @@ public class PasivoTcb {
                 wr.write(soapXml);
                 wr.flush();
             } catch (IOException e2) {
-                log.info("PasivoTcb - SalidaResponse : View In .- " + vista);
-                log.error("PasivoTcb - SalidaResponse : OutputStreamWriter. ", e2);
+                System.out.println("PasivoTcb - SalidaResponse : View In .- " + vista);
+                System.out.println("PasivoTcb - SalidaResponse : OutputStreamWriter. "+ e2);
             }
 
             /* Begin */
@@ -2544,8 +2518,8 @@ public class PasivoTcb {
             try {
                 rd = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
             } catch (IOException e1) {
-                log.info("PasivoTcb - SalidaResponse : View In .- " + vista);
-                log.error("PasivoTcb - SalidaResponse : BufferedReader. ", e1);
+                System.out.println("PasivoTcb - SalidaResponse : View In .- " + vista);
+                System.out.println("PasivoTcb - SalidaResponse : BufferedReader. "+ e1);
             }
             try {
                 String line = "";
@@ -2561,11 +2535,11 @@ public class PasivoTcb {
                 salida = salida.replaceAll("</SOAP-ENV:Envelope>", "");
                 salida = salida.trim();
             } catch (Exception ex) {
-                log.error("PasivoTcb - SalidaResponse : BufferedReader. ", ex);
+                System.out.println("PasivoTcb - SalidaResponse : BufferedReader. "+ ex);
             }
             Thread.sleep(timeSleep);
         } catch (Exception ex) {
-            log.error("PasivoTcb - SalidaResponse : BufferedReader. ", ex);
+            System.out.println("PasivoTcb - SalidaResponse : BufferedReader. "+ ex);
         }
 
         return salida;

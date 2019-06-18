@@ -4,7 +4,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import com.bansefi.nss.cargoabono.process.ConsultaSaldo;
-import com.bansefi.nss.cargoabono.process.CargoAbono;;
+import com.bansefi.nss.cargoabono.process.CargoAbono;
 
 public class ServiciosCargoAbono {
 
